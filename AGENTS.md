@@ -77,5 +77,13 @@ change the code instead: a better name, a type, an extracted function.
 ## Commits
 
 - Do not commit or push unless asked.
+- Write commit messages as Conventional Commits: `type(scope): summary`.
+  - Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, `build`,
+    `perf`.
+  - The scope is optional and names a crate without its `bot-` prefix:
+    `feat(engine): add the chat driver`.
+  - The summary is lower case, imperative and has no full stop.
+  - Mark a breaking change with `!` after the type or scope and explain it in
+    a `BREAKING CHANGE:` footer.
 - No `Co-Authored-By` trailer and no generated-by footer in commit messages or
   pull request descriptions.

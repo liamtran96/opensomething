@@ -14,6 +14,13 @@ cargo deny check
 
 `cargo deny` is installed with `cargo install cargo-deny --locked`.
 
+## Commit messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+`type(scope): summary`, for example `feat(engine): add the chat driver` or
+`docs: record the storage decision`. The types and the scope rule are listed in
+[`AGENTS.md`](AGENTS.md).
+
 ## Rules
 
 - Project rules for code, comments and architecture are in
