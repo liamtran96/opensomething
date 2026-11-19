@@ -1,0 +1,24 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.94"
+license = "Apache-2.0"
+repository = "https://github.com/liamtran96/opensomething"
+publish = false
+
+[workspace.dependencies]
+bot-protocol = { path = "crates/bot-protocol" }
+bot-core = { path = "crates/bot-core" }
+bot-engine = { path = "crates/bot-engine" }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+dbg_macro = "deny"
+todo = "warn"

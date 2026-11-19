@@ -1,0 +1,20 @@
+opensomething
+Copyright 2026 Liam Tran
+
+Portions of this software are derived from or adapt the design of OpenMausBot,
+https://github.com/milind-soni/OpenMausBot,
+Copyright 2026 Milind Soni and OpenMausBot contributors,
+used under the Apache License, Version 2.0.
+
+No code from OpenMausBot's enterprise/ directory is used: that directory is
+under the OpenMausBot Enterprise License, not the Apache License.
+
+"OpenMausBot" and "MausBot" are trademarks of Supamaus Software Private
+Limited. This project is independent and is not affiliated with or endorsed
+by OpenMausBot, Supamaus Software Private Limited or xAI.
+
+Adapted components
+
+List each ported component here as it is added, with the OpenMausBot path it
+adapts, and carry over any third-party notice that OpenMausBot's own NOTICE
+attaches to that path.
