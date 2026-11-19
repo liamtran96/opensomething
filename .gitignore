@@ -1,4 +1,5 @@
 /target
+/crates/bot-desktop/gen/schemas
 .env
 .env.*
 *.db

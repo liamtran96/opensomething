@@ -1,0 +1,19 @@
+[package]
+name = "bot-desktop"
+description = "The opensomething desktop application."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[build-dependencies]
+tauri-build.workspace = true
+
+[dependencies]
+bot-core.workspace = true
+tauri.workspace = true
+
+[lints]
+workspace = true
