@@ -22,7 +22,8 @@ reference:
   identifiers, product text or assets. Mention them only in `NOTICE` and the
   README's credits.
 - Check a dependency's license before adding it. Prefer MIT, Apache-2.0 or
-  BSD; ask before adding anything copyleft.
+  BSD. MPL-2.0 is permitted (decision D11); ask before adding any other
+  copyleft license.
 
 ## Architecture rules
 

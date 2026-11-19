@@ -20,6 +20,8 @@ decision D9 of [`decisions.md`](decisions.md).
 - Commit messages follow Conventional Commits, for example
   `feat(cli): add the echo loop`.
 - Never put an API key in a file in this repository or in a commit.
+- Follow the rules in decision D10 from step 2 on: settings do not live in
+  the code, all data is in one folder, and logic stays in the library crates.
 
 ## Step 1. Echo loop
 
@@ -103,6 +105,8 @@ target architecture (decision D8). The next steps are the build order in the
 - [ ] 7. The server, with an event bus and an event log. Write
   `docs/threat-model.md` here: this is the first step where something outside
   the terminal can reach the program.
+- [ ] 7b. The desktop application (decision D10): a window that starts the
+  core and shows a chat UI, with an installer for Windows first.
 - [ ] 8. An ACP driver, with permission requests shown as approvals.
 - [ ] 9. The assignment runtime and its invariant tests.
 - [ ] 10. Several bots: `list_bots` and `coordinate_bots` over MCP.

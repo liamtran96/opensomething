@@ -211,3 +211,60 @@ entry was written. Verify them before relying on them.
   path.
 - **References:**
   - The Rust Programming Language: https://doc.rust-lang.org/book/
+
+## D10. The product is a desktop application; a server stays possible
+
+- **Date:** 2026-11-19
+- **Status:** Proposed
+- **What:** People download an installer, open the application, connect one
+  AI provider, make a bot and send it a task. The application runs the bots on
+  the person's own computer. We operate no service and hold no data.
+  - The application is a shell. It starts the Rust core in the same process or
+    on `127.0.0.1` and shows a web UI in a window.
+  - Tauri is the proposed shell, because the backend is already Rust and the
+    installer is small. This choice is not final until the desktop step starts.
+  - The UI is web technology (HTML, CSS, TypeScript). The framework is not
+    chosen yet.
+  - A server that a person hosts on a remote machine is not planned now. The
+    rules below keep it possible.
+- **Rules that apply to code from step 2 on,** because they are difficult to
+  add later:
+  - All settings come from environment variables, flags or a settings file.
+    No setting is a constant in the code.
+  - All data is in one folder. One setting names that folder.
+  - A network listener binds to `127.0.0.1` only.
+  - A request from a web page or from another machine must sign in. A request
+    is never trusted because of its network address alone.
+  - A secret is never written to a log.
+  - Logic stays in the library crates. The shell and the CLI only start it.
+- **Why:** This is the shape of the product we follow: its quickstart is
+  "download the desktop app, connect one provider, create your first bot, send
+  a task". A desktop application needs no server knowledge from the person who
+  installs it, and their keys and conversations stay on their computer.
+- **Alternatives:** A self-hosted server as the main product (access from a
+  phone or a second computer, but the person must run a server). A hosted
+  service (we would hold data and keys and pay for servers). Electron as the
+  shell (what OpenMausBot uses; it needs a Node backend, and ours is Rust).
+- **References:**
+  - MausBot quickstart: https://mausbot.com/#quickstart
+  - OpenMausBot `electron/` (the shell) and `docs/self-hosting.md` (the server
+    path): https://github.com/milind-soni/OpenMausBot
+  - Tauri: https://tauri.app/
+
+## D11. MPL-2.0 is a permitted dependency license
+
+- **Date:** 2026-11-19
+- **Status:** Accepted
+- **What:** `deny.toml` permits MPL-2.0 in addition to the permissive
+  licenses. No other copyleft license is permitted.
+- **Why:** Tauri depends on seven MPL-2.0 libraries that process CSS, such as
+  `cssparser`. The desktop application (D10) cannot use Tauri without them.
+  MPL-2.0 applies to each file of the library: a person who changes one of
+  those files and distributes it must publish the changed file. Our own code
+  stays Apache-2.0, and we use the libraries without change.
+- **Alternatives:** A different window tool with no MPL-2.0 dependency (none
+  was examined). Changing one of these libraries would need a new decision.
+- **References:**
+  - Mozilla Public License 2.0: https://www.mozilla.org/en-US/MPL/2.0/
+  - The license list came from `cargo metadata` on 2026-11-19: 427
+    third-party packages, 7 of them MPL-2.0.
