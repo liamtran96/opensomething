@@ -88,3 +88,13 @@ change the code instead: a better name, a type, an extracted function.
     a `BREAKING CHANGE:` footer.
 - No `Co-Authored-By` trailer and no generated-by footer in commit messages or
   pull request descriptions.
+
+## Pull requests
+
+A person reviews every pull request and must be able to understand all of it,
+including the code an agent wrote.
+
+- A pull request changes no more than 200 lines, counting added plus deleted
+  lines. Lock files and generated files do not count.
+- Split a larger change into a sequence of pull requests. Each one builds and
+  passes the checks without the ones after it.
