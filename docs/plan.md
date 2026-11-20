@@ -1,12 +1,13 @@
 # Plan
 
-The steps to a working single-bot chat program, one Rust concept at a time.
+The steps to a desktop application that runs one bot, then a team of bots.
 Tick a box when its "done when" is true. The reasons for this order are in
-decision D9 of [`decisions.md`](decisions.md).
+decision D14 of [`decisions.md`](decisions.md).
 
 ## How we work
 
-- One step, one concept, one commit. Each step ends with a program that runs.
+- One step is one or more pull requests. Each pull request obeys the size
+  limit in [`AGENTS.md`](../AGENTS.md) and ends with a program that runs.
 - Record a choice in [`decisions.md`](decisions.md) when you make one.
 - Before every commit:
 
@@ -18,106 +19,85 @@ decision D9 of [`decisions.md`](decisions.md).
 
 - After adding or changing a dependency, also run `cargo deny check`.
 - Commit messages follow Conventional Commits, for example
-  `feat(cli): add the echo loop`.
+  `feat(engine): add the chat driver`.
 - Never put an API key in a file in this repository or in a commit.
-- Follow the rules in decision D10 from step 2 on: settings do not live in
-  the code, all data is in one folder, and logic stays in the library crates.
+- Follow the rules in decision D10: settings do not live in the code, all
+  data is in one folder, and logic stays in the library crates.
+- A test never uses the network, a real engine account or a real data folder.
+  It uses the fake driver, a fake HTTP server, a fake engine CLI or an
+  in-memory database.
 
-## Step 1. Echo loop
+## Done before this plan
 
-- [x] Read a line, print it back, stop on `/quit`.
+- [x] An echo loop in `bot-cli`.
+- [x] The desktop window, which sends a line to `bot-core` and shows the echo.
 
-**Concepts:** `main`, `String`, `loop`, `let mut`, borrowing with `&mut`,
-`Result` and `?`.
+## Part 1. One bot that answers
 
-## Step 2. A real reply from an AI
+| Step | What to build | Crate | Concepts | Done when |
+|---|---|---|---|---|
+| 1 | The chat skeleton with mock data: bot list, chat pane, composer, settings panel | `bot-desktop` | React components and state | The window shows a mock conversation, and you can type in it |
+| 2 | Identifiers, message types and the event union: `turn.started`, `content.delta`, `turn.completed`, `runtime.error` | `bot-protocol` | Structs, enums, `serde` | A test shows the JSON of each event |
+| 3 | The `Driver` trait with capability flags and typed refusals, and a fake driver | `bot-engine` | Traits, `async`, `thiserror`, unit tests | A test sends a turn to the fake driver and reads its events |
+| 4 | The registry: each config entry becomes a driver. An unknown driver or a bad entry becomes "unavailable" | `bot-engine` | `HashMap`, trait objects | A test loads one good entry and one bad entry, and the good one works |
+| 5 | The chat API driver with streaming | `bot-engine` | `reqwest`, `tokio`, streams | A test with a fake HTTP server gets the reply in pieces |
+| 6 | Settings and the data folder, with atomic writes and redaction of secrets | `bot-core` | Files, `Result`, `regex` | Settings stay after a restart. A test shows that a key does not reach a log |
+| 7 | The event bus. The window shows the streamed reply. The settings panel takes the API key | `bot-core`, `bot-desktop` | Channels, Tauri commands and events | You enter a key, send a message, and the answer appears word by word |
 
-Design choices for this step:
-
-- The program reads three environment variables: a base URL, an API key and a
-  model name. Any OpenAI-compatible service then works without a code change.
-- The HTTP call is blocking, with no async. Step 6 replaces it.
-- All the code stays in `bot-cli`. Moving it is the lesson of steps 3 and 4.
-- The bot has no memory yet: each line is a new question.
-
-| Part | What to do | Concept | Done when |
-|---|---|---|---|
-| 2a | Get an API key and set it as an environment variable | How a program gets a secret without it being in the code | The terminal shows the variable is set |
-| 2b | Add `reqwest`, `serde`, `serde_json` and `anyhow` to `[workspace.dependencies]` | Dependencies in Cargo | `cargo build` and `cargo deny check` pass |
-| 2c | Write structs for the request and the response | Structs, `derive`, Rust data to JSON | A test shows the JSON you expect |
-| 2d | Send one fixed message and print the reply | HTTP calls, real errors with `Result` and `?` | An AI answer appears in the terminal |
-| 2e | Connect it to the echo loop | Functions, passing `&str` | Typing a line returns an AI reply |
-
-- [ ] 2a
-- [ ] 2b
-- [ ] 2c
-- [ ] 2d
-- [ ] 2e
+- [ ] 1
+- [ ] 2
+- [ ] 3
+- [ ] 4
+- [ ] 5
+- [ ] 6
+- [ ] 7
 
 Providers that speak the OpenAI-compatible chat API include OpenRouter, Groq
 and a local Ollama server. Check each one's current pricing and terms before
 you choose.
 
-## Step 3. The bot remembers the conversation
+## Part 2. The bot remembers and acts
 
-- [ ] Message types (a role and the text) live in `bot-protocol`.
-- [ ] `bot-cli` keeps a list of messages and sends the whole list each time.
+| Step | What to build | Crate | Concepts | Done when |
+|---|---|---|---|---|
+| 8 | The SQLite store for threads and messages, and the event log for each thread | `bot-core` | `rusqlite`, ownership, transactions | You quit, start again, and the conversation is there |
+| 9 | The ACP driver: a generic core, a fake ACP CLI for tests, then one adapter | `bot-engine` | Child processes, JSON-RPC on stdio | A test runs a turn with the fake CLI |
+| 10 | Approvals: the approval levels, the permission request path and the approval box | `bot-protocol`, `bot-engine`, `bot-desktop` | Ordered enums, requests across the bus | A permission request shows in the window, and your answer reaches the engine |
 
-**Concepts:** enums, `Vec`, modules, using one crate from another.
-**Done when:** you tell the bot your name, and two lines later it still knows
-it.
+- [ ] 8
+- [ ] 9
+- [ ] 10
 
-## Step 4. The `Driver` trait
+Write `docs/threat-model.md` before step 9: this is the first step where the
+program starts another program.
 
-- [ ] A `Driver` trait in `bot-engine` with one method: send the conversation,
-  get a reply.
-- [ ] The chat-API code moves into `bot-engine` as one implementation.
-- [ ] A fake driver that returns a fixed reply, used by a unit test.
+## Part 3. A team of bots
 
-**Concepts:** traits, generics, unit tests.
-**Read first:** chapter 10 of The Rust Programming Language.
-**Done when:** `cargo test --workspace` runs a test that uses no network.
+| Step | What to build | Crate | Done when |
+|---|---|---|---|
+| 11 | Tasks: a bot has more than one thread | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
+| 12 | Our own tools for engines, given as an MCP server: `list_bots` first | `bot-engine` | An engine lists the bots through the tool |
+| 13 | The assignment runtime and its invariant tests | `bot-core` | Each scenario test passes the invariant checks |
+| 14 | Several bots: `coordinate_bots` writes an assignment | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
+| 15 | Memory, then routines | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
+| 16 | Outside tools: custom MCP servers, then Composio (decision D12) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
-## Step 5. Conversations survive a restart
+- [ ] 11
+- [ ] 12
+- [ ] 13
+- [ ] 14
+- [ ] 15
+- [ ] 16
 
-- [ ] `bot-core` saves each message to a SQLite file and loads them at start.
-- [ ] Tests use an in-memory database, never the real data file.
-- [ ] Record the data folder's location as a decision.
-
-**Concepts:** `rusqlite`, ownership and borrowing.
-**Done when:** you quit, start again, and the bot still has the conversation.
-
-## Step 6. The reply streams in
-
-- [ ] The driver returns the reply piece by piece.
-- [ ] The CLI prints each piece as it arrives.
-- [ ] The blocking HTTP call from step 2 is gone.
-
-**Concepts:** `async`/`await`, `tokio`, streams.
-**Done when:** a long answer appears word by word.
-
-## After step 6
-
-The program is a tested single-bot chat with the same internal shape as the
-target architecture (decision D8). The next steps are the build order in the
-[`README`](../README.md):
-
-- [ ] 7. The server, with an event bus and an event log. Write
-  `docs/threat-model.md` here: this is the first step where something outside
-  the terminal can reach the program.
-- [ ] 7b. The desktop application (decision D10): a window that starts the
-  core and shows a chat UI, with an installer for Windows first.
-- [ ] 8. An ACP driver, with permission requests shown as approvals.
-- [ ] 9. The assignment runtime and its invariant tests.
-- [ ] 10. Several bots: `list_bots` and `coordinate_bots` over MCP.
-- [ ] 11. Memory, then routines.
+An HTTP server is not in these steps. The core runs in the process of the
+desktop application (decision D10).
 
 ## What to expect
 
-- Steps 2 and 3 are mostly new syntax.
-- Step 4 is the first conceptual jump (traits).
-- Step 5 is where the borrow checker pushes back. That is normal.
-- Step 6 is the hardest.
+- Steps 1 and 2 are mostly new syntax.
+- Step 3 is the first conceptual jump: traits and `async` together.
+- Step 5 is the hardest step of part 1.
+- Step 8 is where the borrow checker pushes back. That is normal.
 
 ## Reference
 
