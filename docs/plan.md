@@ -32,6 +32,14 @@ decision D14 of [`decisions.md`](decisions.md).
 - [x] An echo loop in `bot-cli`.
 - [x] The desktop window, which sends a line to `bot-core` and shows the echo.
 
+## Work outside the steps
+
+- [x] The plan of part 1, split into pull requests in [`plan/`](plan/README.md)
+  (#5).
+- [ ] The docs web site in `apps/docs`, with a home page (decision D15, #10).
+  Done when the site is published at a public address. The host and the
+  publish workflow are not chosen yet.
+
 ## Part 1. One bot that answers
 
 | Step | What to build | Crate | Concepts | Done when |
@@ -44,7 +52,7 @@ decision D14 of [`decisions.md`](decisions.md).
 | 6 | Settings and the data folder, with atomic writes and redaction of secrets | `bot-core` | Files, `Result`, `regex` | Settings stay after a restart. A test shows that a key does not reach a log |
 | 7 | The event bus. The window shows the streamed reply. The settings panel takes the API key | `bot-core`, `bot-desktop` | Channels, Tauri commands and events | You enter a key, send a message, and the answer appears word by word |
 
-- [ ] 1
+- [ ] 1 (pull requests 1.1 and 1.2 of 6 are merged)
 - [ ] 2
 - [ ] 3
 - [ ] 4
