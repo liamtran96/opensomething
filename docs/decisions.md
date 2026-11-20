@@ -189,7 +189,7 @@ entry was written. Verify them before relying on them.
 ## D9. The first steps add one concept at a time
 
 - **Date:** 2026-11-19
-- **Status:** Accepted
+- **Status:** Superseded by D14
 - **What:** Before the server and the runtime, the project is built in six
   small steps, each of which runs and adds one Rust concept:
   1. Echo loop in `bot-cli`: `main`, `String`, `loop`, `Result` and `?`.
@@ -386,3 +386,51 @@ entry was written. Verify them before relying on them.
   - StyleX, defining variables (the `.stylex.ts` file rule): https://stylexjs.com/docs/learn/theming/defining-variables
   - Tauri, frontend configuration: https://v2.tauri.app/start/frontend/
   - bulletproof-react, project structure: https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md
+
+## D14. The build order follows how the reference project grew
+
+- **Date:** 2026-11-20
+- **Status:** Accepted
+- **What:** [`plan.md`](plan.md) builds the product in the order in which
+  OpenMausBot grew, and puts each part that it added late in its final place.
+  - **The order:** the chat UI with mock data, the protocol types, the
+    `Driver` trait with a fake driver, the registry, the chat API driver,
+    settings, then the event bus and a streamed reply in the window. After
+    that: the SQLite store, the ACP driver, approvals, tasks, our own tools
+    over MCP, the assignment runtime, several bots, memory, routines and
+    outside tools.
+  - **The first engine is a chat API.** It needs only an API key, and a test
+    can replace it with a fake HTTP server. This fills an open point of D8.
+  - **Async from the first driver.** There is no blocking HTTP call that a
+    later step replaces.
+  - **SQLite from the first store,** with `rusqlite` and its `bundled`
+    feature. There is no stage with JSON files.
+  - **Tests, atomic writes and redaction come with the part they protect,**
+    not after it.
+  - **Logic starts in the library crates.** It does not start in `bot-cli`
+    and move later.
+  - **No HTTP server in the plan.** The window talks to the core with Tauri
+    commands and events (D10).
+- **Why:** The author wants to follow the reference project. Its first 200
+  commits were read on 2026-11-20. It had a usable application after 40
+  commits, because it built the UI and one driver contract first. It then
+  replaced three early designs: JSON files became SQLite (commit 383),
+  `ask_bot` became `coordinate_bots` (commit 1719), and one thread for each
+  bot became tasks (commit 157). Its tests came at commit 55, atomic writes
+  at commit 73 and redaction at commit 283. We know the final design (D8), so
+  we build each part one time. The assignment runtime comes before several
+  bots, because `coordinate_bots` writes an assignment.
+- **Cost:** Traits and async come early, which D9 delayed because the author
+  is new to Rust. The pull request size limit in `AGENTS.md` keeps each
+  change small enough to read and understand.
+- **Alternatives:** Keep D9 (an easier start; a blocking call and a move
+  between crates that are written to be deleted). Copy the reference order
+  exactly, with JSON files first (a faster first result; a migration later).
+  The assignment runtime directly after the store (the core of D8 arrives
+  sooner; nothing before step 13 needs it).
+- **References:**
+  - OpenMausBot commits `43a40803c` (UI scaffold), `6432ff3e6` (contracts,
+    bus, registry), `659349e72` (server and drivers), `91df452e6` (tests and
+    the fake driver), `cfa7beb5e` (ACP core), `67d8cf5e8` (SQLite store):
+    https://github.com/milind-soni/OpenMausBot
+  - [`comparison.md`](comparison.md), for the crate of each part.
