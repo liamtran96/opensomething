@@ -18,3 +18,12 @@ Adapted components
 List each ported component here as it is added, with the OpenMausBot path it
 adapts, and carry over any third-party notice that OpenMausBot's own NOTICE
 attaches to that path.
+
+- crates/bot-desktop/ui/src/features/sidebar/ adapts the layout of
+  src/components/Sidebar.tsx, SidebarFooter.tsx and SidebarProfileMenu.tsx.
+- crates/bot-desktop/ui/src/features/chat/ChatHeader.tsx and Composer.tsx
+  adapt the layout of src/components/ChatView.tsx, ChatHeadPill.tsx and
+  Composer.tsx.
+- crates/bot-desktop/ui/src/features/settings/SettingsDialog.tsx adapts the
+  layout of src/components/settings/SettingsWindow.tsx, SettingsNav.tsx and
+  SettingsPageHeader.tsx, and of src/components/SettingsPrimitives.tsx.
