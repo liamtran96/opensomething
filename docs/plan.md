@@ -52,6 +52,9 @@ decision D14 of [`decisions.md`](decisions.md).
 - [ ] 6
 - [ ] 7
 
+Each step of this part is split into pull requests in
+[`plan/`](plan/README.md).
+
 Providers that speak the OpenAI-compatible chat API include OpenRouter, Groq
 and a local Ollama server. Check each one's current pricing and terms before
 you choose.
