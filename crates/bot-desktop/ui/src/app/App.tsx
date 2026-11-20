@@ -56,6 +56,7 @@ export function App() {
             <BackdropPicker value={backdrop} onChange={setBackdrop} />
           </header>
           <ChatLayout
+            className="chat-scroll"
             composer={<ChatComposer onSubmit={send} isDisabled={sending} placeholder="Write a message" />}
             emptyState={<ChatSystemMessage>Send a message to start.</ChatSystemMessage>}
           >

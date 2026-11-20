@@ -8,6 +8,37 @@ body,
   height: 100%;
 }
 
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+/*
+ * The Astryx 0.7.16 chat dock has --spacing-3 of padding below the composer.
+ * Messages scroll through that strip, and the glass panel does not hide them.
+ */
+.chat-scroll {
+  clip-path: inset(0 0 var(--spacing-3) 0);
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  margin-bottom: 20px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background-color: color-mix(in srgb, var(--color-text-primary) 30%, transparent);
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
 /*
  * Astryx 0.7.16 adds this rule in a <style> element at run time. The content
  * security policy of the window blocks that element, so the rule is here.
