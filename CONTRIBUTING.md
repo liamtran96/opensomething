@@ -14,6 +14,14 @@ cargo deny check
 
 `cargo deny` is installed with `cargo install cargo-deny --locked`.
 
+For a change to the desktop UI, also run these in `crates/bot-desktop/ui`:
+
+```
+pnpm run lint
+pnpm run typecheck
+pnpm run build
+```
+
 ## Commit messages
 
 Use [Conventional Commits](https://www.conventionalcommits.org/):

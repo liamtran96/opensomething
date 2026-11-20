@@ -3,10 +3,18 @@
   "productName": "opensomething",
   "identifier": "dev.opensomething.desktop",
   "build": {
-    "frontendDist": "./ui"
+    "frontendDist": "./ui/dist",
+    "devUrl": "http://127.0.0.1:5173",
+    "beforeDevCommand": {
+      "script": "pnpm run dev",
+      "cwd": "ui"
+    },
+    "beforeBuildCommand": {
+      "script": "pnpm run build",
+      "cwd": "ui"
+    }
   },
   "app": {
-    "withGlobalTauri": true,
     "windows": [
       {
         "title": "opensomething",
@@ -23,6 +31,9 @@
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": ["icons/icon.ico", "icons/icon.png"]
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png"
+    ]
   }
 }
