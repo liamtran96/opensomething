@@ -1,0 +1,40 @@
+---
+title: Roadmap
+description: The steps to one bot, then a team of bots.
+---
+
+The work is in three parts. The full plan, with a check for each step, is in
+[`docs/plan.md`](https://github.com/liamtran96/opensomething/blob/main/docs/plan.md).
+
+## Part 1. One bot that answers
+
+1. The chat skeleton with mock data. This step is in progress.
+2. The message types and the events.
+3. The `Driver` trait and a fake driver.
+4. The registry of drivers.
+5. The chat API driver with streaming.
+6. Settings and the data folder.
+7. The event bus and the streamed reply in the window.
+
+When part 1 is done, you enter an API key, send a message, and the answer
+appears word by word.
+
+## Part 2. The bot remembers and acts
+
+8. The SQLite store for conversations.
+9. The ACP driver, which runs an agent CLI.
+10. Approvals: a permission request shows in the window.
+
+## Part 3. A team of bots
+
+11. Tasks: one bot has more than one conversation.
+12. Our own tools for engines, given as an MCP server.
+13. The assignment runtime.
+14. Several bots: one bot gives work to a second bot.
+15. Memory, then routines.
+16. Outside tools from custom MCP servers.
+
+## Why this design
+
+The decisions and their reasons are in
+[`docs/decisions.md`](https://github.com/liamtran96/opensomething/blob/main/docs/decisions.md).
