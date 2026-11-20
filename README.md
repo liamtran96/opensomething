@@ -1,13 +1,15 @@
 # opensomething
 
-A local-first server for running a team of AI bots, written in Rust.
+A local-first desktop application for running a team of AI bots, written in
+Rust.
 
 Each bot is a persona around an agent engine (an ACP agent CLI or a chat API).
-The server owns the conversations, the hand-offs between bots, approvals,
-memory and schedules; the engine only runs turns.
+The application owns the conversations, the hand-offs between bots, approvals,
+memory and schedules; the engine only runs turns. Your keys and your
+conversations stay on your computer.
 
-Status: early. The desktop window opens and echoes a line; no bot feature is
-built yet.
+Status: early. The desktop window opens with a chat on a background that you
+can change, and it echoes a line; no bot feature is built yet.
 
 ## Layout
 
@@ -19,7 +21,13 @@ crates/
   bot-engine/         the Driver trait and its drivers
   bot-cli/            the opensomething binary
   bot-desktop/        the desktop window (Tauri); its web UI is in ui/
-docs/decisions.md     what we chose, why, and the references
+apps/
+  docs/               the docs web site (Next.js and Fumadocs)
+docs/
+  plan.md             the steps, with a "done when" check for each
+  plan/               each step as a list of pull requests
+  decisions.md        what we chose, why, and the references
+  comparison.md       the reference project's features and our crate for each
 ```
 
 The crates will be split further as the code grows. The plan and the reasons
@@ -48,11 +56,22 @@ pnpm run lint
 pnpm run typecheck
 ```
 
+The docs web site is a Next.js app with Fumadocs (decision D15). Its pages
+are MDX files in `apps/docs/content/docs`. Run these commands in `apps/docs`:
+
+```
+pnpm install
+pnpm run dev            # the site at http://localhost:3000, with reload
+pnpm run build          # static files in out/
+pnpm run typecheck
+```
+
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Build order
 
 The steps and their "done when" checks are in [`docs/plan.md`](docs/plan.md).
+Each step of part 1 is split into pull requests in [`docs/plan/`](docs/plan/README.md).
 The reasons for the order are in decision D14.
 
 1. One bot that answers: the chat UI, the protocol types, the `Driver` trait

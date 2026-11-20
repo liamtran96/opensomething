@@ -1,0 +1,49 @@
+---
+title: Run from source
+description: Build the desktop application and open the window.
+---
+
+There is no installer yet. You build the application from the source code.
+
+## What you need
+
+- Rust. The file `rust-toolchain.toml` sets the version, and `rustup` installs
+  it automatically.
+- Node 24 and pnpm.
+- On Linux, the system libraries that Tauri needs. See the
+  [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/).
+
+## Start the application
+
+1. Get the source code.
+
+   ```bash
+   git clone https://github.com/liamtran96/opensomething
+   cd opensomething/crates/bot-desktop/ui
+   ```
+
+2. Install the packages of the UI.
+
+   ```bash
+   pnpm install
+   ```
+
+3. Start the application in development mode.
+
+   ```bash
+   pnpm run tauri dev
+   ```
+
+The first start compiles the Rust code, which takes some minutes. Then the
+window opens. A change to a UI file shows in the window immediately.
+
+## Build the installer
+
+```bash
+pnpm run tauri build
+```
+
+## What you can do now
+
+Type a message and press Enter. The reply is the same text: the application
+only echoes until the first bot is built.

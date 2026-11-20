@@ -1,0 +1,52 @@
+---
+title: Contributing
+description: The checks and the rules for a pull request.
+---
+
+Contributions are accepted under the Apache License 2.0.
+
+## Before you open a pull request
+
+Run these commands at the root of the repository:
+
+```bash
+cargo fmt --all --check
+cargo clippy --workspace --all-targets -- -D warnings
+cargo test --workspace
+cargo deny check
+```
+
+For a change to the desktop UI, also run these commands in
+`crates/bot-desktop/ui`:
+
+```bash
+pnpm run lint
+pnpm run typecheck
+pnpm run build
+```
+
+## Rules
+
+- A pull request changes no more than 200 lines. Lock files and generated
+  files do not count.
+- A commit message follows Conventional Commits, for example
+  `feat(engine): add the chat driver`.
+- A change to the structure, the tooling or a core design choice adds an
+  entry to `docs/decisions.md`.
+
+The full rules are in
+[`AGENTS.md`](https://github.com/liamtran96/opensomething/blob/main/AGENTS.md)
+and
+[`CONTRIBUTING.md`](https://github.com/liamtran96/opensomething/blob/main/CONTRIBUTING.md).
+
+## Change this site
+
+The pages of this site are MDX files in `apps/docs/content/docs`. Run these
+commands in `apps/docs`:
+
+```bash
+pnpm install
+pnpm run dev
+```
+
+The site opens at `http://localhost:3000`.

@@ -434,3 +434,45 @@ entry was written. Verify them before relying on them.
     the fake driver), `cfa7beb5e` (ACP core), `67d8cf5e8` (SQLite store):
     https://github.com/milind-soni/OpenMausBot
   - [`comparison.md`](comparison.md), for the crate of each part.
+
+## D15. The docs web site is a Fumadocs app in `apps/docs`
+
+- **Date:** 2026-11-20
+- **Status:** Accepted
+- **What:** The public docs site is a Next.js app with Fumadocs, in
+  `apps/docs`. It is a separate pnpm project, not part of the Cargo workspace.
+  - **Content:** the pages for people who use the application are MDX files
+    in `apps/docs/content/docs`. The `docs` folder at the root stays for the
+    plan, the decisions and other notes for contributors, and the site links
+    to those files on GitHub.
+  - **Look:** the "spacious" docs layout, the neutral theme with a blue
+    accent, and the Geist and JetBrains Mono fonts. This is the setup of the
+    Fumadocs site itself.
+  - **Output:** `next build` writes static files to `apps/docs/out`, with a
+    static search index, so any static host can serve the site. The variable
+    `NEXT_PUBLIC_BASE_PATH` sets the path prefix of the host.
+  - **Versions** are exact in `package.json`. pnpm refuses a package version
+    that is less than one day old, so the versions are one release behind
+    the newest ones of 2026-11-20.
+- **Why:** The author wants a docs site like the one of the reference
+  project, which is a Next.js app with Fumadocs. Fumadocs gives the sidebar,
+  the search, the table of contents and the light and dark modes.
+- **Rules:**
+  - A special Fumadocs layout needs its own stylesheet from
+    `fumadocs-ui/css/generated/`. Without it the layout is broken.
+  - Stop the dev server before you change the packages. A change during a
+    run mixes two versions and breaks the pages.
+  - `next dev` writes `apps/docs/AGENTS.md` on each start. That file is in
+    `.gitignore`.
+- **Alternatives:** mdBook (one program, reads the `docs` folder directly; a
+  plain look; tried in pull request #8 and closed). Astro Starlight or
+  VitePress (static by design; not the look that the author wants).
+- **Open risks:**
+  - The host is not chosen, and no workflow publishes the site.
+  - `cargo deny` does not check npm packages. The licenses of the direct
+    packages were checked by hand on 2026-11-20 (MIT).
+  - The build downloads the two fonts from Google Fonts. The built site
+    serves them itself.
+- **References:**
+  - Fumadocs: https://www.fumadocs.dev/
+  - The static template: https://github.com/fuma-nama/fumadocs/tree/dev/examples/next-static

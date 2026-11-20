@@ -1,0 +1,12 @@
+{
+  "title": "opensomething",
+  "root": true,
+  "pages": [
+    "---Introduction---",
+    "index",
+    "---Getting started---",
+    "...getting-started",
+    "---Project---",
+    "...project"
+  ]
+}
