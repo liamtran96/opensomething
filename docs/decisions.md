@@ -434,3 +434,30 @@ entry was written. Verify them before relying on them.
     the fake driver), `cfa7beb5e` (ACP core), `67d8cf5e8` (SQLite store):
     https://github.com/milind-soni/OpenMausBot
   - [`comparison.md`](comparison.md), for the crate of each part.
+
+## D15. The docs web site is built with mdBook and served by GitHub Pages
+
+- **Date:** 2026-11-20
+- **Status:** Accepted
+- **What:** `book.toml` at the root makes a web site from the `docs` folder.
+  `docs/SUMMARY.md` is the table of contents, and `docs/introduction.md` is
+  the first page. The `Docs` workflow builds the site for each pull request
+  that changes it, and publishes it to GitHub Pages after a merge to `main`.
+  The workflow uses a fixed mdBook version.
+- **Why:** The docs are already Markdown files in `docs`, and mdBook reads
+  them where they are. It is one program with no Node packages, and Rust
+  projects use it for their books. The files stay readable on GitHub.
+- **Rules:**
+  - A new file in `docs` needs a line in `docs/SUMMARY.md`, or it is not in
+    the site.
+  - A link to a file outside `docs` uses the full GitHub address. A relative
+    link to such a file does not work in the site.
+- **Alternatives:** Astro Starlight, VitePress or Docusaurus (more design
+  control and search options; a second Node project to keep current). The
+  GitHub file view only (no work; no navigation and no search).
+- **Open risks:** `docs/plan.md` and `docs/plan/README.md` have relative
+  links to `AGENTS.md`, which do not work in the site.
+- **References:**
+  - mdBook: https://rust-lang.github.io/mdBook/
+  - GitHub Pages with a custom workflow:
+    https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages

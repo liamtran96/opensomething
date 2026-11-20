@@ -1,0 +1,13 @@
+[book]
+title = "opensomething"
+description = "A local-first desktop application for running a team of AI bots."
+language = "en"
+src = "docs"
+
+[build]
+build-dir = "target/book"
+
+[output.html]
+site-url = "/opensomething/"
+git-repository-url = "https://github.com/liamtran96/opensomething"
+edit-url-template = "https://github.com/liamtran96/opensomething/edit/main/{path}"
