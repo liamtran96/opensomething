@@ -1,0 +1,17 @@
+@import "@astryxdesign/core/reset.css";
+@import "@astryxdesign/core/astryx.css";
+@import "./themes/built/brand.css";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/*
+ * Astryx 0.7.16 adds this rule in a <style> element at run time. The content
+ * security policy of the window blocks that element, so the rule is here.
+ */
+[data-astryx-scroll-anchoring="off"] {
+  overflow-anchor: none !important;
+}

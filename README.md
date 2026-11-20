@@ -18,6 +18,7 @@ crates/
   bot-core/           store, assignment runtime and memory
   bot-engine/         the Driver trait and its drivers
   bot-cli/            the opensomething binary
+  bot-desktop/        the desktop window (Tauri); its web UI is in ui/
 docs/decisions.md     what we chose, why, and the references
 ```
 
@@ -32,6 +33,19 @@ cargo fmt --all --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 cargo deny check
+```
+
+The desktop UI is React with the Astryx components and StyleX, built with Vite
+(decision D13). It needs Node 24 and pnpm. Run these commands in
+`crates/bot-desktop/ui`:
+
+```
+pnpm install
+pnpm run tauri dev      # the window, with the UI dev server and hot reload
+pnpm run tauri build    # the installer
+pnpm run theme:build    # after a change to src/themes/brand.ts
+pnpm run lint
+pnpm run typecheck
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).

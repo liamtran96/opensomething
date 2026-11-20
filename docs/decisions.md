@@ -268,3 +268,121 @@ entry was written. Verify them before relying on them.
   - Mozilla Public License 2.0: https://www.mozilla.org/en-US/MPL/2.0/
   - The license list came from `cargo metadata` on 2026-11-19: 427
     third-party packages, 7 of them MPL-2.0.
+
+## D12. Outside tools come from custom MCP servers and from Composio
+
+- **Date:** 2026-11-20
+- **Status:** Proposed
+- **What:** A bot gets tools for outside apps in two ways.
+  - **Custom MCP servers.** A person adds the command or the URL of an MCP
+    server in the settings. The server passes it to the engine.
+  - **Composio.** A person saves their own Composio project key. The server
+    then keeps one Composio session and gives its MCP endpoint to the engine
+    through the same path as a custom server.
+  - In both ways a proxy of ours stands between the engine and the tool
+    server. It filters the tool list to what the bot is granted and checks the
+    grant again on each call. A sign-in is shown to the person as a card; the
+    model never writes an authorization address.
+  - We do not operate a broker that holds a Composio key for people. App
+    events ("when an email arrives") need that broker in OpenMausBot, so they
+    are not planned.
+- **Why:** Custom MCP servers need no account with a third party and no
+  service of ours, which agrees with D10. Composio gives hundreds of apps with
+  the sign-in done, for a person who accepts that Composio holds the provider
+  tokens. Composio is itself an MCP server, so the second way adds little code
+  to the first.
+- **Alternatives:** Custom MCP servers only (no third party holds tokens; each
+  app needs its own server). A managed broker like OpenMausBot's (no key for
+  the person to add, and app events work; we would operate a service and hold
+  a key, which D10 excludes).
+- **References:**
+  - OpenMausBot `docs/custom-mcp-servers.md`, `docs/composio.md` and
+    `server/connector-proxy.ts`
+  - Composio: https://docs.composio.dev/
+
+## D13. The desktop UI is React with Astryx and StyleX, built with Vite
+
+- **Date:** 2026-11-20
+- **Status:** Accepted
+- **What:** The web UI of the desktop application is in
+  `crates/bot-desktop/ui`.
+  - **React 19** for the components.
+  - **Astryx** (`@astryxdesign/core`, MIT, from Meta) for ready components:
+    the chat layout, messages, the composer, and later dialogs, menus and
+    tables. The theme is `@astryxdesign/theme-neutral`.
+  - **StyleX** for our own styles. A style is in the same file as its
+    component. Astryx is written with StyleX and ships built CSS, so the two
+    use one style system.
+  - **Vite 7** bundles the page and serves it in development, with the
+    StyleX plugin (`@stylexjs/unplugin`) and the React plugin.
+  - **pnpm** installs the packages and runs the scripts. Node 24 runs them.
+  - **Layout:** `index.html` and `vite.config.ts` at the top, then
+    `src/main.tsx`, `src/global.css`, `src/app/` and `src/themes/`. Add `src/components/`
+    for shared parts, `src/features/<name>/` for one feature and
+    `src/theme/*.stylex.ts` for our own variables when the first one is
+    necessary. Import files directly; do not make index files that export
+    again.
+  - **Theme:** `src/themes/brand.ts` extends the neutral theme with
+    `defineTheme`. `pnpm run theme:build` writes the built theme to
+    `src/themes/built/`, and those files are committed. The application
+    imports only the built theme, because a theme that is not built adds a
+    `<style>` element at run time, which the content security policy blocks.
+    Run `pnpm run theme:build` after each change to the theme and after each
+    Astryx update.
+  - **Checks:** a check that the built theme is current, ESLint with the
+    StyleX rules, `tsc`, and a build, in the `ui` job of CI.
+  - This fills the open point of D10 ("the framework is not chosen yet").
+- **Why:** React has the most components and guides, and the reference UI
+  uses it. Astryx gives accessible chat components, so we do not write them.
+  StyleX checks style names and values with the compiler and has one rule for
+  conflicts: the last style wins. Vite is the bundler that the Tauri, StyleX
+  and Astryx guides all document.
+- **Rules that follow from the content security policy and from D10:**
+  - Do not import `@astryxdesign/theme-neutral/fonts.css`. In version 0.7.16
+    that file loads the Figtree font from Google on each start. The UI uses
+    the system font. Check this file again on each Astryx update.
+  - The policy `style-src 'self'` blocks a `<style>` element that Astryx
+    0.7.16 adds at run time for its scroll anchor rule. `src/global.css` has
+    that rule as static CSS. After an Astryx update, look for new blocked
+    styles in the console.
+  - `src/global.css` imports the stylesheets in the order `reset.css`,
+    `astryx.css`, then the built theme. Our StyleX layers come after them, so our
+    styles override the Astryx styles.
+- **Facts found while this was set up:**
+  - Astryx is in beta (0.x). The versions are exact in `package.json`. Its
+    CLI has an `upgrade` command with codemods.
+  - Do not run `astryx init` without a review: it writes a guide into
+    `AGENTS.md`.
+  - `pnpm-workspace.yaml` refuses the install scripts of `esbuild` and of the
+    two Astryx packages. The Astryx scripts only print a reminder, and the
+    build works without the `esbuild` script.
+  - `typescript-eslint` 8 does not support TypeScript 7, so the UI uses
+    TypeScript 6.
+  - The Tauri CLI finds `tauri.conf.json` only in the current folder or below
+    it, so the `tauri` script changes to the crate folder first.
+  - The Rust build in development mode does not need `ui/dist`, so the Rust
+    job of CI does not need Node.
+  - Bun as the bundler was tried first and rejected. With Bun 1.3.14 and
+    StyleX 0.19.2, the theme variables were missing from the CSS unless the
+    option `treeshakeCompensation` was set, and the build adapter of the
+    official StyleX example for Bun added no CSS. Neither problem gave an
+    error.
+- **Alternatives:** Tailwind (shorter to write, and what the reference UI
+  uses; no check of style values by the compiler). Bun as the package manager
+  and bundler (one tool; see the facts above). npm (comes with Node; pnpm
+  refuses install scripts by default). Our own components with no library
+  (no beta dependency; much more code to write and to make accessible).
+- **Open risks:**
+  - `cargo deny` does not check npm packages. The licenses of the direct UI
+    packages were checked by hand on 2026-11-20 (MIT, Apache-2.0). The
+    packages that they depend on were not checked.
+  - The UI was tested in Chrome with the policy of the window, and the
+    application was started on Windows. It was not tested in the WebKit
+    webviews of macOS and Linux.
+  - The built script is about 620 kB (200 kB compressed) for one chat screen.
+- **References:**
+  - Astryx: https://github.com/meta/astryx and https://astryx.atmeta.com/components
+  - StyleX example for Vite and React: https://github.com/facebook/stylex/tree/main/examples/example-vite-react
+  - StyleX, defining variables (the `.stylex.ts` file rule): https://stylexjs.com/docs/learn/theming/defining-variables
+  - Tauri, frontend configuration: https://v2.tauri.app/start/frontend/
+  - bulletproof-react, project structure: https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md
