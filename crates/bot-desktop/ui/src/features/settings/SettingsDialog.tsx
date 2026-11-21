@@ -13,27 +13,29 @@ import {
   LockKeyhole,
   type LucideIcon,
   Monitor,
-  Search,
   Smartphone,
   Sparkles,
   X,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
+import { IconButton } from "../../components/IconButton";
+import { SearchField } from "../../components/SearchField";
 import { BackdropPicker } from "../backdrop/BackdropPicker";
 import type { BackdropId } from "../backdrop/backdrops";
+
+const version = "0.1.0";
 
 interface Page {
   id: string;
   label: string;
   icon?: LucideIcon;
-  /** A second line makes the item a tall item with a badge. */
-  line?: string;
+  secondLine?: string;
   badge?: ReactNode;
 }
 
 const pageGroups = (botCount: number): Page[][] => [
   [
-    { id: "computer", label: "This computer", line: `${botCount} bots`, badge: <Laptop size={15} /> },
+    { id: "computer", label: "This computer", secondLine: `${botCount} bots`, badge: <Laptop size={15} /> },
     { id: "devices", label: "Phone & devices", icon: Smartphone },
     { id: "ai", label: "AI", icon: Sparkles },
     { id: "bots", label: "You and your bots", icon: BotIcon },
@@ -44,10 +46,10 @@ const pageGroups = (botCount: number): Page[][] => [
     { id: "data", label: "Data", icon: Archive },
   ],
   [
-    { id: "account", label: "Your account", line: "Not signed in", badge: "?" },
+    { id: "account", label: "Your account", secondLine: "Not signed in", badge: "?" },
     { id: "billing", label: "Plan & billing", icon: CreditCard },
   ],
-  [{ id: "app", label: "This app", line: "0.1.0 · Up to date", badge: "o" }],
+  [{ id: "app", label: "This app", secondLine: `${version} · Up to date`, badge: "o" }],
 ];
 
 interface SettingsDialogProps {
@@ -67,40 +69,33 @@ export function SettingsDialog({ isOpen, onOpenChange, botCount, backdrop, onBac
   const [apiKey, setApiKey] = useState("");
   const groups = pageGroups(botCount);
   const page = groups.flat().find(({ id }) => id === pageId);
-  const matches = (item: Page) => item.label.toLowerCase().includes(query.trim().toLowerCase());
+  const needle = query.trim().toLowerCase();
+  const matches = (item: Page) => item.label.toLowerCase().includes(needle);
 
   return (
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange} width={920} padding={0}>
       <div {...stylex.props(styles.body)}>
         <nav aria-label="Settings" {...stylex.props(styles.nav)}>
-          <label {...stylex.props(styles.search)}>
-            <Search size={14} aria-hidden="true" />
-            <input
-              aria-label="Search settings"
-              placeholder="Search settings"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              {...stylex.props(styles.searchInput)}
-            />
+          <SearchField label="Search settings" value={query} onChange={setQuery} style={styles.search}>
             <kbd {...stylex.props(styles.kbd)}>/</kbd>
-          </label>
+          </SearchField>
           <div {...stylex.props(styles.navList)}>
             {groups.map((group) => (
               <div key={group[0]?.id} {...stylex.props(styles.navGroup)}>
-                {group.filter(matches).map(({ id, label, icon: ItemIcon, line, badge }) => (
+                {group.filter(matches).map(({ id, label, icon: ItemIcon, secondLine, badge }) => (
                   <button
                     key={id}
                     type="button"
                     aria-current={id === pageId ? "page" : undefined}
                     onClick={() => setPageId(id)}
-                    {...stylex.props(styles.item, line !== undefined && styles.tall, id === pageId && styles.current)}
+                    {...stylex.props(styles.item, secondLine !== undefined && styles.tall, id === pageId && styles.current)}
                   >
                     <span {...stylex.props(styles.itemIcon, badge !== undefined && styles.badge)}>
                       {ItemIcon ? <ItemIcon size={16} strokeWidth={1.75} aria-hidden="true" /> : badge}
                     </span>
                     <span {...stylex.props(styles.itemText)}>
-                      <span {...stylex.props(line !== undefined && styles.strong)}>{label}</span>
-                      {line !== undefined && <span {...stylex.props(styles.itemLine)}>{line}</span>}
+                      <span {...stylex.props(secondLine !== undefined && styles.strong)}>{label}</span>
+                      {secondLine !== undefined && <span {...stylex.props(styles.itemLine)}>{secondLine}</span>}
                     </span>
                   </button>
                 ))}
@@ -112,13 +107,13 @@ export function SettingsDialog({ isOpen, onOpenChange, botCount, backdrop, onBac
           </div>
         </nav>
         <div {...stylex.props(styles.page)}>
-          <button type="button" aria-label="Close" onClick={() => onOpenChange(false)} {...stylex.props(styles.close)}>
+          <IconButton label="Close" onClick={() => onOpenChange(false)} style={styles.close}>
             <X size={18} />
-          </button>
+          </IconButton>
           <div {...stylex.props(styles.column)}>
             <header {...stylex.props(styles.header)}>
               <h2 {...stylex.props(styles.title)}>{page?.label}</h2>
-              {pageId === "computer" && <p {...stylex.props(styles.secondary)}>opensomething 0.1.0 · Updates with the app</p>}
+              {pageId === "computer" && <p {...stylex.props(styles.secondary)}>opensomething {version} · Updates with the app</p>}
             </header>
             {pageId === "computer" ? (
               <>
@@ -195,9 +190,6 @@ function Value({ children }: { children: ReactNode }) {
   );
 }
 
-const hover = "color-mix(in srgb, var(--color-text-primary) 5%, transparent)";
-const raised = "color-mix(in srgb, var(--color-text-primary) 9%, transparent)";
-
 const styles = stylex.create({
   body: {
     display: "flex",
@@ -215,29 +207,10 @@ const styles = stylex.create({
     borderInlineEndColor: "var(--color-border)",
   },
   search: {
-    display: "flex",
-    flexShrink: 0,
-    alignItems: "center",
-    gap: 8,
-    height: 32,
     marginTop: 12,
     marginInline: 12,
     paddingInline: 8,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "var(--color-border)",
     borderRadius: 8,
-    color: "var(--color-text-secondary)",
-  },
-  searchInput: {
-    flexGrow: 1,
-    minWidth: 0,
-    padding: 0,
-    borderWidth: 0,
-    color: "var(--color-text-primary)",
-    fontSize: 13,
-    backgroundColor: "transparent",
-    outline: "none",
   },
   kbd: {
     display: "flex",
@@ -282,7 +255,7 @@ const styles = stylex.create({
     cursor: "pointer",
     backgroundColor: {
       default: "transparent",
-      ":hover": hover,
+      ":hover": "var(--color-overlay-hover)",
     },
     outline: {
       default: "none",
@@ -295,7 +268,7 @@ const styles = stylex.create({
   },
   current: {
     fontWeight: 500,
-    backgroundColor: raised,
+    backgroundColor: "var(--color-overlay-pressed)",
   },
   itemIcon: {
     display: "flex",
@@ -310,7 +283,7 @@ const styles = stylex.create({
     borderRadius: 6,
     fontSize: 12,
     fontWeight: 600,
-    backgroundColor: raised,
+    backgroundColor: "var(--color-overlay-pressed)",
   },
   itemText: {
     display: "flex",
@@ -346,23 +319,10 @@ const styles = stylex.create({
     overflowY: "auto",
   },
   close: {
-    display: "flex",
     position: "absolute",
     top: 12,
     insetInlineEnd: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 32,
-    height: 32,
-    padding: 0,
-    borderWidth: 0,
     borderRadius: "50%",
-    color: "var(--color-text-secondary)",
-    cursor: "pointer",
-    backgroundColor: {
-      default: "transparent",
-      ":hover": hover,
-    },
   },
   column: {
     display: "flex",

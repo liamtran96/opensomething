@@ -1,6 +1,7 @@
 import * as stylex from "@stylexjs/stylex";
 import { ArrowUp, AudioLines, ChevronDown, GraduationCap, Monitor, Paperclip, ShieldAlert, Target } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { IconButton } from "../../components/IconButton";
 
 interface ComposerProps {
   placeholder: string;
@@ -10,33 +11,34 @@ interface ComposerProps {
 
 export function Composer({ placeholder, isDisabled, onSubmit }: ComposerProps) {
   const [value, setValue] = useState("");
-  const hasText = value.trim().length > 0;
+  const text = value.trim();
+  const hasText = text.length > 0;
 
   function submit(event: FormEvent) {
     event.preventDefault();
     if (!hasText || isDisabled) return;
-    onSubmit(value);
+    onSubmit(text);
     setValue("");
   }
 
   return (
     <form onSubmit={submit} {...stylex.props(styles.pill)}>
-      <button type="button" aria-label="Attach a file" title="Attach a file" {...stylex.props(styles.tool)}>
+      <IconButton label="Attach a file" style={styles.tool}>
         <Paperclip size={18} strokeWidth={1.75} />
-      </button>
-      <button type="button" aria-label="Skills" title="Skills" {...stylex.props(styles.tool)}>
+      </IconButton>
+      <IconButton label="Skills" style={styles.tool}>
         <GraduationCap size={18} strokeWidth={1.75} />
-      </button>
+      </IconButton>
       <button type="button" {...stylex.props(styles.chip)}>
         <Target size={15} strokeWidth={1.75} aria-hidden="true" />
         Goal
       </button>
-      <button type="button" aria-label="Approvals" title="Approvals" {...stylex.props(styles.tool)}>
+      <IconButton label="Approvals" style={styles.tool}>
         <ShieldAlert size={18} strokeWidth={1.75} />
-      </button>
-      <button type="button" aria-label="Bot screen" title="Bot screen" {...stylex.props(styles.tool)}>
+      </IconButton>
+      <IconButton label="Bot screen" style={styles.tool}>
         <Monitor size={18} strokeWidth={1.75} />
-      </button>
+      </IconButton>
       <input
         aria-label={placeholder}
         placeholder={placeholder}
@@ -45,22 +47,22 @@ export function Composer({ placeholder, isDisabled, onSubmit }: ComposerProps) {
         {...stylex.props(styles.input)}
       />
       {hasText ? (
-        <button type="submit" aria-label="Send" disabled={isDisabled} {...stylex.props(styles.action, styles.send)}>
+        <IconButton label="Send" type="submit" disabled={isDisabled} style={[styles.action, styles.send]}>
           <ArrowUp size={18} />
-        </button>
+        </IconButton>
       ) : (
-        <button type="button" aria-label="Talk" title="Talk" {...stylex.props(styles.action)}>
+        <IconButton label="Talk" style={styles.action}>
           <AudioLines size={18} strokeWidth={1.75} />
-        </button>
+        </IconButton>
       )}
-      <button type="button" aria-label="More options" title="More options" {...stylex.props(styles.action)}>
+      <IconButton label="More options" style={styles.action}>
         <ChevronDown size={16} />
-      </button>
+      </IconButton>
     </form>
   );
 }
 
-const fill = "color-mix(in srgb, var(--color-text-primary) 8%, transparent)";
+const fill = "var(--color-overlay-pressed)";
 
 const styles = stylex.create({
   pill: {
@@ -78,17 +80,7 @@ const styles = stylex.create({
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.06)",
   },
   tool: {
-    display: "flex",
-    flexShrink: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 32,
-    height: 32,
-    padding: 0,
-    borderWidth: 0,
     borderRadius: "50%",
-    color: "var(--color-text-secondary)",
-    cursor: "pointer",
     backgroundColor: {
       default: "transparent",
       ":hover": fill,
@@ -129,17 +121,8 @@ const styles = stylex.create({
     },
   },
   action: {
-    display: "flex",
-    flexShrink: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 32,
-    height: 32,
-    padding: 0,
-    borderWidth: 0,
     borderRadius: 10,
     color: "inherit",
-    cursor: "pointer",
     backgroundColor: fill,
   },
   send: {

@@ -7,7 +7,7 @@ import {
 } from "@astryxdesign/core/Chat";
 import { invoke } from "@tauri-apps/api/core";
 import { useState } from "react";
-import type { Bot } from "../../mocks/bots";
+import type { Bot } from "../bots/types";
 import { Composer } from "./Composer";
 import type { MessageKind } from "./types";
 
@@ -19,10 +19,7 @@ interface ChatPaneProps {
 export function ChatPane({ bot, onAdd }: ChatPaneProps) {
   const [sending, setSending] = useState(false);
 
-  async function send(value: string) {
-    const text = value.trim();
-    if (!text || sending) return;
-
+  async function send(text: string) {
     onAdd("person", text);
     setSending(true);
     try {
@@ -47,7 +44,7 @@ export function ChatPane({ bot, onAdd }: ChatPaneProps) {
               <ChatSystemMessage key={message.id}>{message.text}</ChatSystemMessage>
             ) : message.kind === "person" ? (
               <ChatMessage key={message.id} sender="user">
-                <ChatMessageBubble style={{ backgroundColor: bot.color, color: "#ffffff" }}>{message.text}</ChatMessageBubble>
+                <ChatMessageBubble style={{ backgroundColor: bot.color, color: "var(--color-on-dark)" }}>{message.text}</ChatMessageBubble>
               </ChatMessage>
             ) : (
               <ChatMessage key={message.id} sender="assistant">

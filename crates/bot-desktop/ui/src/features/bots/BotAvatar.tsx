@@ -1,5 +1,5 @@
 import * as stylex from "@stylexjs/stylex";
-import type { Bot } from "../../mocks/bots";
+import type { Bot } from "./types";
 
 interface BotAvatarProps {
   bot: Pick<Bot, "name" | "color">;
@@ -25,7 +25,7 @@ const styles = stylex.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: "32%",
-    color: "#ffffff",
+    color: "var(--color-on-dark)",
     fontWeight: 600,
     lineHeight: 1,
   },

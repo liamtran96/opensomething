@@ -61,8 +61,8 @@ const styles = stylex.create({
     cursor: "pointer",
     backgroundColor: {
       default: "transparent",
-      ":hover": "color-mix(in srgb, var(--color-text-primary) 5%, transparent)",
-      ":is([aria-expanded=true])": "color-mix(in srgb, var(--color-text-primary) 9%, transparent)",
+      ":hover": "var(--color-overlay-hover)",
+      ":is([aria-expanded=true])": "var(--color-overlay-pressed)",
     },
   },
   badge: {
@@ -76,7 +76,7 @@ const styles = stylex.create({
     color: "var(--color-text-secondary)",
     fontSize: 12,
     fontWeight: 500,
-    backgroundColor: "color-mix(in srgb, var(--color-text-primary) 8%, transparent)",
+    backgroundColor: "var(--color-overlay-pressed)",
   },
   shortcut: {
     color: "var(--color-text-secondary)",

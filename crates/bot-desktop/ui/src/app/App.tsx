@@ -1,12 +1,13 @@
 import { Theme } from "@astryxdesign/core/theme";
 import { type BackdropId, backdropStyles, backdrops } from "../features/backdrop/backdrops";
+import type { Bot } from "../features/bots/types";
 import { ChatHeader } from "../features/chat/ChatHeader";
 import { ChatPane } from "../features/chat/ChatPane";
 import type { MessageKind } from "../features/chat/types";
 import { SettingsDialog } from "../features/settings/SettingsDialog";
 import { AccountMenu } from "../features/sidebar/AccountMenu";
 import { Sidebar } from "../features/sidebar/Sidebar";
-import { type Bot, mockBots } from "../mocks/bots";
+import { mockBots } from "../mocks/bots";
 import { brandTheme } from "../themes/built/brand";
 import * as stylex from "@stylexjs/stylex";
 import { useEffect, useState } from "react";
@@ -41,7 +42,7 @@ export function App() {
           bots={bots}
           selectedId={selected.id}
           onSelect={setSelectedId}
-          tint={backdropStyles[backdrop]}
+          picture={backdropStyles[backdrop]}
           account={<AccountMenu onOpenSettings={() => setSettingsOpen(true)} />}
         />
         <main {...stylex.props(styles.main)}>

@@ -1,17 +1,7 @@
-import type { Message } from "../features/chat/types";
+import type { Bot } from "../features/bots/types";
+import type { Message, MessageKind } from "../features/chat/types";
 
-export interface Bot {
-  id: string;
-  name: string;
-  color: string;
-  model: string;
-  /** The helper for the whole application. Its row is above the bot list. */
-  isChief?: boolean;
-  lastActive?: string;
-  messages: Message[];
-}
-
-function conversation(...lines: [Message["kind"], string][]): Message[] {
+function conversation(...lines: [MessageKind, string][]): Message[] {
   return lines.map(([kind, text], id) => ({ id, kind, text }));
 }
 

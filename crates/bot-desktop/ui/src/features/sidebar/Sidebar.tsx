@@ -10,13 +10,14 @@ import {
   Plus,
   Puzzle,
   Rocket,
-  Search,
   Users,
   Zap,
 } from "lucide-react";
 import { type ReactNode, useState } from "react";
-import type { Bot } from "../../mocks/bots";
+import { IconButton } from "../../components/IconButton";
+import { SearchField } from "../../components/SearchField";
 import { BotAvatar } from "../bots/BotAvatar";
+import type { Bot } from "../bots/types";
 
 const tools: { label: string; icon: LucideIcon }[] = [
   { label: "Automations", icon: Zap },
@@ -28,42 +29,33 @@ interface SidebarProps {
   bots: Bot[];
   selectedId: string;
   onSelect: (id: string) => void;
-  /** The picture that fades into the top of the sidebar. */
-  tint: stylex.StyleXStyles;
+  picture: stylex.StyleXStyles;
   account: ReactNode;
 }
 
-export function Sidebar({ bots, selectedId, onSelect, tint, account }: SidebarProps) {
+export function Sidebar({ bots, selectedId, onSelect, picture, account }: SidebarProps) {
   const [query, setQuery] = useState("");
   const [botsOpen, setBotsOpen] = useState(true);
   const [toolsOpen, setToolsOpen] = useState(true);
-  const matches = (bot: Bot) => bot.name.toLowerCase().includes(query.trim().toLowerCase());
+  const needle = query.trim().toLowerCase();
+  const matches = (bot: Bot) => bot.name.toLowerCase().includes(needle);
   const chief = bots.find((bot) => bot.isChief && matches(bot));
   const team = bots.filter((bot) => !bot.isChief && matches(bot));
 
   return (
     <nav aria-label="Bots" {...stylex.props(styles.sidebar)}>
-      <div aria-hidden="true" {...stylex.props(styles.tint, tint)} />
+      <div aria-hidden="true" {...stylex.props(styles.tint, picture)} />
       <div {...stylex.props(styles.top)}>
         <button type="button" {...stylex.props(styles.place)}>
           <Laptop size={16} strokeWidth={1.75} aria-hidden="true" />
           This computer
           <ChevronDown size={14} aria-hidden="true" />
         </button>
-        <button type="button" aria-label="New bot" title="New bot" {...stylex.props(styles.iconButton)}>
+        <IconButton label="New bot" style={styles.small}>
           <Plus size={18} strokeWidth={1.75} />
-        </button>
+        </IconButton>
       </div>
-      <label {...stylex.props(styles.search)}>
-        <Search size={15} aria-hidden="true" />
-        <input
-          aria-label="Search"
-          placeholder="Search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          {...stylex.props(styles.searchInput)}
-        />
-      </label>
+      <SearchField label="Search" value={query} onChange={setQuery} style={styles.search} />
       <div {...stylex.props(styles.scroll)}>
         <button type="button" {...stylex.props(styles.row, styles.inbox)}>
           <span {...stylex.props(styles.inboxIcon)}>
@@ -96,9 +88,9 @@ export function Sidebar({ bots, selectedId, onSelect, tint, account }: SidebarPr
       </div>
       <div {...stylex.props(styles.footer)}>
         {account}
-        <button type="button" aria-label="Plugins" title="Plugins" {...stylex.props(styles.iconButton)}>
+        <IconButton label="Plugins" style={styles.small}>
           <Puzzle size={18} strokeWidth={1.75} />
-        </button>
+        </IconButton>
       </div>
     </nav>
   );
@@ -149,9 +141,6 @@ function BotRow({ bot, isSelected, onSelect, children }: BotRowProps) {
   );
 }
 
-const hover = "color-mix(in srgb, var(--color-text-primary) 5%, transparent)";
-const raised = "color-mix(in srgb, var(--color-text-primary) 9%, transparent)";
-
 const styles = stylex.create({
   sidebar: {
     display: "flex",
@@ -200,51 +189,19 @@ const styles = stylex.create({
     cursor: "pointer",
     backgroundColor: {
       default: "transparent",
-      ":hover": hover,
+      ":hover": "var(--color-overlay-hover)",
     },
   },
-  iconButton: {
-    display: "flex",
-    flexShrink: 0,
-    alignItems: "center",
-    justifyContent: "center",
+  small: {
     width: 28,
     height: 28,
-    padding: 0,
-    borderWidth: 0,
-    borderRadius: 8,
-    color: "var(--color-text-secondary)",
-    cursor: "pointer",
-    backgroundColor: {
-      default: "transparent",
-      ":hover": hover,
-    },
   },
   search: {
-    display: "flex",
     position: "relative",
-    flexShrink: 0,
-    alignItems: "center",
-    gap: 8,
-    height: 32,
     marginInline: 8,
     paddingInline: 12,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "var(--color-border)",
     borderRadius: 9999,
-    color: "var(--color-text-secondary)",
     backgroundColor: "var(--color-background-surface)",
-  },
-  searchInput: {
-    flexGrow: 1,
-    minWidth: 0,
-    padding: 0,
-    borderWidth: 0,
-    color: "var(--color-text-primary)",
-    fontSize: 13,
-    backgroundColor: "transparent",
-    outline: "none",
   },
   scroll: {
     display: "flex",
@@ -270,7 +227,7 @@ const styles = stylex.create({
     cursor: "pointer",
     backgroundColor: {
       default: "transparent",
-      ":hover": hover,
+      ":hover": "var(--color-overlay-hover)",
     },
   },
   inbox: {
@@ -287,7 +244,7 @@ const styles = stylex.create({
     width: 32,
     height: 32,
     borderRadius: "50%",
-    backgroundColor: raised,
+    backgroundColor: "var(--color-overlay-pressed)",
   },
   groupLabel: {
     display: "flex",
@@ -317,11 +274,11 @@ const styles = stylex.create({
     borderRadius: 8,
     backgroundColor: {
       default: "transparent",
-      ":hover": hover,
+      ":hover": "var(--color-overlay-hover)",
     },
   },
   selected: {
-    backgroundColor: raised,
+    backgroundColor: "var(--color-overlay-pressed)",
   },
   botButton: {
     display: "flex",
@@ -399,7 +356,7 @@ const styles = stylex.create({
     cursor: "pointer",
     backgroundColor: {
       default: "transparent",
-      ":hover": raised,
+      ":hover": "var(--color-overlay-pressed)",
     },
   },
   tools: {

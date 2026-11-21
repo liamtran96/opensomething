@@ -1,6 +1,7 @@
 import * as stylex from "@stylexjs/stylex";
 import { ChevronDown, List, Monitor, MoreHorizontal, Pencil, Signal } from "lucide-react";
-import type { Bot } from "../../mocks/bots";
+import { IconButton } from "../../components/IconButton";
+import type { Bot } from "../bots/types";
 import { BotAvatar } from "../bots/BotAvatar";
 
 export function ChatHeader({ bot }: { bot: Bot }) {
@@ -26,15 +27,13 @@ export function ChatHeader({ bot }: { bot: Bot }) {
         <button type="button" aria-label="Bot screen" title="Bot screen" {...stylex.props(styles.pill, styles.round)}>
           <Monitor size={16} strokeWidth={1.75} />
         </button>
-        <button type="button" aria-label="More" title="More" {...stylex.props(styles.more)}>
+        <IconButton label="More">
           <MoreHorizontal size={18} />
-        </button>
+        </IconButton>
       </div>
     </header>
   );
 }
-
-const hover = "color-mix(in srgb, var(--color-text-primary) 5%, transparent)";
 
 const styles = stylex.create({
   header: {
@@ -98,22 +97,6 @@ const styles = stylex.create({
     width: 34,
     height: 34,
     paddingInline: 0,
-  },
-  more: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 32,
-    height: 32,
-    padding: 0,
-    borderWidth: 0,
-    borderRadius: 8,
-    color: "var(--color-text-secondary)",
-    cursor: "pointer",
-    backgroundColor: {
-      default: "transparent",
-      ":hover": hover,
-    },
   },
   faint: {
     flexShrink: 0,
