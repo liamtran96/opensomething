@@ -1,13 +1,28 @@
 import * as stylex from "@stylexjs/stylex";
-import { ChevronDown, List, Monitor, MoreHorizontal, Pencil, Signal } from "lucide-react";
+import { ChevronDown, List, Monitor, MoreHorizontal, PanelLeftClose, PanelLeftOpen, Pencil, Signal } from "lucide-react";
 import { IconButton } from "../../components/IconButton";
 import type { Bot } from "../bots/types";
 import { BotAvatar } from "../bots/BotAvatar";
 
-export function ChatHeader({ bot }: { bot: Bot }) {
+interface ChatHeaderProps {
+  bot: Bot;
+  isSidebarOpen: boolean;
+  onToggleSidebar: () => void;
+}
+
+export function ChatHeader({ bot, isSidebarOpen, onToggleSidebar }: ChatHeaderProps) {
+  const SidebarIcon = isSidebarOpen ? PanelLeftClose : PanelLeftOpen;
+
   return (
     <header {...stylex.props(styles.header)}>
       <div {...stylex.props(styles.side)}>
+        <IconButton
+          label={isSidebarOpen ? "Hide the sidebar" : "Show the sidebar"}
+          aria-expanded={isSidebarOpen}
+          onClick={onToggleSidebar}
+        >
+          <SidebarIcon size={18} strokeWidth={1.75} />
+        </IconButton>
         <button type="button" {...stylex.props(styles.pill, styles.quiet)}>
           <List size={15} aria-hidden="true" />
           Chat activity

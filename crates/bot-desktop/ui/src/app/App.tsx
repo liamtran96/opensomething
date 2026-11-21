@@ -17,6 +17,7 @@ export function App() {
   const [selectedId, setSelectedId] = useState(mockBots[0].id);
   const [backdrop, setBackdrop] = useState<BackdropId>("dawn");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const selected = bots.find((bot) => bot.id === selectedId) ?? mockBots[0];
 
   useEffect(() => {
@@ -38,15 +39,17 @@ export function App() {
   return (
     <Theme theme={brandTheme} mode={backdrops[backdrop].mode}>
       <div {...stylex.props(styles.window)}>
-        <Sidebar
-          bots={bots}
-          selectedId={selected.id}
-          onSelect={setSelectedId}
-          picture={backdropStyles[backdrop]}
-          account={<AccountMenu onOpenSettings={() => setSettingsOpen(true)} />}
-        />
+        {sidebarOpen && (
+          <Sidebar
+            bots={bots}
+            selectedId={selected.id}
+            onSelect={setSelectedId}
+            picture={backdropStyles[backdrop]}
+            account={<AccountMenu onOpenSettings={() => setSettingsOpen(true)} />}
+          />
+        )}
         <main {...stylex.props(styles.main)}>
-          <ChatHeader bot={selected} />
+          <ChatHeader bot={selected} isSidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((open) => !open)} />
           <ChatPane key={selected.id} bot={selected} onAdd={(kind, text) => addMessage(selected.id, kind, text)} />
         </main>
         <SettingsDialog
