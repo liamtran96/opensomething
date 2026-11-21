@@ -476,3 +476,53 @@ entry was written. Verify them before relying on them.
 - **References:**
   - Fumadocs: https://www.fumadocs.dev/
   - The static template: https://github.com/fuma-nama/fumadocs/tree/dev/examples/next-static
+
+## D16. The desktop window follows the layout of the reference project
+
+- **Date:** 2026-11-20
+- **Status:** Accepted
+- **What:** The window has the three places of the reference project, with
+  plain flat panes.
+  - **Sidebar** (320 px): the workspace selector, the search field, the
+    Inbox row, the chief bot, the "Bots" group, the "Tools" group and the
+    account row. The main object is the bot, not the conversation.
+  - **Chat:** a header with the bot pill at the centre and the model
+    selector at the right, the messages from the top, and a one-row composer.
+  - **Settings:** a dialog with a section list at the left and a page of
+    group boxes at the right. The account menu and Ctrl+, open it.
+  - **Look:** the sidebar has the body colour and the chat has the surface
+    colour, with a 1 px line between them. The glass panel on a picture is
+    gone. The picture of a backdrop now fades into the top of the sidebar,
+    and the backdrop still sets the colour mode. The default is "Dawn".
+  - **Icons** come from `lucide-react`, the icon library of the reference
+    project. Astryx has too few icons for this layout.
+  - **State of the parts:** all data is mock data in `src/mocks`. A control
+    with no feature behind it does nothing. Each later step of the plan
+    connects its part.
+- **Why:** The author wants the complete layout of the reference project
+  first, and the features after it. A bot roster is also the correct model
+  for a team of bots (Grok Bot uses the same model; Claude and ChatGPT list
+  conversations).
+- **Rules:**
+  - Our own composer replaces the Astryx `ChatComposer`, which has no
+    one-row form in 0.7.16.
+  - `src/layers.css` sets the order of the CSS layers and `index.html` loads
+    it first. Without it, the dev server of `@stylexjs/unplugin` 0.19.2 puts
+    the StyleX layers below the Astryx reset, and our padding and fills are
+    lost. The build did not have this problem.
+  - Look at the real window before you report a UI change.
+- **Alternatives:** Keep the glass panel on a picture (the first look; the
+  author chose the plain panes of the reference). The Astryx `Drawer` for
+  the settings (it takes the right edge, which a bot panel will need).
+- **Open risks:**
+  - Some labels name features that are not in the plan: "Phone & devices",
+    "Plan & billing", "Published apps" and "Spending". Remove a label when
+    we decide not to build its feature.
+  - The window title bar is the bar of the operating system. The reference
+    project draws its own.
+  - The license of `lucide-react` (ISC) was checked by hand on 2026-11-20.
+- **References:**
+  - The reference files are in the "Adapted components" section of
+    [`NOTICE`](../NOTICE).
+  - Designing Grok Bot: https://x.ai/news/designing-grok-bot
+  - Lucide: https://lucide.dev/

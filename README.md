@@ -8,8 +8,8 @@ The application owns the conversations, the hand-offs between bots, approvals,
 memory and schedules; the engine only runs turns. Your keys and your
 conversations stay on your computer.
 
-Status: early. The desktop window opens with a chat on a background that you
-can change, and it echoes a line; no bot feature is built yet.
+Status: early. The desktop window shows the full layout (bot sidebar, chat,
+settings) with mock bots, and it echoes a line; no bot feature is built yet.
 
 ## Layout
 

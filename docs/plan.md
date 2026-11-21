@@ -52,7 +52,7 @@ decision D14 of [`decisions.md`](decisions.md).
 | 6 | Settings and the data folder, with atomic writes and redaction of secrets | `bot-core` | Files, `Result`, `regex` | Settings stay after a restart. A test shows that a key does not reach a log |
 | 7 | The event bus. The window shows the streamed reply. The settings panel takes the API key | `bot-core`, `bot-desktop` | Channels, Tauri commands and events | You enter a key, send a message, and the answer appears word by word |
 
-- [ ] 1 (pull requests 1.1 and 1.2 of 6 are merged)
+- [x] 1
 - [ ] 2
 - [ ] 3
 - [ ] 4

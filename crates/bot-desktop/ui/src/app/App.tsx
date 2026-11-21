@@ -1,80 +1,64 @@
-import {
-  ChatComposer,
-  ChatLayout,
-  ChatMessage,
-  ChatMessageBubble,
-  ChatMessageList,
-  ChatSystemMessage,
-} from "@astryxdesign/core/Chat";
 import { Theme } from "@astryxdesign/core/theme";
-import { BackdropPicker } from "../features/backdrop/BackdropPicker";
 import { type BackdropId, backdropStyles, backdrops } from "../features/backdrop/backdrops";
+import type { Bot } from "../features/bots/types";
+import { ChatHeader } from "../features/chat/ChatHeader";
+import { ChatPane } from "../features/chat/ChatPane";
+import type { MessageKind } from "../features/chat/types";
+import { SettingsDialog } from "../features/settings/SettingsDialog";
+import { AccountMenu } from "../features/sidebar/AccountMenu";
+import { Sidebar } from "../features/sidebar/Sidebar";
+import { mockBots } from "../mocks/bots";
 import { brandTheme } from "../themes/built/brand";
 import * as stylex from "@stylexjs/stylex";
-import { invoke } from "@tauri-apps/api/core";
-import { useRef, useState } from "react";
-
-type MessageKind = "person" | "bot" | "error";
-
-interface Message {
-  id: number;
-  kind: MessageKind;
-  text: string;
-}
+import { useEffect, useState } from "react";
 
 export function App() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [sending, setSending] = useState(false);
-  const [backdrop, setBackdrop] = useState<BackdropId>("meadow");
-  const nextId = useRef(0);
+  const [bots, setBots] = useState<Bot[]>(mockBots);
+  const [selectedId, setSelectedId] = useState(mockBots[0].id);
+  const [backdrop, setBackdrop] = useState<BackdropId>("dawn");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const selected = bots.find((bot) => bot.id === selectedId) ?? mockBots[0];
 
-  function add(kind: MessageKind, text: string) {
-    const id = nextId.current++;
-    setMessages((current) => [...current, { id, kind, text }]);
-  }
-
-  async function send(value: string) {
-    const text = value.trim();
-    if (!text || sending) return;
-
-    add("person", text);
-    setSending(true);
-    try {
-      add("bot", await invoke<string>("send_message", { message: text }));
-    } catch (error) {
-      add("error", `The message failed: ${String(error)}`);
-    } finally {
-      setSending(false);
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.ctrlKey && event.key === ",") setSettingsOpen(true);
     }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  function addMessage(botId: string, kind: MessageKind, text: string) {
+    setBots((current) =>
+      current.map((bot) =>
+        bot.id === botId ? { ...bot, messages: [...bot.messages, { id: bot.messages.length, kind, text }] } : bot,
+      ),
+    );
   }
 
   return (
     <Theme theme={brandTheme} mode={backdrops[backdrop].mode}>
-      <div {...stylex.props(styles.window, backdropStyles[backdrop])}>
-        <div {...stylex.props(styles.glass)}>
-          <header {...stylex.props(styles.header)}>
-            <BackdropPicker value={backdrop} onChange={setBackdrop} />
-          </header>
-          <ChatLayout
-            className="chat-scroll"
-            composer={<ChatComposer onSubmit={send} isDisabled={sending} placeholder="Write a message" />}
-            emptyState={<ChatSystemMessage>Send a message to start.</ChatSystemMessage>}
-          >
-            {messages.length > 0 && (
-              <ChatMessageList>
-                {messages.map((message) =>
-                  message.kind === "error" ? (
-                    <ChatSystemMessage key={message.id}>{message.text}</ChatSystemMessage>
-                  ) : (
-                    <ChatMessage key={message.id} sender={message.kind === "person" ? "user" : "assistant"}>
-                      <ChatMessageBubble>{message.text}</ChatMessageBubble>
-                    </ChatMessage>
-                  ),
-                )}
-              </ChatMessageList>
-            )}
-          </ChatLayout>
-        </div>
+      <div {...stylex.props(styles.window)}>
+        {sidebarOpen && (
+          <Sidebar
+            bots={bots}
+            selectedId={selected.id}
+            onSelect={setSelectedId}
+            picture={backdropStyles[backdrop]}
+            account={<AccountMenu onOpenSettings={() => setSettingsOpen(true)} />}
+          />
+        )}
+        <main {...stylex.props(styles.main)}>
+          <ChatHeader bot={selected} isSidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((open) => !open)} />
+          <ChatPane key={selected.id} bot={selected} onAdd={(kind, text) => addMessage(selected.id, kind, text)} />
+        </main>
+        <SettingsDialog
+          isOpen={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          botCount={bots.length}
+          backdrop={backdrop}
+          onBackdropChange={setBackdrop}
+        />
       </div>
     </Theme>
   );
@@ -83,25 +67,15 @@ export function App() {
 const styles = stylex.create({
   window: {
     display: "flex",
-    flexDirection: "column",
     height: "100%",
-    padding: 20,
-    backgroundSize: "cover",
+    overflow: "hidden",
+    backgroundColor: "var(--color-background-surface)",
   },
-  glass: {
+  main: {
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
+    minWidth: 0,
     minHeight: 0,
-    overflow: "hidden",
-    borderRadius: 20,
-    backgroundColor: "color-mix(in srgb, var(--color-background-surface) 38%, transparent)",
-    backdropFilter: "blur(28px) saturate(140%)",
-    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.25)",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "flex-end",
-    padding: 12,
   },
 });

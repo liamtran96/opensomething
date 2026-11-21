@@ -1,0 +1,7 @@
+/*
+ * The dev server of @stylexjs/unplugin 0.19.2 loads the StyleX layers before
+ * the Astryx layers. The first style sheet that names a layer sets its
+ * priority, so this file names the Astryx layers and index.html loads it
+ * first. The StyleX layers come after them because they are not named here.
+ */
+@layer reset, astryx-base, astryx-theme;
