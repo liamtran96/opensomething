@@ -8,3 +8,6 @@
 .DS_Store
 /crates/bot-desktop/ui/node_modules
 /crates/bot-desktop/ui/dist
+
+# Analyses of other projects; kept on this computer only
+/docs/research/
