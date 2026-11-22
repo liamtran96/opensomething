@@ -26,6 +26,7 @@ apps/
 docs/
   plan.md             the steps, with a "done when" check for each
   plan/               each step as a list of pull requests
+  code/               the code to type for each pull request of a step
   decisions.md        what we chose, why, and the references
   comparison.md       the reference project's features and our crate for each
 ```
