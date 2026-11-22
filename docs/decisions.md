@@ -526,3 +526,22 @@ entry was written. Verify them before relying on them.
     [`NOTICE`](../NOTICE).
   - Designing Grok Bot: https://x.ai/news/designing-grok-bot
   - Lucide: https://lucide.dev/
+
+## D17. An identifier is an opaque string that the caller makes
+
+- **Date:** 2026-11-22
+- **Status:** Accepted
+- **What:** `BotId`, `ThreadId`, `TurnId` and `MessageId` in `bot-protocol`
+  are each a struct around a `String`, and each is a plain string in JSON.
+  The code that creates a bot, a thread, a turn or a message makes its
+  identifier. `bot-protocol` does not make an identifier and does not check
+  its form.
+- **Why:** With one type for each kind, the compiler refuses a thread
+  identifier where a bot identifier belongs. To make a unique identifier, the
+  code needs a clock or a random source, and `bot-protocol` does no I/O. A
+  plain string in JSON is what the window already uses for its mock bots.
+- **Alternatives:** A UUID type inside each identifier (a new dependency for
+  `bot-protocol`, and it sets the form before the store exists). One `Id`
+  type for all four kinds (the compiler cannot tell them apart).
+- **Open risks:** The form of a new identifier is not chosen. Choose it with
+  the store in step 8.
