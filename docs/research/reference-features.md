@@ -41,7 +41,7 @@ wide first, and its base parts came late.
 | # | Capability | Crate | Step | Research |
 |---|---|---|---|---|
 | 1 | Identifiers, message types, the five events | `bot-protocol` | 2 | partial: [`turn-flow-comparison.md`](turn-flow-comparison.md) |
-| 2 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | partial: [`features/driver-contract.md`](features/driver-contract.md) |
+| 2 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | done: [`features/driver-contract.md`](features/driver-contract.md) |
 | 3 | The registry, with "unavailable" for a bad entry | `bot-engine` | 4 | done: [`newer-config-unavailable.md`](features/newer-config-unavailable.md) |
 | 4 | The chat API driver with streaming | `bot-engine` | 5 | done: [`chat-streaming.md`](features/chat-streaming.md), [`chat-driver-tool-calls.md`](features/chat-driver-tool-calls.md) |
 | 5 | Settings, the data folder, keys, atomic writes, redaction | `bot-core` | 6 | done: [`write-only-secrets.md`](features/write-only-secrets.md), [`file-modes-atomic-writes-redaction.md`](features/file-modes-atomic-writes-redaction.md) |

@@ -232,4 +232,23 @@ and 4. The new research replaces the note.
 
 | # | Capability of group 1 | Crate | Step | Name | State |
 |---|---|---|---|---|---|
-| 1 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | [`driver-contract`](features/driver-contract.md) | running, at commit `d6660e2` |
+| 1 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | [`driver-contract`](features/driver-contract.md) | done, 2026-11-23, at commit `d6660e2` |
+
+The main session checked six key claims at `d6660e2`. All six agree with
+the code:
+
+1. `interruptTurn` and `respondToRequest` are mandatory, and no flag is
+   about streaming, interrupt or approvals (`server/contracts.ts:255-323`).
+2. No code reads `sessionModelSwitch`, the only mandatory flag.
+3. The fake driver returns `"fake-turn"` for each turn
+   (`server/testing/fake-driver.ts:79`).
+4. Only the chat driver checks the turn id at a stop
+   (`server/drivers/openai-chat.ts:961-966`). Claude ignores it
+   (`server/drivers/claude.ts:1963`).
+5. Five drivers throw the same busy text (`pi.ts:413`,
+   `openai-chat.ts:518`, `claude.ts:951`, `codex.ts:408`,
+   `acp/core.ts:922`).
+6. The ACP core copies all of `process.env` and deletes only known keys
+   (`server/drivers/acp/core.ts:333-346`).
+
+The proposals are in [`../plan/driver-contract.md`](../plan/driver-contract.md).

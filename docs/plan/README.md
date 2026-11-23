@@ -37,7 +37,8 @@ this file. The reasons for this order are in decision D14 of [`decisions.md`](..
 ## Open proposals
 
 The research of batches 1 and 2 (`../research/features/`) and the release
-history (`../research/changelog.md`) gave 51 proposals, P1 to P51. Each
+history (`../research/changelog.md`) gave 51 proposals, P1 to P51. Batch 3 (the driver contract) gave P52 to
+P64. Each
 proposal is in the plan file of its feature. Each step below links to its
 proposals. The author decides each one. Reply with the numbers, for example
 "accept P1, P2. P5 option a. Reject P9". Then the proposal becomes a
@@ -53,8 +54,11 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`write-only-secrets.md`](write-only-secrets.md) | [`write-only-secrets.md`](../research/features/write-only-secrets.md) | P19, P20, P21, P32, P40 | 6, 7, 9 |
 | [`queue-and-steer.md`](queue-and-steer.md) | [`queue-and-steer.md`](../research/features/queue-and-steer.md) | P34 | 7, 8 |
 | [`chat-driver-tool-calls.md`](chat-driver-tool-calls.md) | [`chat-driver-tool-calls.md`](../research/features/chat-driver-tool-calls.md) | P7, P33, P42 to P47, P49, P50 | 2, 10, 12 |
+| [`driver-contract.md`](driver-contract.md) | [`driver-contract.md`](../research/features/driver-contract.md) | P52 to P64, and more cases for P6 | 3, 4, 5, 7, 8, 9 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
+- Decide P52 first. PR 3.2 and PR 3.5 plan flags for streaming,
+  interrupt and approvals, and the reference has none of them.
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
   2.5 is not typed yet.
 - Two proposals change the structure: [P33](chat-driver-tool-calls.md)
@@ -189,7 +193,7 @@ The fake driver of step 3 and each real driver must obey them.
 - Where the fake driver lives until `bot-testkit` exists (decision D8): a
   public module behind a Cargo feature.
 
-**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md).
+**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md), [P52 to P60](driver-contract.md).
 
 ### Step 4. The registry
 
@@ -209,7 +213,7 @@ The fake driver of step 3 and each real driver must obey them.
 - The reason of an unavailable entry is shown to the person, so it must not
   contain a secret.
 
-**Proposals:** [P10](newer-config-unavailable.md), [P11](newer-config-unavailable.md), [P12](newer-config-unavailable.md).
+**Proposals:** [P10](newer-config-unavailable.md), [P11](newer-config-unavailable.md), [P12](newer-config-unavailable.md), [P62](driver-contract.md).
 
 ### Step 5. The chat API driver with streaming
 
@@ -235,7 +239,7 @@ The fake driver of step 3 and each real driver must obey them.
   (P14).
 - `interrupt` stops the stream. Set the capability flag to agree.
 
-**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md).
+**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver).
 
 ### Step 6. Settings and the data folder
 
@@ -288,7 +292,7 @@ The fake driver of step 3 and each real driver must obey them.
   (P28).
 - The name and the payload of the Tauri event (P29).
 
-**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md).
+**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md), [P64](driver-contract.md) (or step 8).
 
 - **P26. The composition root. This blocks PR 7.3.**
   - Option a: change the rule of `AGENTS.md`: `bot-cli` and `bot-desktop`
@@ -340,7 +344,7 @@ Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](
 
 ## Notes for steps 8 to 14
 
-Each note is in the file of its feature: [P37](event-bus-fold.md), [P38](chat-turns.md), [P39](event-bus-fold.md), [P40](write-only-secrets.md), [P42](chat-driver-tool-calls.md), [P43](chat-driver-tool-calls.md), [P44](chat-driver-tool-calls.md), [P45](chat-driver-tool-calls.md), [P46](chat-driver-tool-calls.md), [P47](chat-driver-tool-calls.md), [P49](chat-driver-tool-calls.md), [P50](chat-driver-tool-calls.md), [P51](chat-turns.md).
+Each note is in the file of its feature: [P37](event-bus-fold.md), [P38](chat-turns.md), [P39](event-bus-fold.md), [P40](write-only-secrets.md), [P42](chat-driver-tool-calls.md), [P43](chat-driver-tool-calls.md), [P44](chat-driver-tool-calls.md), [P45](chat-driver-tool-calls.md), [P46](chat-driver-tool-calls.md), [P47](chat-driver-tool-calls.md), [P49](chat-driver-tool-calls.md), [P50](chat-driver-tool-calls.md), [P51](chat-turns.md), [P61](driver-contract.md), [P63](driver-contract.md).
 Two notes come from the release history, not from a feature:
 
 | # | Step | Note | Source |
