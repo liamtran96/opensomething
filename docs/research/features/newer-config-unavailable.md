@@ -1,11 +1,11 @@
 # Rule: a config from a newer version loads in an older version as "unavailable"
 
 Read on 2026-11-23 for part 2 of [`../README.md`](../README.md), and for steps
-4 (the registry) and 6 (settings) of [`../../plan.md`](../../plan.md). All
+4 (the registry) and 6 (settings) of [`../../plan/README.md`](../../plan/README.md). All
 paths are in the reference project, under `server/` unless a path starts with
 another folder (`src/`, `shared/`). Nobody opened the `enterprise/` directory.
 
-This file adds to [`../driver-contract.md`](../driver-contract.md). It does
+This file adds to [`driver-contract.md`](driver-contract.md). It does
 not repeat that file. It closes two open points of that file: the six wrappers
 around each instance, and the lines of `config.ts` that were not read.
 
@@ -377,7 +377,7 @@ table, not to this feature.
     server finds the changed instances with a deep compare
     (`changedInstanceIds`, `:675-678`) and loads only those again
     (`index.ts:11830-11896`, already in
-    [`../driver-contract.md`](../driver-contract.md)).
+    [`driver-contract.md`](driver-contract.md)).
 12. After a save of one instance, `persistProviderInstance`
     (`index.ts:11797-11810`) loads it again. A shadow is always built again,
     because `registry.get` is null for it.
@@ -549,14 +549,14 @@ function. Steps 4 and 6 are not started.
 
 What we plan:
 
-- Step 4 ([`../../plan/step-04-registry.md`](../../plan/step-04-registry.md)):
+- Step 4 ([`../../plan/README.md`](../../plan/README.md)):
   `DriverEntry` with an identifier, a kind and the settings of that kind
   (4.1); a registry slot that is a driver or "unavailable" with a reason
   (4.2); tests for an unknown kind and bad settings (4.3). The choices say
   that one bad entry must not stop the others, and that the reason must not
   contain a secret.
 - Step 5.6: an entry of kind `chat` with no key is "unavailable".
-- Step 6 ([`../../plan/step-06-settings.md`](../../plan/step-06-settings.md)):
+- Step 6 ([`../../plan/README.md`](../../plan/README.md)):
   the `Settings` type with `serde`, "a missing field gets its default", and
   an atomic write.
 - [`../../comparison.md`](../../comparison.md) lists "`serde` with

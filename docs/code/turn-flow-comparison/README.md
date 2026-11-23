@@ -1,7 +1,7 @@
-# Step 2. Code to type
+# Code to type: turn-flow-comparison (step 2)
 
 One file for each pull request of
-[`../../plan/step-02-protocol-types.md`](../../plan/step-02-protocol-types.md).
+[`../../plan/README.md`](../../plan/README.md).
 Type the code, run the check, then tick the box.
 
 - [x] [2.1 add serde](2.1-add-serde.md)

@@ -1,9 +1,9 @@
 # The event bus, the fold and the streamed reply in the window
 
-Capability 6 of group 1 in [`../features.md`](../features.md): "The event
+Capability 6 of group 1 in [`../reference-features.md`](../reference-features.md): "The event
 bus, the fold, the streamed reply in the window". Batch 2, gap 2 of
-[`../progress.md`](../progress.md). Step 7 of [`../../plan.md`](../../plan.md).
-Rows of `features.md`: `README.md` ("the event bus and the event stream",
+[`../progress.md`](../progress.md). Step 7 of [`../../plan/README.md`](../../plan/README.md).
+Rows of `reference-features.md`: `README.md` ("the event bus and the event stream",
 "streaming replies") and `chat-ui.md` ("streaming replies"). Parts 1, 2, 6
 and 22 of [`../README.md`](../README.md).
 
@@ -15,7 +15,7 @@ group in section 2. The main session then read the key lines again. The word
 
 This file adds to these files:
 
-- [`../driver-contract.md`](../driver-contract.md), section 3, has a short
+- [`driver-contract.md`](driver-contract.md), section 3, has a short
   summary of the bus. This file gives all the rules of the bus, its log and
   the readers of the log.
 - [`../turn-flow-comparison.md`](../turn-flow-comparison.md), sections 1 and
@@ -165,7 +165,7 @@ The line counts are at commit 3aec210. `index.ts` is `server/index.ts`
 `src/state/store.tsx` 360-372, `server/drivers/openai-chat.ts` 520-545 and
 640-660, `packages/phone-protocol/src/wire.ts` 415-418 and 524-562.
 
-`features.md` names the feature document `chat-ui.md`. Its real path is
+`reference-features.md` names the feature document `chat-ui.md`. Its real path is
 `docs/verification/chat-ui.md`. The file `docs/chat-ui.md` does not exist.
 
 ## 3. How it works
@@ -850,7 +850,7 @@ driver to the window.
 - `bot-protocol` (ours) has `Event { thread_id, turn_id, kind }` and
   `EventKind` with `TurnStarted` and `TurnCompleted { outcome }`
   (`crates/bot-protocol/src/event.rs`).
-- Step 2.5 (`docs/code/step-02/2.5-content-and-error-events.md`, ours) adds
+- Step 2.5 (`docs/code/turn-flow-comparison/2.5-content-and-error-events.md`, ours) adds
   `ContentDelta { stream_kind, delta }`, `ItemCompleted { text }` and
   `RuntimeError { code, message }`. The author has not typed it yet. These
   kinds have no item id. The events have no `event_id` and no time (decision
@@ -862,7 +862,7 @@ driver to the window.
   waits for the whole answer. There are no events.
 - `bot-engine` and `bot-cli` (ours) have no bus code.
 
-### 7.2 What we plan (step 7, `docs/plan/step-07-event-bus.md`)
+### 7.2 What we plan (step 7 of `docs/plan/README.md`)
 
 | PR | Ours | The reference files that it ports |
 |---|---|---|
@@ -882,7 +882,7 @@ driver to the window.
 | Item id | The bus makes it | Not in the event type (D20, step 2.5) |
 | Event id and time | On each event | Not yet (D20 open risk, step 8) |
 | Where the text is stored | The fold stores it from `item.completed` | PR 7.5 replaces live text with the `item.completed` text in the window. No store before step 8 |
-| Busy | On the task (thread). The bot value is calculated | Not decided (`features.md`, "What to do next", item 2) |
+| Busy | On the task (thread). The bot value is calculated | Not decided (`reference-features.md`, "What to do next", item 2) |
 | Order of listeners | Implicit: the order of calls in a file of 15,000 lines | Not decided |
 | Row and event | Separate writes. The event goes out before the row | `AGENTS.md`: one transaction before any action |
 

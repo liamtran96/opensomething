@@ -1,9 +1,9 @@
 # Chat turns: one turn from send to reply, the parts that the first study did not read
 
-Feature row of [`../features.md`](../features.md): `chat-turns.md`, "Chat
+Feature row of [`../reference-features.md`](../reference-features.md): `chat-turns.md`, "Chat
 turns and independent tasks". Gap 3 of batch 2 in
 [`../progress.md`](../progress.md), the capability for step 7 of
-[`../../plan.md`](../../plan.md). Documents of the reference:
+[`../../plan/README.md`](../../plan/README.md). Documents of the reference:
 `docs/verification/chat-turns.md` and `docs/verification/chat-ui.md`.
 
 Read at commit 3aec210 (2026-11-23) of the reference project. All paths are
@@ -20,7 +20,7 @@ This file adds to these files and does not repeat them:
   the bubbles).
 - [`queue-and-steer.md`](queue-and-steer.md) has admission, the queue and
   steer. This file names a call into them and stops there.
-- [`../driver-contract.md`](../driver-contract.md) has the driver methods.
+- [`driver-contract.md`](driver-contract.md) has the driver methods.
 
 The two files above read the same commit, 3aec210. Their line numbers
 agree with this file.
@@ -809,7 +809,7 @@ What we have now:
   send runs (`crates/bot-desktop/ui/src/features/chat/ChatPane.tsx:20-37`,
   ours).
 - `bot-engine` is empty. Step 3 plans `send_turn`, which returns a stream of
-  events (`docs/plan/step-03-driver-trait.md`, ours).
+  events (`docs/plan/README.md`, step 3, ours).
 
 The port, part by part:
 

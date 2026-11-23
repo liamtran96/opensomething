@@ -1,6 +1,6 @@
 # Rule: files with mode 0600, atomic writes, redaction of text that an agent wrote
 
-The feature is one row of [`../features.md`](../features.md). Its document in
+The feature is one row of [`../reference-features.md`](../reference-features.md). Its document in
 the reference project is
 `docs/superpowers/plans/2026-08-31-00-control-plane-roadmap.md`. It belongs to
 parts 4 (the store and the data folder) and 11 (security) of
@@ -59,7 +59,7 @@ Terms used in this file:
 - **Held secret:** a secret that has no fixed shape, such as a saved website
   password. The server knows it by value and replaces it with `••••••`.
 - **Event log:** the file `events/<threadId>.ndjson` that keeps each engine
-  event of a thread, one JSON object on each line ([`../driver-contract.md`](../driver-contract.md), section 3).
+  event of a thread, one JSON object on each line ([`driver-contract.md`](driver-contract.md), section 3).
 
 ## 2. Files read completely
 
@@ -677,7 +677,7 @@ The feature has little UI.
   (`electron/main.mjs:387-392`).
 - **Settings:** a stored key never goes back to the window. The window sees
   only `configured: true` (roadmap `:32-34`). That rule is the subject of
-  another row of `features.md`.
+  another row of `reference-features.md`.
 
 ## 6. The tests
 
@@ -748,12 +748,12 @@ files). No code writes a file, sets a mode or redacts.
 
 **What we plan:**
 
-- [`../../plan/step-06-settings.md`](../../plan/step-06-settings.md):
+- [`../../plan/README.md`](../../plan/README.md):
   6.3 `atomic.rs` ("write to a temporary file in the same folder, then
   rename it", with a test that a failed write keeps the old file); 6.4
   `redact.rs` ("replaces the known secret values and the text that matches a
   key pattern"); 6.5 a `Secret` type whose `Debug` output is `[redacted]`.
-- [`../../plan.md`](../../plan.md) row 6: "A test shows that a key does not
+- [`../../plan/README.md`](../../plan/README.md) row 6: "A test shows that a key does not
   reach a log."
 - [`../../decisions.md`](../../decisions.md) D14: "Tests, atomic writes and
   redaction come with the part they protect." D14 also chooses SQLite from

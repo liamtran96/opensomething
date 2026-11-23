@@ -12,7 +12,7 @@ directory (`AGENTS.md`).
 ## How to do one part
 
 1. Choose a part from the tables below. The parts for the next steps of
-   [`../plan.md`](../plan.md) come first.
+   [`../plan/README.md`](../plan/README.md) come first.
 2. Start a new session in this repository.
 3. Paste the prompt below, with the number and the name of the part.
 4. When the session ends, read the new file, then set the state of the part
@@ -34,7 +34,7 @@ it and make it better. Do not write source code in this task.
 1. MEMORY.md and AGENTS.md in this repository. Obey them.
 2. docs/research/README.md: the row of this part, and the files of the parts
    that are complete. Do not do their work again.
-3. docs/decisions.md, docs/comparison.md and docs/plan.md: what we build and
+3. docs/decisions.md, docs/comparison.md and docs/plan/README.md: what we build and
    what is out of scope. A part that is out of scope is still analyzed in
    full, because the author wants to understand it.
 
@@ -82,7 +82,7 @@ Call the other project "the reference project" in all files. Put no personal
 data and no secrets in a file.
 
 ## Last step
-Give me a list of proposed changes to docs/plan.md and docs/decisions.md, in
+Give me a list of proposed changes to docs/plan/README.md and docs/decisions.md, in
 order of importance. Do not change those two files. Do not commit or push.
 I decide after I read the list.
 
@@ -95,7 +95,7 @@ cost. Then wait for my approval.
 
 There are 66 parts. On 2026-11-23, eight subagents read all the
 documentation of the reference project: 408 Markdown files, every line. The
-features that they found are in [`features.md`](features.md), each with the
+features that they found are in [`reference-features.md`](reference-features.md), each with the
 number of its part. This table has a part for each of them.
 
 - The numbers of files come from a count of the folders, without
@@ -111,7 +111,7 @@ number of its part. This table has a part for each of them.
 | # | Part | Where to start | For our step | State |
 |---|---|---|---|---|
 | 1 | One chat turn, from send to stored reply; queue and steer | `server/index.ts` (`beginTurn`, the fold), `src/state/live-reply.ts`, `docs/specs/steer-vs-queue.md` | 2, 7 | partial: [`turn-flow-comparison.md`](turn-flow-comparison.md) |
-| 2 | The driver contract, the registry, the event bus, the chat driver | `server/contracts.ts`, `server/harness/` (23 files), `server/drivers/openai-chat.ts`, `docs/custom-engines.md` | 3, 4, 5 | partial: [`driver-contract.md`](driver-contract.md) |
+| 2 | The driver contract, the registry, the event bus, the chat driver | `server/contracts.ts`, `server/harness/` (23 files), `server/drivers/openai-chat.ts`, `docs/custom-engines.md` | 3, 4, 5 | partial: [`features/driver-contract.md`](features/driver-contract.md) |
 | 3 | The shared wire types | `shared/` (289 files), `packages/phone-protocol/` (100 files) | 2 | open |
 | 4 | The store and the data folder: bots, threads, messages, the config, atomic writes, the data format marker, feature switches | `server/store.ts`, `server/config.ts`, `server/atomic.ts`, `server/message-db.ts`, `CONTRIBUTING.md`, `docs/feature-flags.md` | 6, 8 | open |
 | 5 | The composition root: start-up, shutdown, how the modules connect | `server/index.ts` (15,276 lines), `server/host/README.md`, `server/routes/README.md` | 7 | open |
@@ -196,7 +196,7 @@ The author wants to understand these too.
 |---|---|---|---|
 | 40 | Tests: fake drivers, fake clocks, golden files, evals, the verification method | `server/testing/` (117 files), `src/testing/`, `evals/` (81 files), `docs/verification/README.md` | open |
 | 41 | CI, scripts, the build, releases and updates | `docs/ci.md`, `docs/releasing.md`, `scripts/` (362 files) | open |
-| 43 | The history of the design: what was planned, what was built and what was removed | `docs/plans/` (16 files), `docs/superpowers/` (47 files), `docs/specs/`, `docs/design/` | partial: [`features.md`](features.md) has the state of each plan |
+| 43 | The history of the design: what was planned, what was built and what was removed | `docs/plans/` (16 files), `docs/superpowers/` (47 files), `docs/specs/`, `docs/design/` | partial: [`reference-features.md`](reference-features.md) has the state of each plan |
 | 42 | The last check: each file that no other part read, and each feature that has code and no document | all folders, and the 741 files directly in `server/` | open |
 
 ## Order

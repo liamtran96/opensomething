@@ -1,9 +1,9 @@
 # The chat API driver with streaming
 
 Batch 2, gap 1 of [`../progress.md`](../progress.md): "The chat API driver
-with streaming". Rows of [`../features.md`](../features.md):
+with streaming". Rows of [`../reference-features.md`](../reference-features.md):
 `custom-engines.md` and "A model connection with no tools". Step 5 of
-[`../../plan.md`](../../plan.md), crate `bot-engine`.
+[`../../plan/README.md`](../../plan/README.md), crate `bot-engine`.
 
 Read on 2026-11-23, at commit 3aec210 of the reference project. All paths
 are in the reference project unless a line says "ours". The `enterprise/`
@@ -11,7 +11,7 @@ directory was not opened.
 
 This file adds to three earlier files and does not repeat them:
 
-- [`../driver-contract.md`](../driver-contract.md) section 4 has a short
+- [`driver-contract.md`](driver-contract.md) section 4 has a short
   summary of the chat driver. It gives the config, the request, the end of
   the stream, the retry numbers and the rejected key. This file gives the full
   flow, the error paths, the limits and the tests.
@@ -856,7 +856,7 @@ answer is empty.
 - Step 3: the `Driver` trait, with `send_turn` that returns a stream of
   events, and `interrupt`.
 - Step 5, in
-  [`../../plan/step-05-chat-driver.md`](../../plan/step-05-chat-driver.md).
+  [`../../plan/README.md`](../../plan/README.md).
   It has six pull requests:
   - 5.1: the wire types
   - 5.2: an SSE parser with no I/O

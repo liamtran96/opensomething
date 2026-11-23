@@ -41,7 +41,7 @@ wide first, and its base parts came late.
 | # | Capability | Crate | Step | Research |
 |---|---|---|---|---|
 | 1 | Identifiers, message types, the five events | `bot-protocol` | 2 | partial: [`turn-flow-comparison.md`](turn-flow-comparison.md) |
-| 2 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | partial: [`driver-contract.md`](driver-contract.md) |
+| 2 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | partial: [`features/driver-contract.md`](features/driver-contract.md) |
 | 3 | The registry, with "unavailable" for a bad entry | `bot-engine` | 4 | done: [`newer-config-unavailable.md`](features/newer-config-unavailable.md) |
 | 4 | The chat API driver with streaming | `bot-engine` | 5 | done: [`chat-streaming.md`](features/chat-streaming.md), [`chat-driver-tool-calls.md`](features/chat-driver-tool-calls.md) |
 | 5 | Settings, the data folder, keys, atomic writes, redaction | `bot-core` | 6 | done: [`write-only-secrets.md`](features/write-only-secrets.md), [`file-modes-atomic-writes-redaction.md`](features/file-modes-atomic-writes-redaction.md) |
@@ -50,7 +50,7 @@ wide first, and its base parts came late.
 
 ### What to do next
 
-1. The author types the code of step 2 from `docs/code/step-02/`. The
+1. The author types the code of step 2 from `docs/code/turn-flow-comparison/`. The
    research for step 2 is enough to start.
 2. The author decides five design choices before step 2 ends, because they
    change the types of `bot-protocol`. They are in section 7 of
@@ -62,7 +62,8 @@ wide first, and its base parts came late.
    (capability 6), and the part of one chat turn that
    `turn-flow-comparison.md` did not read (capability 7). Done on
    2026-11-23 (batch 2 of [`progress.md`](progress.md)).
-4. After that, no more research until step 7 is done.
+4. After that, no more research until step 7 is done. One exception: the
+   `Driver` contract for step 3 (batch 3 of [`progress.md`](progress.md)).
 
 ## Plans in `docs/superpowers/plans/`, files 1 to 12
 
@@ -278,7 +279,7 @@ a feature is marked. Each row has all the features of one page.
 
 | Document | Features | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
-| `custom-engines.md` | Provider icons; a custom ACP instance; model refresh for each bot; removal of the keys of other providers; OpenAI-compatible instances; guides for providers; an invalid instance does not stop the others | 2, 7, 9 | **1** | `bot-engine` | partial: [`driver-contract.md`](driver-contract.md) |
+| `custom-engines.md` | Provider icons; a custom ACP instance; model refresh for each bot; removal of the keys of other providers; OpenAI-compatible instances; guides for providers; an invalid instance does not stop the others | 2, 7, 9 | **1** | `bot-engine` | partial: [`features/driver-contract.md`](features/driver-contract.md) |
 | `approval-levels.md` | The approval levels (ask, auto-accept edits, approve for me, custom, full access); full access is the default; reads of own files never ask; a new thread gets the level of the conversation; change of level in the middle of a turn; a level for all bots of a department; a receipt with Undo; the level of a Chief flows down; allow once and allow for this session; question cards and `ask_user`; the safety floor and guarded sends | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
 | `cursor.md` | One ACP engine in detail: a sign-in card, a version check, install on a Cloud, model discovery, autonomy, a question card, the agent tools on that engine | 7 | 2 | `bot-engine` | open |
 | `agents-tool-bridge.md` | The tool bridge: a short tool list with `find_tool` and `use_tool` (off by default); automatic for local models; the tools that are always listed; which engines can use it; a golden test of the catalog; an eval of tool choice | 13 | 3 | `bot-engine` | open |
@@ -454,7 +455,7 @@ site in `apps/docs/`, and 23 Markdown files in other folders.
 
 | Document | Features | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
-| `README.md` | Bots on the agent CLIs of the person, with a custom binary for each engine; one local server that owns all agents; a computer for each bot; the model picker with a provider rail; a model switch in the middle of a conversation; the Computer panel; approval and question cards; the permission broker; the connected apps marketplace; the context menu of a bot; write-only keys with hot reload; channels; automatic routing with the decision model; install of a team from a Markdown file; spoken replies and calls; streaming replies with tool rows; dictation; screenshots in the transcript; the driver interface; the event bus and the event stream; the HTTP API; the desktop shells; the MCP server for other tools; the headless CLI; triggers: schedules, app events and webhooks, with a triggers page and bot tools; a hosted webhook relay; custom engines by config; the open-source edition | 1 to 42 | **1** | `bot-core` | partial: [`driver-contract.md`](driver-contract.md), [`changelog.md`](changelog.md) |
+| `README.md` | Bots on the agent CLIs of the person, with a custom binary for each engine; one local server that owns all agents; a computer for each bot; the model picker with a provider rail; a model switch in the middle of a conversation; the Computer panel; approval and question cards; the permission broker; the connected apps marketplace; the context menu of a bot; write-only keys with hot reload; channels; automatic routing with the decision model; install of a team from a Markdown file; spoken replies and calls; streaming replies with tool rows; dictation; screenshots in the transcript; the driver interface; the event bus and the event stream; the HTTP API; the desktop shells; the MCP server for other tools; the headless CLI; triggers: schedules, app events and webhooks, with a triggers page and bot tools; a hosted webhook relay; custom engines by config; the open-source edition | 1 to 42 | **1** | `bot-core` | partial: [`features/driver-contract.md`](features/driver-contract.md), [`changelog.md`](changelog.md) |
 | `CONTRIBUTING.md` | Development commands; a screenshot tool; the data format marker and the rule that a format change takes two releases; stores that repair themselves; the driver contract; rules for the control CLIs and for MCP tool schemas; how to add a language; no shell command built from a string; the write-only secrets API; CI gates; self-contained fakes | 4, 41, 40 | **1** | `bot-core` | open |
 | `SECURITY.md`, `LICENSING.md` | How to report a vulnerability; loopback binding; the routes that a service can call; the credentials file; pointers to Vault values; the meaning of full access; the edition flag; enterprise entitlements; sign-in to a hosted workspace fails closed | 11 | **1** | `bot-core` | open |
 | `server/host/README.md`, `server/routes/README.md` | The rules for the host modules and the route modules: how `server/index.ts` is split | 5 | **1** | `bot-cli`, `bot-desktop` | open |
