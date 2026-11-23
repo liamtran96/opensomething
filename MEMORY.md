@@ -114,6 +114,24 @@ at our Rust files and folders, and say where the feature goes in them.
   - For each feature, name the TypeScript files of the reference and the
     Rust crate and module that get the port.
 
+### A change updates its related documents in the same pull request (2026-11-23)
+
+When a pull request changes something, change each document that describes
+it in the same pull request: the feature page in `docs/`, the table in
+`docs/README.md`, the root `README.md`, the plan, the research tables and
+the docs web site in `apps/docs`.
+
+- **Why:** The author said: "please note that once we change something
+  update the related docs like readme, docs site,.. as well". Two pull
+  requests were opened with stale documents: `docs/protocol.md` said that
+  the message types were "not merged yet", and the roadmap page of the docs
+  site said that step 1 was in progress.
+- **How:** Before a commit, search for the name of the changed thing in
+  `README.md`, `docs/` and `apps/docs/content/`. Read each place that
+  states its state ("built", "not built", "step N", "in progress") and
+  correct it. Say in the pull request text which documents changed. When no
+  document needs a change, say that too.
+
 ### Make a worktree with the Orca CLI (2026-11-23)
 
 When the author asks for a worktree, make it with `orca worktree create`, not
