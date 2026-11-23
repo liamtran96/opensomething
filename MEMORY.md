@@ -29,6 +29,14 @@ asked.
 - **How:** Prepare the branch and the code-to-type file. Wait until the
   author says the code is typed. Then review it against the file and run the
   checks. Report an error for the author to correct. Do not correct it.
+- **The order of the work (2026-11-23):** analyze a feature, then the author
+  decides the proposals, then update `docs/plan/`, `docs/decisions.md` and
+  `docs/code/`. Before the author types a step, check the code file against
+  the latest reference source again. The author said: "once we analyze
+  finish for each feature we need to update plan and the code folder" and
+  "when i start coding i want to check the reference source code to confirm
+  it correct". The steps are 6 and 7 of "How to run a batch" in
+  [`docs/research/progress.md`](docs/research/progress.md).
 
 ### Always read the reference code before a suggestion (2026-11-23)
 
@@ -87,6 +95,10 @@ features that our plan does not have.
   - The list of all parts, their state and the prompt for one session are in
     [`docs/research/README.md`](docs/research/README.md). The author does one
     part in each session.
+  - To research several features at the same time, follow "How to run a
+    batch" in [`docs/research/progress.md`](docs/research/progress.md). It
+    chooses features from `features.md` and the problems to check from
+    `changelog.md`, and it has the prompt for one feature.
   - Write each research file for a person who did not read the code: a plain
     summary first, each special term explained one time, each flow as a
     numbered list.
@@ -114,6 +126,17 @@ at our Rust files and folders, and say where the feature goes in them.
   - For each feature, name the TypeScript files of the reference and the
     Rust crate and module that get the port.
 
+### Write the output with the ASD-STE100 skill (2026-11-23)
+
+Use the `asd-ste100` skill (Simplified Technical English) for the output of
+a task: the research files, the reports and the summaries.
+
+- **Why:** The author said: "remember to use asd skill for the output note
+  that".
+- **How:** Load the skill before you write the output. Tell each agent of a
+  worktree to load it before it writes its file. Apply it to prose, not to
+  code, paths or quotes from the reference.
+
 ### Make a worktree with the Orca CLI (2026-11-23)
 
 When the author asks for a worktree, make it with `orca worktree create`, not
@@ -130,6 +153,24 @@ with a hidden worktree of the agent tool.
   give the agent the absolute path of the reference project. The research
   work is tracked in [`docs/research/progress.md`](docs/research/progress.md),
   one row of `docs/research/features.md` for each worktree.
+
+### The agent of an analysis worktree uses subagents (2026-11-23)
+
+When an agent makes a worktree for an analysis task (research of the
+reference project), the prompt tells the agent of that worktree to use
+subagents: one subagent for each group of related files. The rule is for
+analysis tasks only, not for other worktrees.
+
+- **Why:** The author said: "please note that use subagent for each worktree
+  you create", then "from now [on] the analyzing task only", then "for each
+  worktree use should subagent to speed up the progress". The subagents read
+  their groups of files at the same time, so the analysis ends sooner. The
+  agent of the worktree is the lead, and it does not read all the files
+  itself.
+- **How:** Put the line "Use subagents: one for each group of related files,
+  and each one reads its files completely" in the `--prompt` of
+  `orca worktree create`. The main session does not start its own subagent
+  for a worktree; the Orca agent of the worktree starts them.
 
 ### Look at the real window before you report a UI change (2026-11-20)
 
@@ -169,8 +210,13 @@ a quote or a list item, in the application or in the docs site.
 ## Facts about the environment
 
 - **The reference project** is a local clone in a folder next to this
-  repository: `../OpenMausBot`. It is not in this repository. Clone it on a
-  new computer before design work.
+  repository: `../OpenMausBot`. It is not in this repository. On each
+  computer, run `scripts/reference.sh` before design work. It clones the
+  reference if it is missing, adds the remote `upstream` (the original
+  project), checks out the latest `upstream/main` and prints the commit.
+  The remote `origin` of an old clone is the fork of the author, which can
+  be behind. Record the printed commit in each research file. The author
+  asked for the latest code, the same on each computer (2026-11-23).
 - **Run the desktop application:** `pnpm run tauri dev` in
   `crates/bot-desktop/ui`. The UI has hot reload.
 - **Window capture on the work computer (Windows):** PowerShell is in
