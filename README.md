@@ -29,6 +29,9 @@ docs/
   code/               the code to type for each pull request of a step
   decisions.md        what we chose, why, and the references
   comparison.md       the reference project's features and our crate for each
+  research/           what we read in the reference project, with file and line
+  <feature>.md        what one feature does now; the list is in docs/README.md
+MEMORY.md             how the author wants the work done; notes for all computers
 ```
 
 The crates will be split further as the code grows. The plan and the reasons
