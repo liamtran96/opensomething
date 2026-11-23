@@ -19,7 +19,7 @@ is in git, so each computer has the same notes.
 ### The author types the code (2026-11-23)
 
 Do not write the source files of a plan step. Show the code to type
-(`docs/code/step-NN/` has one file for each pull request), and do the other
+(`docs/code/<feature>/` has one file for each pull request), and do the other
 work: branches, documents, checks, review, commits and pull requests when
 asked.
 
@@ -37,6 +37,39 @@ asked.
   "when i start coding i want to check the reference source code to confirm
   it correct". The steps are 6 and 7 of "How to run a batch" in
   [`docs/research/progress.md`](docs/research/progress.md).
+
+### The changelog is correct and up to date (2026-11-23)
+
+[`docs/research/changelog.md`](docs/research/changelog.md) is a correct and
+complete record of the releases of the reference project. Use it as a
+trusted source. Do not research the release history again.
+
+- **Why:** The author said "please remember that the changelog is correct
+  and up to date". On 2026-11-23 it covered v0.1.0 to v0.1.177, and v0.1.177
+  (2026-11-22) was the latest release of the reference project.
+- **How:**
+  - Use sections 5, 6 and 7 for the problems that each feature must check,
+    as "How to run a batch" in `docs/research/progress.md` says.
+  - Keep it up to date: when the reference project publishes a release after
+    v0.1.177, add its row to section 8. Change sections 3 to 7 only when the
+    new release changes them.
+
+### One plan file for each researched feature (2026-11-23)
+
+`docs/plan/README.md` has the steps, their pull requests and their choices.
+`docs/plan/<feature>.md` has the proposals of one feature, with the same name
+as `docs/research/features/<feature>.md`. Do not make other plan files.
+
+- **Why:** The author first said "there to many plan file consolidate it"
+  (the plan had a file for each step and a separate file of proposals). Then
+  the author said "i want to a folder plan with each folder in it
+  corresponding on each feature folder in research folder", and chose one
+  file for each feature.
+- **How:** When a research file is done, write `docs/plan/<feature>.md`
+  with its proposals (P1, P2, ...), and link each proposal from its step in
+  `docs/plan/README.md`. The code to type goes in `docs/code/<feature>/`,
+  with the same name. The author said "and code folder as well it should
+  match with the feature as well".
 
 ### Always read the reference code before a suggestion (2026-11-23)
 
@@ -97,7 +130,7 @@ features that our plan does not have.
     part in each session.
   - To research several features at the same time, follow "How to run a
     batch" in [`docs/research/progress.md`](docs/research/progress.md). It
-    chooses features from `features.md` and the problems to check from
+    chooses features from `reference-features.md` and the problems to check from
     `changelog.md`, and it has the prompt for one feature.
   - Write each research file for a person who did not read the code: a plain
     summary first, each special term explained one time, each flow as a
@@ -119,8 +152,8 @@ at our Rust files and folders, and say where the feature goes in them.
 - **How:**
   - The layout is in [`README.md`](README.md): `bot-protocol`, `bot-engine`,
     `bot-core`, `bot-cli`, `bot-desktop`. The step and the crate of each
-    feature are in [`docs/plan.md`](docs/plan.md).
-  - [`docs/research/features.md`](docs/research/features.md) has the columns
+    feature are in [`docs/plan/README.md`](docs/plan/README.md).
+  - [`docs/research/reference-features.md`](docs/research/reference-features.md) has the columns
     "Core" and "Ours" for each row. Choose research work from the rows that
     are core. Keep the two columns correct when the plan changes.
   - For each feature, name the TypeScript files of the reference and the
@@ -152,7 +185,7 @@ with a hidden worktree of the agent tool.
   `../workspaces/opensomething/<name>`, so `../OpenMausBot` is wrong there:
   give the agent the absolute path of the reference project. The research
   work is tracked in [`docs/research/progress.md`](docs/research/progress.md),
-  one row of `docs/research/features.md` for each worktree.
+  one row of `docs/research/reference-features.md` for each worktree.
 
 ### The agent of an analysis worktree uses subagents (2026-11-23)
 

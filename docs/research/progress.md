@@ -1,6 +1,6 @@
 # Research progress, feature by feature
 
-The unit of work is one row of [`features.md`](features.md): one feature, or
+The unit of work is one row of [`reference-features.md`](reference-features.md): one feature, or
 one document row that has several features. Each feature is analyzed in its
 own worktree by one agent, with the prompt of [`README.md`](README.md). The
 worktree is made with `orca worktree create`, so that it shows in the sidebar
@@ -22,14 +22,14 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
 
 ### 1. Choose the features
 
-1. Read [`features.md`](features.md). Choose rows of the lowest group that
+1. Read [`reference-features.md`](reference-features.md). Choose rows of the lowest group that
    is not complete (group 1 first). Use only rows that are marked core.
-2. Read "What to do next" in `features.md`, and the "Research" column of
+2. Read "What to do next" in `reference-features.md`, and the "Research" column of
    its table "What group 1 needs" (or the table of the next group).
 3. Read sections 5, 6 and 7 of [`changelog.md`](changelog.md). Write down
    the problems of section 5 that each chosen feature can have. Each
    agent must check these problems in the code.
-4. Look at our crates and at [`../plan.md`](../plan.md). Name the step,
+4. Look at our crates and at [`../plan/README.md`](../plan/README.md). Name the step,
    the crate and the module that get the port of each feature.
 5. Choose three to six features. Give each one a short name. Its file is
    `features/<name>.md`.
@@ -86,19 +86,24 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
 3. Make sure that the agent used the `asd-ste100` skill.
 4. Copy each file to `docs/research/features/` on `main`.
 5. Set the state of each row to **done**, with the commit of the
-   reference. Change the "Research" column of `features.md`.
+   reference. Change the "Research" column of `reference-features.md`.
 6. Ask each agent to write its proposals to a file outside the
-   repository. Merge the lists into one list, in ASD-STE100. Give it to
-   the author. Do not change `plan.md` or `decisions.md` before the author
-   decides.
+   repository. Write `docs/plan/<name>.md` for each feature, in
+   ASD-STE100: each proposal has the next free number (P52, P53, ...) and
+   the step that it changes. Link each proposal from its step in
+   `docs/plan/README.md`, and add a row to its table "Open proposals". Do
+   not change the steps, the pull requests or `decisions.md` before the
+   author decides.
 
 ### 6. Update the plan and the code to type
 
 Do this after the author decides on the proposals of a feature.
 
 1. Change `docs/decisions.md` for each accepted decision.
-2. Change `docs/plan.md` and the file of each step in `docs/plan/`.
-3. Change or write the files of the code to type in `docs/code/step-NN/`.
+2. Change `docs/plan/README.md`: the step, its pull requests and its
+   choices. Remove each decided proposal from `docs/plan/<name>.md` and
+   its link from the step.
+3. Change or write the files of the code to type in `docs/code/<feature>/` (see `docs/code/README.md`).
    Each claim about the reference in these files has a file and a line.
 4. Keep each pull request in the 200-line limit of `AGENTS.md`.
 
@@ -119,8 +124,8 @@ Do this when the author types the code of a step.
 ### The prompt for one feature
 
 ```text
-Analyze the feature "<FEATURE>" (row of docs/research/features.md) for
-step <STEP> of docs/plan.md. Its file is docs/research/features/<NAME>.md.
+Analyze the feature "<FEATURE>" (row of docs/research/reference-features.md) for
+step <STEP> of docs/plan/README.md. Its file is docs/research/features/<NAME>.md.
 Use a workflow with subagents: one subagent for each group of related
 files, and each one reads its files completely. You are the lead: do not
 read all the files yourself.
@@ -134,11 +139,11 @@ system from it and make it better. Do not write source code in this task.
 ## Read these first
 1. MEMORY.md and AGENTS.md in this repository. Obey them.
 2. docs/research/README.md, docs/research/progress.md and
-   docs/research/features.md. Read the research files that are complete.
+   docs/research/reference-features.md. Read the research files that are complete.
    Do not do their work again. Say what you add to them.
 3. docs/research/changelog.md, sections 5, 6 and 7. Check these problems
    in the code of this feature: <PROBLEMS>.
-4. docs/decisions.md, docs/comparison.md, docs/plan.md and docs/plan/.
+4. docs/decisions.md, docs/comparison.md and docs/plan/README.md.
 
 ## The reference project
 It is the local clone at <ABSOLUTE PATH>, at commit <COMMIT>.
@@ -173,7 +178,7 @@ Write only that file. Call the other project "the reference project". Put
 no personal data and no secrets in a file.
 
 ## Last step
-Give a list of proposed changes to docs/plan.md and docs/decisions.md, in
+Give a list of proposed changes to docs/plan/README.md and docs/decisions.md, in
 order of importance, with the file and line of the reference for each.
 Do not change those files. Do not commit or push.
 
@@ -184,11 +189,11 @@ the cost. Then wait for my approval.
 
 ## Batch 1, started 2026-11-23
 
-Chosen for steps 2 to 6 of [`../plan.md`](../plan.md). The worktree of a
+Chosen for steps 2 to 6 of [`../plan/README.md`](../plan/README.md). The worktree of a
 feature is `research-<name>`, on the branch `docs/research-<name>`, where
 `<name>` is the name of its file.
 
-| # | Feature (row of `features.md`) | Document of the reference | Part | File | State | Files read | Open points |
+| # | Feature (row of `reference-features.md`) | Document of the reference | Part | File | State | Files read | Open points |
 |---|---|---|---|---|---|---|---|
 | 1 | Enter queues a message, and a second Enter steers it into the running turn | `docs/specs/steer-vs-queue.md` | 1, 23 | `features/queue-and-steer.md` | done, 2026-11-23 | section 2 of the file | The steer specification disagrees with the code in three places |
 | 2 | Tool calls for the chat API drivers, with approvals, deny and interrupt | `docs/verification/openai-tools.md` | 9, 10 | `features/chat-driver-tool-calls.md` | done, 2026-11-23 | section 2 of the file | The limit of 64 model steps is not in the code now |
@@ -201,17 +206,49 @@ feature is `research-<name>`, on the branch `docs/research-<name>`, where
 | Work | File | State |
 |---|---|---|
 | The release history: 169 releases and the git history | [`changelog.md`](changelog.md) | done |
-| The four groups of [`features.md`](features.md), with a group, a crate and a research state for each row | [`features.md`](features.md) | done |
+| The four groups of [`reference-features.md`](reference-features.md), with a group, a crate and a research state for each row | [`reference-features.md`](reference-features.md) | done |
 
 ## Batch 2, started 2026-11-23
 
 The three gaps of group 1. The worktree of a gap is `research-<name>`, on
 the branch `docs/research-<name>`, and its file is `features/<name>.md`.
 
-| # | Capability of group 1 | Row of `features.md` | Crate | Step | Name | State |
+| # | Capability of group 1 | Row of `reference-features.md` | Crate | Step | Name | State |
 |---|---|---|---|---|---|---|
 | 1 | The chat API driver with streaming | `custom-engines.md`; "A model connection with no tools" | `bot-engine` | 5 | [`chat-streaming`](features/chat-streaming.md) | done, 2026-11-23, at commit `3aec210` |
 | 2 | The event bus, the fold, the streamed reply in the window | `README.md`; `chat-ui.md` | `bot-core`, `bot-desktop` | 7 | [`event-bus-fold`](features/event-bus-fold.md) | done, 2026-11-23, at commit `3aec210` |
 | 3 | One chat turn from send to reply, the part that `turn-flow-comparison.md` did not read | `chat-turns.md` | `bot-core` | 7 | [`chat-turns`](features/chat-turns.md) | done, 2026-11-23, at commit `3aec210` |
 
-After batch 2, no more research until step 7 of the plan is done.
+After batch 2, no more research until step 7 of the plan is done. One
+exception: batch 3.
+
+## Batch 3, started 2026-11-23
+
+The author made one exception to the pause above. Step 3 (the `Driver`
+trait) was the only step of part 1 without full research. Its note,
+[`features/driver-contract.md`](features/driver-contract.md), was written
+before batch 1, and other research files later replaced its sections 2, 3
+and 4. The new research replaces the note.
+
+| # | Capability of group 1 | Crate | Step | Name | State |
+|---|---|---|---|---|---|
+| 1 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | [`driver-contract`](features/driver-contract.md) | done, 2026-11-23, at commit `d6660e2` |
+
+The main session checked six key claims at `d6660e2`. All six agree with
+the code:
+
+1. `interruptTurn` and `respondToRequest` are mandatory, and no flag is
+   about streaming, interrupt or approvals (`server/contracts.ts:255-323`).
+2. No code reads `sessionModelSwitch`, the only mandatory flag.
+3. The fake driver returns `"fake-turn"` for each turn
+   (`server/testing/fake-driver.ts:79`).
+4. Only the chat driver checks the turn id at a stop
+   (`server/drivers/openai-chat.ts:961-966`). Claude ignores it
+   (`server/drivers/claude.ts:1963`).
+5. Five drivers throw the same busy text (`pi.ts:413`,
+   `openai-chat.ts:518`, `claude.ts:951`, `codex.ts:408`,
+   `acp/core.ts:922`).
+6. The ACP core copies all of `process.env` and deletes only known keys
+   (`server/drivers/acp/core.ts:333-346`).
+
+The proposals are in [`../plan/driver-contract.md`](../plan/driver-contract.md).

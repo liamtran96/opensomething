@@ -391,7 +391,7 @@ entry was written. Verify them before relying on them.
 
 - **Date:** 2026-11-20
 - **Status:** Accepted
-- **What:** [`plan.md`](plan.md) builds the product in the order in which
+- **What:** [`plan/README.md`](plan/README.md) builds the product in the order in which
   OpenMausBot grew, and puts each part that it added late in its final place.
   - **The order:** the chat UI with mock data, the protocol types, the
     `Driver` trait with a fake driver, the registry, the chat API driver,
@@ -657,3 +657,26 @@ entry was written. Verify them before relying on them.
   - `server/index.ts:6382-6384`: the server stores the reply from
     `item.completed`.
   - `src/state/live-reply.ts:88`: the window draws `assistant_text` only.
+
+## D21. One plan file for each researched feature
+
+- **Date:** 2026-11-23
+- **Status:** Accepted
+- **What:**
+  - `docs/plan/README.md` holds the steps, the pull requests of each step
+    and the open choices. Each step links to its open proposals.
+  - `docs/plan/<feature>.md` holds the open proposals (P1, P2, ...) of one
+    feature. It has the same name as `docs/research/features/<feature>.md`.
+  - A proposal that comes from the plan itself or from
+    `research/changelog.md` stays in `docs/plan/README.md`.
+  - The code to type is in `docs/code/<feature>/`, with the same feature
+    names. Step 2 uses `turn-flow-comparison/`, the name of its research
+    file. `docs/code/README.md` maps each pull request to its folder.
+- **Why:** The author asked for one plan file for each research file. A
+  research file and its proposals then have the same name, and the author
+  decides the proposals of one feature in one place.
+- **Alternatives:** One file for each step in `docs/plan/`, and a separate
+  file of proposals (the first form). All of the plan in `docs/plan.md` (a
+  file of about 700 lines, used for one day).
+- **Open risks:** A proposal that changes several steps is in one feature
+  file only. The step sections of `docs/plan/README.md` link to it.

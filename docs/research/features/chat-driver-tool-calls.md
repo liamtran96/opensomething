@@ -2,13 +2,13 @@
 
 Read on 2026-11-23, at commit `3aec210` of the reference project. This file
 is for the feature row "Tool calls for the chat API drivers, with approvals,
-deny and interrupt" of [`features.md`](../features.md) (parts 9 and 10 of
+deny and interrupt" of [`reference-features.md`](../reference-features.md) (parts 9 and 10 of
 [`README.md`](../README.md)). All paths are in the reference project unless a
 line says "ours". The `enterprise/` directory, the ACP drivers and the CLI
 drivers were not read.
 
 Two files are complete and are not repeated here:
-[`driver-contract.md`](../driver-contract.md) (the request with no tools, the
+[`driver-contract.md`](driver-contract.md) (the request with no tools, the
 stream parser, the retry rules, redaction) and
 [`turn-flow-comparison.md`](../turn-flow-comparison.md) (the events of a turn
 with no tool, the stored reply, the chat UI).
@@ -1026,7 +1026,7 @@ types. So this section compares the reference with our plan and decisions.
 
 | Topic | The reference | Ours |
 |---|---|---|
-| Who runs the tool loop of a chat driver | The driver (`chat.ts`) | No step of `docs/plan.md` says it. Step 5 is a chat driver with streaming only. `docs/comparison.md` section 3 notes "The server runs the tool loop" |
+| Who runs the tool loop of a chat driver | The driver (`chat.ts`) | No step of `docs/plan/README.md` says it. Step 5 is a chat driver with streaming only. `docs/comparison.md` section 3 notes "The server runs the tool loop" |
 | Where tools come from | The driver is an MCP client. It starts each MCP server as a child process | D8: "The server exposes its own tools to engines as an MCP server". Step 12: "An engine lists the bots through the tool". This fits an ACP engine, which is an MCP client itself. A chat API is not |
 | Events of a tool | `item.started`, `item.completed` with `itemType: "tool"`, `request.opened`, `request.resolved`, `runtime.notice`, `turn.retrying`, `cap.exhausted` | D20 has five events. Its open risk says: "`item.completed` is for reply text only ... The tool steps must extend it" |
 | The end of a turn | `ok`, `stopReason` (5 values), `denials` | D20: one `outcome`: `completed`, `failed`, `interrupted`. The error codes are `setup`, `engine_failed`, `internal`. None says "a tool failed" or "the person said no" |

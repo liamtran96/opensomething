@@ -1,6 +1,6 @@
 # Write-only secrets in the reference project
 
-The feature row in [`../features.md`](../features.md): "Rule: secrets are
+The feature row in [`../reference-features.md`](../reference-features.md): "Rule: secrets are
 write-only; the UI sees only `configured`". Document of the reference:
 `docs/superpowers/plans/2026-08-31-00-control-plane-roadmap.md`. Part 11 of
 [`../README.md`](../README.md).
@@ -524,13 +524,13 @@ What we have now:
 What we plan:
 
 - Step 6.4: `redact(text)` replaces known secret values and key patterns
-  (`docs/plan/step-06-settings.md:16`).
+  (`docs/plan/README.md`, step 6).
 - Step 6.5: a `Secret` type whose `Debug` output is `[redacted]`
-  (`docs/plan/step-06-settings.md:17`).
+  (`docs/plan/README.md`, step 6).
 - Step 6 choice: the key in the settings file, or in the keychain of the
-  operating system (`docs/plan/step-06-settings.md:22-23`).
+  operating system (`docs/plan/README.md`, step 6).
 - Step 7.6: Tauri commands to load and save settings. "The window never gets
-  the saved key back, only 'a key is set'" (`docs/plan/step-07-event-bus.md`).
+  the saved key back, only 'a key is set'" (`docs/plan/README.md`, step 7).
 - Decision D10: a secret is never written to a log. The core runs in the
   Tauri process. There is no HTTP server (D14).
 - `docs/comparison.md`: `keyring` 4 for desktop secrets, `secrecy` for

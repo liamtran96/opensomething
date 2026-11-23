@@ -2,9 +2,8 @@
 
 | File | What it holds |
 |---|---|
-| [`plan.md`](plan.md) | The steps, with a "done when" check for each |
-| [`plan/`](plan/README.md) | Each step as a list of pull requests |
-| [`code/`](code/) | The code to type for each pull request of a step |
+| [`plan/`](plan/README.md) | The steps and their pull requests (`README.md`), and one file of proposals for each feature of `research/features/` |
+| [`code/`](code/README.md) | The code to type for each pull request, one folder for each feature |
 | [`decisions.md`](decisions.md) | What we chose, why, and the references |
 | [`comparison.md`](comparison.md) | The features of the reference project and our crate for each |
 | [`research/`](research/) | What we read in the reference project, with the file and the line of each fact |

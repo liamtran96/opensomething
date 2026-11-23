@@ -1,6 +1,6 @@
 # Queue and steer: a message sent while a turn runs
 
-Feature row of [`../features.md`](../features.md): "Enter queues a message,
+Feature row of [`../reference-features.md`](../reference-features.md): "Enter queues a message,
 and a second Enter steers it into the running turn". Document of the
 reference: `docs/specs/steer-vs-queue.md`. Parts 1 and 23 of
 [`../README.md`](../README.md).
@@ -9,7 +9,7 @@ Read on 2026-11-23. All paths are in the reference project
 (`../OpenMausBot`) unless a line says "ours". The `enterprise/` directory was
 not opened. This file adds to
 [`../turn-flow-comparison.md`](../turn-flow-comparison.md) (section 4) and
-[`../driver-contract.md`](../driver-contract.md) (section 5, "Steer"). It
+[`driver-contract.md`](driver-contract.md) (section 5, "Steer"). It
 does not repeat them.
 
 ## 1. In short
@@ -30,7 +30,7 @@ Special terms, explained one time:
 - **Turn**: one run of the engine, from one message of the person to the
   reply. See [`../turn-flow-comparison.md`](../turn-flow-comparison.md).
 - **Driver**: the server code for one kind of engine. See
-  [`../driver-contract.md`](../driver-contract.md).
+  [`driver-contract.md`](driver-contract.md).
 - **Steer outcome**: what a driver says after a steer. `steered` (the engine
   has it), `refused` (proved not delivered, so it is safe to queue it), or
   `indeterminate` (maybe delivered, so the server must never send it again).

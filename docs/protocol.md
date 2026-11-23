@@ -67,7 +67,7 @@ person stopped the turn).
 
 - An unknown `type` is an error when the JSON is read.
 - The order of the events of one turn is in
-  [`plan/step-02-protocol-types.md`](plan/step-02-protocol-types.md).
+  [`plan/README.md`](plan/README.md), step 2.
 
 ## Code
 

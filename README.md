@@ -24,9 +24,8 @@ crates/
 apps/
   docs/               the docs web site (Next.js and Fumadocs)
 docs/
-  plan.md             the steps, with a "done when" check for each
-  plan/               each step as a list of pull requests
-  code/               the code to type for each pull request of a step
+  plan/               the steps (README.md) and one plan file for each feature
+  code/               the code to type, one folder for each feature
   decisions.md        what we chose, why, and the references
   comparison.md       the reference project's features and our crate for each
   research/           what we read in the reference project, with file and line
@@ -74,8 +73,9 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Build order
 
-The steps and their "done when" checks are in [`docs/plan.md`](docs/plan.md).
-Each step of part 1 is split into pull requests in [`docs/plan/`](docs/plan/README.md).
+The steps and their "done when" checks are in [`docs/plan/README.md`](docs/plan/README.md).
+The same file splits each step of part 1 into pull requests. The proposals
+of each researched feature are in a file next to it.
 The reasons for the order are in decision D14.
 
 1. One bot that answers: the chat UI, the protocol types, the `Driver` trait
