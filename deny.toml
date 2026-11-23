@@ -2,6 +2,7 @@
 yanked = "deny"
 ignore = [
     { id = "RUSTSEC-2024-0370", reason = "proc-macro-error is unmaintained, not vulnerable. It comes from gtk3-macros, which Tauri needs on Linux, and no upgrade exists." },
+    { id = "RUSTSEC-2026-0592", reason = "Stack overflow in Url::origin() on a nested blob: URL, in url 2.5.8 from tauri and reqwest. Our code does not call Url::origin(). url 2.5.9 corrects it: run `cargo update -p url`, then remove this entry." },
 ]
 
 [licenses]
