@@ -7,6 +7,14 @@ What we chose and why is in [`docs/decisions.md`](docs/decisions.md). Read it
 before changing the structure, the tooling or a core design choice, and add an
 entry when you change one.
 
+How the author wants the work done is in [`MEMORY.md`](MEMORY.md). Read it at
+the start of a session and obey it. When the author corrects an approach or
+states a preference, add a note there, not only in a memory folder on one
+computer.
+
+What each feature does now is in its page in [`docs/`](docs/README.md). A pull
+request that changes the behaviour of a feature changes its page too.
+
 ## Reference code and licensing
 
 The design draws on OpenMausBot (Apache License 2.0). When you use it as a

@@ -45,7 +45,7 @@ decision D14 of [`decisions.md`](decisions.md).
 | Step | What to build | Crate | Concepts | Done when |
 |---|---|---|---|---|
 | 1 | The chat skeleton with mock data: bot list, chat pane, composer, settings panel | `bot-desktop` | React components and state | The window shows a mock conversation, and you can type in it |
-| 2 | Identifiers, message types and the event union: `turn.started`, `content.delta`, `turn.completed`, `runtime.error` | `bot-protocol` | Structs, enums, `serde` | A test shows the JSON of each event |
+| 2 | Identifiers, message types and the event union: `turn.started`, `content.delta`, `item.completed`, `runtime.error`, `turn.completed` | `bot-protocol` | Structs, enums, `serde` | A test shows the JSON of each event |
 | 3 | The `Driver` trait with capability flags and typed refusals, and a fake driver | `bot-engine` | Traits, `async`, `thiserror`, unit tests | A test sends a turn to the fake driver and reads its events |
 | 4 | The registry: each config entry becomes a driver. An unknown driver or a bad entry becomes "unavailable" | `bot-engine` | `HashMap`, trait objects | A test loads one good entry and one bad entry, and the good one works |
 | 5 | The chat API driver with streaming | `bot-engine` | `reqwest`, `tokio`, streams | A test with a fake HTTP server gets the reply in pieces |
