@@ -17,7 +17,7 @@ we plan. Change the page in the same pull request that changes the behaviour
 
 | Feature | Page | State |
 |---|---|---|
-| Wire types | [`protocol.md`](protocol.md) | Identifiers are built. Messages are step 2.3. Events are steps 2.4 and 2.5 |
+| Wire types | [`protocol.md`](protocol.md) | Identifiers, messages and the turn events are built. The content and error events are step 2.5 |
 | Desktop window | [`desktop-window.md`](desktop-window.md) | The layout is built, with mock data |
 | Settings | [`settings.md`](settings.md) | The dialog is built. Nothing is saved |
 | Backgrounds | [`backgrounds.md`](backgrounds.md) | Built. The choice is not saved |

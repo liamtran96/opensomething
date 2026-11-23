@@ -1,6 +1,6 @@
 # Wire types
 
-The types that all crates share: identifiers, messages and, later, events.
+The types that all crates share: identifiers, messages and events.
 They are in the `bot-protocol` crate. Each type has one fixed form in JSON,
 and a test shows that form.
 
@@ -23,8 +23,6 @@ belongs.
 
 ## Messages
 
-Step 2.3 of the plan adds this type. Its code is not merged yet.
-
 `Message` is one message of a thread. It has three fields:
 
 | Field | Type | In JSON |
@@ -42,18 +40,47 @@ Step 2.3 of the plan adds this type. Its code is not merged yet.
 and a failed turn does not get a third role (decision D18). How a failed turn
 is stored is not decided. Decide it with the store in step 8.
 
+## Events
+
+`Event` is one thing that happens while an engine runs a turn (decision
+D20). It has two parts, and in JSON the two parts are one object:
+
+| Field | Type | In JSON |
+|---|---|---|
+| `thread_id` | `ThreadId` | a string |
+| `turn_id` | `TurnId` | a string |
+| `kind` | `EventKind` | a `type` field, and the fields of that event |
+
+`EventKind` has two events now:
+
+| `type` | Fields | When |
+|---|---|---|
+| `turn.started` | none | The first event of a turn |
+| `turn.completed` | `outcome` | The last event of each turn that started |
+
+```json
+{ "thread_id": "thread-1", "turn_id": "turn-1", "type": "turn.completed", "outcome": "failed" }
+```
+
+`Outcome` says how a turn ended: `completed`, `failed` or `interrupted` (a
+person stopped the turn).
+
+- An unknown `type` is an error when the JSON is read.
+- The order of the events of one turn is in
+  [`plan/step-02-protocol-types.md`](plan/step-02-protocol-types.md).
+
 ## Code
 
 - `crates/bot-protocol/src/ids.rs`: the identifiers and their tests.
-- `crates/bot-protocol/src/message.rs`: `Role`, `Message` and their tests
-  (step 2.3, not merged yet).
+- `crates/bot-protocol/src/message.rs`: `Role`, `Message` and their tests.
+- `crates/bot-protocol/src/event.rs`: `Event`, `EventKind`, `Outcome` and
+  their tests.
 
 ## Not built
 
-- The events of a turn: steps 2.4 and 2.5 of the plan. The design is in
-  decision D20, and the order of the events is in
-  [`plan/step-02-protocol-types.md`](plan/step-02-protocol-types.md). Add an
-  "Events" section to this page in the pull request that adds the code.
+- The events `content.delta`, `item.completed` and `runtime.error`: step 2.5
+  of the plan. Add them to the "Events" section in the pull request that
+  adds the code.
 - An event has no identifier and no time. Add them with the event log in
   step 8.
 - The desktop window does not use these types yet. It has its own mock types
