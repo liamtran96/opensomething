@@ -14,7 +14,7 @@
 | [ ] 7.2 | `feat(core): add the TurnRunner trait` | `bot-core/src/runner.rs` | The trait, with a doc comment, and a function that runs one turn and publishes its events on the bus | A test with a fake runner reads the events from the bus |
 | [ ] 7.3 | `feat(desktop): run turns through the registry` | `bot-desktop/src/main.rs`, `bot-desktop/src/runner.rs` | The desktop loads the settings, builds the registry and gives `bot-core` a `TurnRunner` that calls the driver | `send_message` returns immediately, and the turn runs |
 | [ ] 7.4 | `feat(desktop): send bus events to the window` | `bot-desktop/src/events.rs`, `capabilities/default.json` | A task that reads the bus and emits each event to the window | The events show in the console of the window |
-| [ ] 7.5 | `feat(desktop): show the streamed reply` | `ui/src/features/chat/useTurnEvents.ts`, `ChatPane.tsx` | The chat listens for the events and adds each delta to the bot message. A `runtime.error` shows as a system message | The answer appears word by word |
+| [ ] 7.5 | `feat(desktop): show the streamed reply` | `ui/src/features/chat/useTurnEvents.ts`, `ChatPane.tsx` | The chat listens for the events. It shows the `assistant_text` deltas as live text, and replaces that text with the text of `item.completed`. A `runtime.error` shows as an error notice. `turn.completed` ends the working state | The answer appears word by word |
 | [ ] 7.6 | `feat(desktop): save the API key from the settings panel` | `bot-desktop/src/settings.rs`, `ui/src/features/settings/SettingsPanel.tsx` | Commands to load and save the settings. The window never gets the saved key back, only "a key is set" | You enter a key, restart, and the bot answers |
 
 ## Choices

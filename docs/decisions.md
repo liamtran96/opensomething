@@ -545,3 +545,115 @@ entry was written. Verify them before relying on them.
   type for all four kinds (the compiler cannot tell them apart).
 - **Open risks:** The form of a new identifier is not chosen. Choose it with
   the store in step 8.
+
+## D18. A message has two roles: user and assistant
+
+- **Date:** 2026-11-23
+- **Status:** Accepted
+- **What:** `Role` in `bot-protocol` has two values, `user` and `assistant`.
+  The system prompt is not a message: a later step gives it to the driver as
+  its own field of the turn request. A failed turn does not get a third
+  role. The reference stores it as a row of the bot with its own kind, and
+  keeps that row out of the transcript. How we store it is a choice for the
+  store in step 8.
+- **Why:** The reference project has two roles in a message, and no step of
+  our plan reads a third. A `system` role also permits a wrong state: a
+  system message in the middle of a transcript, which each driver must then
+  handle.
+- **Alternatives:** Three roles, `user`, `assistant` and `system` (the first
+  form of the plan: it came from the vendor chat APIs, not from the
+  reference). The stored names of the reference, `bot` and `user`, with a
+  conversion to `assistant` for the driver (two sets of names for a type
+  with three fields).
+- **Open risks:** A tool result has no role. Step 2.4 and the later tool
+  steps put tool activity in events. Add a role only when a step needs it.
+- **References** (reference project, read on 2026-11-23):
+  - `packages/phone-protocol/src/wire.ts:442`: a stored message has
+    `role: "bot" | "user"`.
+  - `server/contracts.ts:162-164`: the transcript for a driver has
+    `role: "user" | "assistant"`, and `system` is a separate field.
+  - `server/drivers/openai-chat.ts:41` and `:507`: only the chat driver has
+    the `system` role, and it adds that line itself.
+  - `packages/phone-protocol/src/failed-turn.ts:1`: a failed turn is stored
+    as an activity row of the bot.
+
+## D19. Each feature has one page in `docs/`
+
+- **Date:** 2026-11-23
+- **Status:** Accepted
+- **What:** Each feature has one Markdown file in `docs/`, named for the
+  feature. The page says what the feature does now: what the person does,
+  the rules, the code paths and what is not built. The list of pages is in
+  [`README.md`](README.md). A pull request that changes the behaviour of a
+  feature changes its page too.
+- **Why:** The plan says what to build next, and this file says why. Neither
+  says what the application does today. The reference project keeps one page
+  for each feature in its `docs/` folder, and each page is the description
+  that its code must match.
+- **Alternatives:** A `docs/features/` folder (the reference project keeps
+  the pages directly in `docs/`). The docs web site only (its pages are for
+  people who use the application, not for people who change it).
+- **Open risks:** A page that nobody updates becomes wrong. The rule in
+  `AGENTS.md` and the review of each pull request are the only checks.
+- **References:** The `docs/` folder of the reference project, for example
+  `docs/pausing-bots.md`, `docs/files.md` and `docs/runtime-contract.md`.
+
+## D20. A turn has five events, and `turn.completed` is always the last
+
+- **Date:** 2026-11-23
+- **Status:** Accepted
+- **What:**
+  - An event is an envelope (`Event`: thread, turn, kind) around one
+    `EventKind`. In JSON they are one object, and `type` names the kind.
+  - The kinds are `turn.started`, `content.delta`, `item.completed`,
+    `runtime.error` and `turn.completed`.
+  - `turn.completed` is the last event of each turn that started. Its
+    `outcome` is `completed`, `failed` or `interrupted`.
+  - `runtime.error` says why a turn failed. It does not end the turn. A stop
+    sends no `runtime.error`.
+  - `content.delta` has a kind of stream, `assistant_text` or
+    `reasoning_text`. It is for the live display only.
+  - `item.completed` has the full reply text. It is the text to store.
+  - The error codes are `setup`, `engine_failed` and `internal`.
+- **Why:**
+  - With one last event, each consumer waits for one event to know that a
+    turn ended. The first form of the plan had two possible last events, and
+    a stopped turn had none.
+  - Without the full text in an event, the window is the only owner of the
+    reply, and the store has nothing to save.
+  - A model that reasons sends reasoning text. Without a kind of stream, a
+    driver must drop that text or mix it into the reply.
+  - A code that says what the person can do lets the window choose the
+    action: open the settings for `setup`, offer a retry for `engine_failed`.
+- **Better than the reference:**
+  - The reference has `ok: boolean` and `stopReason: string | null`, which
+    permits `ok: true` with `stopReason: "error"`. One `outcome` enum does
+    not permit it.
+  - The reference repeats the common fields in each driver. The envelope
+    states them one time.
+  - `turn_id` is mandatory. All five events belong to a turn. A failure
+    before a turn starts is a typed refusal of `send_turn`, not an event.
+- **Alternatives:** Four events, with `runtime.error` as a last event (the
+  first form of the plan). The full text in `turn.completed` (a turn with
+  tools has more than one text item, as in the reference). The flags of the
+  reference on `runtime.error` (`setup`, `terminal`, `partial`: three booleans
+  permit combinations that have no meaning).
+- **Open risks:**
+  - An event has no identifier and no time. The reference has both, for a
+    client that connects again and for the log. Add them with the event log
+    in step 8.
+  - `item.completed` is for reply text only. The reference uses the same
+    event for a tool call. The tool steps must extend it.
+  - The error codes are a first list. Step 7.6 shows what the window needs.
+  - JSON field names are snake_case. The reference uses camelCase.
+- **References** (reference project, read on 2026-11-23; the full notes are
+  in [`research/turn-flow-comparison.md`](research/turn-flow-comparison.md)):
+  - `packages/phone-protocol/src/runtime-events.ts:24-38`: the base of each
+    event. `:52-200`: the union.
+  - `server/drivers/openai-chat.ts:581`, `:656`, `:746-747`, `:904-909` and
+    `:923-926`: the events of the chat driver, in order.
+  - `server/drivers/openai-chat.test.ts:816`: after a failure, the last event
+    is `turn.completed` with `ok: false`.
+  - `server/index.ts:6382-6384`: the server stores the reply from
+    `item.completed`.
+  - `src/state/live-reply.ts:88`: the window draws `assistant_text` only.
