@@ -23,8 +23,6 @@ belongs.
 
 ## Messages
 
-Step 2.3 of the plan adds this type. Its code is not merged yet.
-
 `Message` is one message of a thread. It has three fields:
 
 | Field | Type | In JSON |
@@ -45,8 +43,7 @@ is stored is not decided. Decide it with the store in step 8.
 ## Code
 
 - `crates/bot-protocol/src/ids.rs`: the identifiers and their tests.
-- `crates/bot-protocol/src/message.rs`: `Role`, `Message` and their tests
-  (step 2.3, not merged yet).
+- `crates/bot-protocol/src/message.rs`: `Role`, `Message` and their tests.
 
 ## Not built
 
