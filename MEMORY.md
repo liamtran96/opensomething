@@ -94,6 +94,43 @@ features that our plan does not have.
   - Before the code of a plan step, do the parts that the table names for
     that step.
 
+### This is a port from TypeScript to Rust: look at our crates first (2026-11-23)
+
+Before you choose, order or explain a feature of the reference project, look
+at our Rust files and folders, and say where the feature goes in them.
+
+- **Why:** An agent chose five research features without a mark of core or
+  not core, and three of them were support rules. The author said: "i should
+  mark which one is core which one is not core the the features.md and
+  please remember look at our files and folders structure in rust I want to
+  port from ts to rust".
+- **How:**
+  - The layout is in [`README.md`](README.md): `bot-protocol`, `bot-engine`,
+    `bot-core`, `bot-cli`, `bot-desktop`. The step and the crate of each
+    feature are in [`docs/plan.md`](docs/plan.md).
+  - [`docs/research/features.md`](docs/research/features.md) has the columns
+    "Core" and "Ours" for each row. Choose research work from the rows that
+    are core. Keep the two columns correct when the plan changes.
+  - For each feature, name the TypeScript files of the reference and the
+    Rust crate and module that get the port.
+
+### Make a worktree with the Orca CLI (2026-11-23)
+
+When the author asks for a worktree, make it with `orca worktree create`, not
+with a hidden worktree of the agent tool.
+
+- **Why:** An agent started five research subagents in hidden worktrees. The
+  author stopped them and said: "I mean create worktree in here the side bar
+  of orca project". The author wants to see each worktree and its agent in
+  the Orca sidebar (interpretation).
+- **How:** `orca worktree create --repo id:<repoId> --name <name> --branch
+  <branch> --base-branch main --agent claude --prompt "<text>" --json`.
+  `orca repo list` gives the repository id. The worktree goes in
+  `../workspaces/opensomething/<name>`, so `../OpenMausBot` is wrong there:
+  give the agent the absolute path of the reference project. The research
+  work is tracked in [`docs/research/progress.md`](docs/research/progress.md),
+  one row of `docs/research/features.md` for each worktree.
+
 ### Look at the real window before you report a UI change (2026-11-20)
 
 For work in `crates/bot-desktop/ui`, capture the application window and
