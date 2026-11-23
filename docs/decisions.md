@@ -680,3 +680,40 @@ entry was written. Verify them before relying on them.
   file of about 700 lines, used for one day).
 - **Open risks:** A proposal that changes several steps is in one feature
   file only. The step sections of `docs/plan/README.md` link to it.
+
+## D22. Each driver streams, takes a stop and answers a request
+
+- **Date:** 2026-11-23
+- **Status:** Accepted (proposal P52)
+- **What:**
+  - The `Driver` trait has `send_turn`, which returns a stream of events,
+    and `interrupt`. Each driver must support both. A later step adds the
+    answer to a request, and each driver must support it too.
+  - These are not capability flags. A driver cannot refuse a stop.
+  - A capability flag exists only when the reference reads it and a step of
+    ours reads it. Step 3 has none, so it has no `Capabilities` struct. The
+    struct comes with the first step that reads a flag.
+- **Why:**
+  - In the reference, `interruptTurn`, `respondToRequest` and `onEvent` are
+    mandatory for each driver. Its 26 flags are about tool mounts, images,
+    effort, steer, resume and guests. None is about streaming, a stop or
+    approvals.
+  - A stop that the engine can refuse makes a turn that does not end. That
+    is the first problem of `research/changelog.md`, section 5.
+  - A flag with no reader is a wrong state that the compiler cannot see. In
+    the reference, no code reads its one mandatory flag,
+    `sessionModelSwitch`.
+- **Same as the reference:** a driver must stream, take a stop and answer a
+  request. None of these is a flag.
+- **Better than the reference:** the reference always has a capabilities
+  object with one mandatory flag, `sessionModelSwitch`, and no code reads
+  it. We add the struct only when a step reads a flag, so no flag exists
+  without a reader.
+- **Alternatives:** The first form of step 3: flags for streaming,
+  interrupt, approvals and tools, and a typed refusal for an interrupt
+  without the flag (PR 3.2 and PR 3.5).
+- **References** (reference project at commit `d6660e2`; the full notes are
+  in [`research/features/driver-contract.md`](research/features/driver-contract.md)):
+  - `server/contracts.ts:255-310`: the capability flags.
+  - `server/contracts.ts:311-334`: `sendTurn`, `interruptTurn`,
+    `respondToRequest` and `onEvent`, all mandatory.
