@@ -43,10 +43,10 @@ wide first, and its base parts came late.
 | 1 | Identifiers, message types, the five events | `bot-protocol` | 2 | partial: [`turn-flow-comparison.md`](turn-flow-comparison.md) |
 | 2 | The `Driver` trait, capability flags, a fake driver | `bot-engine` | 3 | partial: [`driver-contract.md`](driver-contract.md) |
 | 3 | The registry, with "unavailable" for a bad entry | `bot-engine` | 4 | done: [`newer-config-unavailable.md`](features/newer-config-unavailable.md) |
-| 4 | The chat API driver with streaming | `bot-engine` | 5 | open for the streaming. The tool loop is done: [`chat-driver-tool-calls.md`](features/chat-driver-tool-calls.md) |
+| 4 | The chat API driver with streaming | `bot-engine` | 5 | done: [`chat-streaming.md`](features/chat-streaming.md), [`chat-driver-tool-calls.md`](features/chat-driver-tool-calls.md) |
 | 5 | Settings, the data folder, keys, atomic writes, redaction | `bot-core` | 6 | done: [`write-only-secrets.md`](features/write-only-secrets.md), [`file-modes-atomic-writes-redaction.md`](features/file-modes-atomic-writes-redaction.md) |
-| 6 | The event bus, the fold, the streamed reply in the window | `bot-core`, `bot-desktop` | 7 | open |
-| 7 | One chat turn from send to reply | `bot-core` | 7 | partial: [`turn-flow-comparison.md`](turn-flow-comparison.md), [`queue-and-steer.md`](features/queue-and-steer.md) |
+| 6 | The event bus, the fold, the streamed reply in the window | `bot-core`, `bot-desktop` | 7 | done: [`event-bus-fold.md`](features/event-bus-fold.md) |
+| 7 | One chat turn from send to reply | `bot-core` | 7 | done: [`chat-turns.md`](features/chat-turns.md), [`turn-flow-comparison.md`](turn-flow-comparison.md), [`queue-and-steer.md`](features/queue-and-steer.md) |
 
 ### What to do next
 
@@ -60,7 +60,8 @@ wide first, and its base parts came late.
 3. Research the three gaps of group 1, one worktree for each: the streaming
    of the chat API driver (capability 4), the event bus and the fold
    (capability 6), and the part of one chat turn that
-   `turn-flow-comparison.md` did not read (capability 7).
+   `turn-flow-comparison.md` did not read (capability 7). Done on
+   2026-11-23 (batch 2 of [`progress.md`](progress.md)).
 4. After that, no more research until step 7 is done.
 
 ## Plans in `docs/superpowers/plans/`, files 1 to 12
