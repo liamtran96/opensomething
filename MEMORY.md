@@ -38,6 +38,22 @@ asked.
   it correct". The steps are 6 and 7 of "How to run a batch" in
   [`docs/research/progress.md`](docs/research/progress.md).
 
+### The changelog is correct and up to date (2026-11-23)
+
+[`docs/research/changelog.md`](docs/research/changelog.md) is a correct and
+complete record of the releases of the reference project. Use it as a
+trusted source. Do not research the release history again.
+
+- **Why:** The author said "please remember that the changelog is correct
+  and up to date". On 2026-11-23 it covered v0.1.0 to v0.1.177, and v0.1.177
+  (2026-11-22) was the latest release of the reference project.
+- **How:**
+  - Use sections 5, 6 and 7 for the problems that each feature must check,
+    as "How to run a batch" in `docs/research/progress.md` says.
+  - Keep it up to date: when the reference project publishes a release after
+    v0.1.177, add its row to section 8. Change sections 3 to 7 only when the
+    new release changes them.
+
 ### One plan file for each researched feature (2026-11-23)
 
 `docs/plan/README.md` has the steps, their pull requests and their choices.
