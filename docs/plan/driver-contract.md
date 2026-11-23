@@ -8,21 +8,14 @@ Then it becomes a decision, a pull request or a choice, and its text leaves
 this file.
 
 - **Steps:** 3, 4, 5, 7, 8, 9.
-- **State:** open. No proposal is decided.
-- **The main finding:** PR 3.2 and PR 3.5 plan capability flags for
-  streaming, interrupt and approvals. The reference has none of these flags.
-  Each of its drivers must stream, must take a stop and must answer a
-  request (`server/contracts.ts:255-323`). P52 changes this.
+- **State:** P52 is decided (D22, 2026-11-23). The others are open.
+- **The main finding:** the reference has no capability flag for
+  streaming, interrupt or approvals. Each of its drivers must stream, must
+  take a stop and must answer a request (`server/contracts.ts:255-323`).
+  P52 made this our rule (D22).
 
 ## Proposals
 
-- **P52 (step 3). Make `interrupt` mandatory, and remove the flags that have
-  no basis in the reference.** Keep a flag only when the reference reads it
-  and a step of ours reads it.
-  - Why: a Stop that the engine can refuse is a turn that does not end. In
-    the reference, each driver has `interruptTurn` and `respondToRequest`.
-  - Source: research 8.1. `contracts.ts:311-323`.
-  - Changes: PR 3.2 (`Capabilities`), PR 3.5 (the refusal test goes).
 - **P53 (step 3). `interrupt(thread, turn)` requires a `TurnId`.**
   - Why: a late Stop can stop the next turn. Claude, Codex, pi and ACP
     ignore the id. Only the chat driver checks it. This takes P35 down to

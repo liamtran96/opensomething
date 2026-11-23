@@ -38,6 +38,24 @@ asked.
   it correct". The steps are 6 and 7 of "How to run a batch" in
   [`docs/research/progress.md`](docs/research/progress.md).
 
+### Follow the reference, and raise each improvement (2026-11-23)
+
+The reference source is the default design. Do what the reference does. When
+we can do better than the reference, do not change it silently: raise it as a
+proposal (a P-number in `docs/plan/<feature>.md`), and the author decides.
+
+- **Why:** The author asked why decision D22 existed, then said: "please
+  follow the reference source and if we can do it better i mean improve it
+  please raise it".
+- **How:**
+  - A plan step, a decision or a code file follows the reference, with the
+    file and line of the reference.
+  - A difference from the reference is either a proposal that the author
+    has not decided yet, or a decision that says "Better than the
+    reference" with its reason.
+  - A difference that is neither is an error. Correct it, or raise it as a
+    proposal.
+
 ### The changelog is correct and up to date (2026-11-23)
 
 [`docs/research/changelog.md`](docs/research/changelog.md) is a correct and

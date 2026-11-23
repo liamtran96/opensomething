@@ -54,11 +54,9 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`write-only-secrets.md`](write-only-secrets.md) | [`write-only-secrets.md`](../research/features/write-only-secrets.md) | P19, P20, P21, P32, P40 | 6, 7, 9 |
 | [`queue-and-steer.md`](queue-and-steer.md) | [`queue-and-steer.md`](../research/features/queue-and-steer.md) | P34 | 7, 8 |
 | [`chat-driver-tool-calls.md`](chat-driver-tool-calls.md) | [`chat-driver-tool-calls.md`](../research/features/chat-driver-tool-calls.md) | P7, P33, P42 to P47, P49, P50 | 2, 10, 12 |
-| [`driver-contract.md`](driver-contract.md) | [`driver-contract.md`](../research/features/driver-contract.md) | P52 to P64, and more cases for P6 | 3, 4, 5, 7, 8, 9 |
+| [`driver-contract.md`](driver-contract.md) | [`driver-contract.md`](../research/features/driver-contract.md) | P53 to P64, and more cases for P6. P52 is decided (D22) | 3, 4, 5, 7, 8, 9 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
-- Decide P52 first. PR 3.2 and PR 3.5 plan flags for streaming,
-  interrupt and approvals, and the reference has none of them.
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
   2.5 is not typed yet.
 - Two proposals change the structure: [P33](chat-driver-tool-calls.md)
@@ -92,7 +90,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 |---|---|---|---|---|
 | 1 | The chat skeleton with mock data: bot list, chat pane, composer, settings panel | `bot-desktop` | React components and state | The window shows a mock conversation, and you can type in it |
 | 2 | Identifiers, message types and the event union: `turn.started`, `content.delta`, `item.completed`, `runtime.error`, `turn.completed` | `bot-protocol` | Structs, enums, `serde` | A test shows the JSON of each event |
-| 3 | The `Driver` trait with capability flags and typed refusals, and a fake driver | `bot-engine` | Traits, `async`, `thiserror`, unit tests | A test sends a turn to the fake driver and reads its events |
+| 3 | The `Driver` trait with typed refusals, and a fake driver | `bot-engine` | Traits, `async`, `thiserror`, unit tests | A test sends a turn to the fake driver and reads its events |
 | 4 | The registry: each config entry becomes a driver. An unknown driver or a bad entry becomes "unavailable" | `bot-engine` | `HashMap`, trait objects | A test loads one good entry and one bad entry, and the good one works |
 | 5 | The chat API driver with streaming | `bot-engine` | `reqwest`, `tokio`, streams | A test with a fake HTTP server gets the reply in pieces |
 | 6 | Settings and the data folder, with atomic writes and redaction of secrets | `bot-core` | Files, `Result`, `regex` | Settings stay after a restart. A test shows that a key does not reach a log |
@@ -176,14 +174,17 @@ The fake driver of step 3 and each real driver must obey them.
 - **Crate:** `bot-engine` (all paths below are in `crates/bot-engine/src`)
 - **Done when:** a test sends a turn to the fake driver and reads its events.
 - **Rule:** behaviour is gated by capability flags, never by a driver's name.
+- **Decided:** each driver streams, takes a stop and answers a request. These
+  are not flags (decision D22). Step 3 has no capability flag. The
+  `Capabilities` struct comes with the first step that reads a flag.
 
 | | Commit | Files | What to build | Check |
 |---|---|---|---|---|
 | [ ] 3.1 | `build(engine): add thiserror, tokio and the stream crate` | root `Cargo.toml`, `crates/bot-engine/Cargo.toml` | The dependencies of this step, and `bot-protocol` | `cargo deny check` passes |
-| [ ] 3.2 | `feat(engine): add capabilities and refusals` | `capabilities.rs`, `error.rs`, `lib.rs` | `Capabilities` (streaming, interrupt, approvals, tools) and the `DriverError` enum. A refusal names the capability that is missing | A test shows the message of each error |
-| [ ] 3.3 | `feat(engine): add the Driver trait` | `driver.rs`, `lib.rs` | `TurnRequest` and the trait: `capabilities`, `send_turn` (returns a stream of events) and `interrupt`. Each has a doc comment | The crate builds, and the trait works as a trait object |
-| [ ] 3.4 | `feat(engine): add the fake driver` | `fake.rs`, `lib.rs` | A driver that gives a fixed list of events, with capability flags that the test sets | A test reads `turn.started`, the deltas, `item.completed` and `turn.completed` in order |
-| [ ] 3.5 | `test(engine): refuse an interrupt without the capability` | `fake.rs` | A test only | `interrupt` returns the typed refusal, and does not panic |
+| [ ] 3.2 | `feat(engine): add the driver refusals` | `error.rs`, `lib.rs` | The `DriverError` enum: the typed refusals of a driver | A test shows the message of each error |
+| [ ] 3.3 | `feat(engine): add the Driver trait` | `driver.rs`, `lib.rs` | `TurnRequest` and the trait: `send_turn` (returns a stream of events) and `interrupt`, which each driver must support. Each has a doc comment | The crate builds, and the trait works as a trait object |
+| [ ] 3.4 | `feat(engine): add the fake driver` | `fake.rs`, `lib.rs` | A driver that gives a fixed list of events that the test sets | A test reads `turn.started`, the deltas, `item.completed` and `turn.completed` in order |
+| [ ] 3.5 | `test(engine): stop a turn of the fake driver` | `fake.rs` | A test only | After `interrupt`, the last event is `turn.completed` with `interrupted` (D20) |
 
 **Choices**
 
@@ -193,7 +194,7 @@ The fake driver of step 3 and each real driver must obey them.
 - Where the fake driver lives until `bot-testkit` exists (decision D8): a
   public module behind a Cargo feature.
 
-**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md), [P52 to P60](driver-contract.md).
+**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md), [P53 to P60](driver-contract.md).
 
 ### Step 4. The registry
 
@@ -237,7 +238,10 @@ The fake driver of step 3 and each real driver must obey them.
   our own. Check the license before you add a crate.
 - The timeouts: for the connection, and for the time between two chunks
   (P14).
-- `interrupt` stops the stream. Set the capability flag to agree.
+- `interrupt` follows the chat driver of the reference: it does nothing when
+  no turn runs or the turn id is another turn, else it aborts the request and
+  waits for the turn to end (`server/drivers/openai-chat.ts:961-966`). Each
+  driver must support it (D22).
 
 **Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver).
 
