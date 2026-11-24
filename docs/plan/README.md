@@ -57,6 +57,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`driver-contract.md`](driver-contract.md) | [`driver-contract.md`](../research/features/driver-contract.md) | P53 to P64, and more cases for P6. P52 is decided (D22) | 3, 4, 5, 7, 8, 9 |
 | [`engine-process-lifecycle.md`](engine-process-lifecycle.md) | [`engine-process-lifecycle.md`](../research/features/engine-process-lifecycle.md) | P65 to P73 | 3, 9, 10 |
 | [`store-and-data-format.md`](store-and-data-format.md) | [`store-and-data-format.md`](../research/features/store-and-data-format.md) | P74 to P85 | 6, 8, 13 |
+| [`composition-root.md`](composition-root.md) | [`composition-root.md`](../research/features/composition-root.md) | P86 to P94, and new facts for P26 | 4, 6, 7, 15, later |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -219,7 +220,7 @@ The fake driver of step 3 and each real driver must obey them.
 - The reason of an unavailable entry is shown to the person, so it must not
   contain a secret.
 
-**Proposals:** [P10](newer-config-unavailable.md), [P11](newer-config-unavailable.md), [P12](newer-config-unavailable.md), [P62](driver-contract.md).
+**Proposals:** [P10](newer-config-unavailable.md), [P11](newer-config-unavailable.md), [P12](newer-config-unavailable.md), [P62](driver-contract.md), [P88](composition-root.md).
 
 ### Step 5. The chat API driver with streaming
 
@@ -274,7 +275,7 @@ The fake driver of step 3 and each real driver must obey them.
 - The default data folder comes from the shell (`bot-desktop` or `bot-cli`),
   and the environment variable that overrides it.
 
-**Proposals:** [P18](file-modes-atomic-writes-redaction.md), [P19](write-only-secrets.md), [P20](write-only-secrets.md), [P21](write-only-secrets.md), [P22](newer-config-unavailable.md), [P23](newer-config-unavailable.md), [P24](file-modes-atomic-writes-redaction.md), [P74](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md).
+**Proposals:** [P18](file-modes-atomic-writes-redaction.md), [P19](write-only-secrets.md), [P20](write-only-secrets.md), [P21](write-only-secrets.md), [P22](newer-config-unavailable.md), [P23](newer-config-unavailable.md), [P24](file-modes-atomic-writes-redaction.md), [P74](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P86](composition-root.md), [P91](composition-root.md).
 
 ### Step 7. The event bus and the streamed reply in the window
 
@@ -301,7 +302,7 @@ The fake driver of step 3 and each real driver must obey them.
   (P28).
 - The name and the payload of the Tauri event (P29).
 
-**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md), [P64](driver-contract.md) (or step 8).
+**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md), [P64](driver-contract.md) (or step 8), [P87](composition-root.md), [P89](composition-root.md), [P90](composition-root.md), [P91](composition-root.md), [P93](composition-root.md).
 
 - **P26. The composition root. This blocks PR 7.3.**
   - Option a: change the rule of `AGENTS.md`: `bot-cli` and `bot-desktop`
@@ -374,18 +375,20 @@ and the proposals that answer it.
 |---|---|
 | A turn or a wait that does not end | P6, P14, P30, P36, P65, P73 |
 | The same work done two times, or lost | P1, P2, P34, P72, P80, P83 |
-| Process control on Windows | P41, P68 |
+| Process control on Windows | P41, P68, P86 |
 | Sign-in to an engine, engine CLIs that change | P10, P11. No other |
 | A secret in the wrong place | P18 to P21, P24, P25, P40 |
 | A feature added, then removed | P3, P33 |
 | "Busy" and races between bots | P3, P27, P34 |
 | The size of the tool list | P48 |
-| State lost at a restart | P34, P37, P44, P69, P79, P82, P84 |
+| State lost at a restart | P34, P37, P44, P69, P79, P82, P84, P86, P87, P90 |
 | A file written over after a failed read | P22, P76, P77 |
 | The approval model changed | P42 to P47 |
 | Memory and the number of processes | P70 |
 | Usage and cost numbers | None. D20 has no usage event yet |
 | Tests that fail by chance | P17. Also P16, but only with option a |
+| The updater loops, sticks or breaks the window | P94 |
+| One slow or stuck part blocks the others | P88, P92 |
 
 ## What to expect
 
