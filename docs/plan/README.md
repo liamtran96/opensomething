@@ -60,6 +60,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`composition-root.md`](composition-root.md) | [`composition-root.md`](../research/features/composition-root.md) | P86 to P94, and new facts for P26 | 4, 6, 7, 15, later |
 | [`security-model.md`](security-model.md) | [`security-model.md`](../research/features/security-model.md) | P95 to P101 | 6, before 9, 10, 12 |
 | [`acp-core.md`](acp-core.md) | [`acp-core.md`](../research/features/acp-core.md) | P102 to P109, and new facts for P6, P53, P54, P61, P63 | 8, 9, 10 |
+| [`approval-levels.md`](approval-levels.md) | [`approval-levels.md`](../research/features/approval-levels.md) | P110 to P121, and new facts for P42, P44 to P46, P49 | 3, 10, 12, 14 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -202,7 +203,7 @@ The fake driver of step 3 and each real driver must obey them.
 - Where the fake driver lives until `bot-testkit` exists (decision D8): a
   public module behind a Cargo feature.
 
-**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md), [P53 to P60](driver-contract.md), [P65](engine-process-lifecycle.md), [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md).
+**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md), [P53 to P60](driver-contract.md), [P65](engine-process-lifecycle.md), [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P113](approval-levels.md).
 
 ### Step 4. The registry
 
@@ -328,7 +329,7 @@ The fake driver of step 3 and each real driver must obey them.
 
 - **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md).
 - **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md).
-- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md).
+- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md).
 
 Write `docs/threat-model.md` before step 9: this is the first step where the
 program starts another program. What it must cover: [P95](security-model.md).
@@ -385,7 +386,7 @@ and the proposals that answer it.
 | The size of the tool list | P48 |
 | State lost at a restart | P34, P37, P44, P69, P79, P82, P84, P86, P87, P90 |
 | A file written over after a failed read | P22, P76, P77, P103 |
-| The approval model changed | P42 to P47, P97 |
+| The approval model changed | P42 to P47, P97, P111, P112, P114, P117, P120 |
 | Memory and the number of processes | P70 |
 | Usage and cost numbers | None. D20 has no usage event yet |
 | Tests that fail by chance | P17. Also P16, but only with option a |
