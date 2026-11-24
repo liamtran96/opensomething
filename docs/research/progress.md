@@ -158,8 +158,10 @@ It is the local clone at <ABSOLUTE PATH>, at commit <COMMIT>.
 - Each subagent report ends with "Files read completely" (path and line
   count) and "Not verified".
 - Check the key findings of each subagent against the code.
-- Load the asd-ste100 skill before you write. Apply it to
-  the prose, not to code, paths or quotes.
+- Load the skill `anthropic-skills:asd-ste100` with the Skill tool before
+  you write. If the Skill tool does not list it, read
+  `~/.claude/skills/synced/*/asd-ste100/SKILL.md`. Apply it to the prose,
+  not to code, paths or quotes.
 
 ## Output
 Write docs/research/features/<NAME>.md with these sections:
