@@ -59,6 +59,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`store-and-data-format.md`](store-and-data-format.md) | [`store-and-data-format.md`](../research/features/store-and-data-format.md) | P74 to P85 | 6, 8, 13 |
 | [`composition-root.md`](composition-root.md) | [`composition-root.md`](../research/features/composition-root.md) | P86 to P94, and new facts for P26 | 4, 6, 7, 15, later |
 | [`security-model.md`](security-model.md) | [`security-model.md`](../research/features/security-model.md) | P95 to P101 | 6, before 9, 10, 12 |
+| [`acp-core.md`](acp-core.md) | [`acp-core.md`](../research/features/acp-core.md) | P102 to P109, and new facts for P6, P53, P54, P61, P63 | 8, 9, 10 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -325,9 +326,9 @@ The fake driver of step 3 and each real driver must obey them.
 - [ ] 9
 - [ ] 10
 
-- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md).
-- **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md).
-- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md).
+- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md).
+- **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md).
+- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md).
 
 Write `docs/threat-model.md` before step 9: this is the first step where the
 program starts another program. What it must cover: [P95](security-model.md).
@@ -378,16 +379,17 @@ and the proposals that answer it.
 | The same work done two times, or lost | P1, P2, P34, P72, P80, P83 |
 | Process control on Windows | P41, P68, P86 |
 | Sign-in to an engine, engine CLIs that change | P10, P11. No other |
-| A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100 |
+| A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100, P103, P108 |
 | A feature added, then removed | P3, P33 |
-| "Busy" and races between bots | P3, P27, P34 |
+| "Busy" and races between bots | P3, P27, P34, P104, P109 |
 | The size of the tool list | P48 |
 | State lost at a restart | P34, P37, P44, P69, P79, P82, P84, P86, P87, P90 |
-| A file written over after a failed read | P22, P76, P77 |
+| A file written over after a failed read | P22, P76, P77, P103 |
 | The approval model changed | P42 to P47, P97 |
 | Memory and the number of processes | P70 |
 | Usage and cost numbers | None. D20 has no usage event yet |
 | Tests that fail by chance | P17. Also P16, but only with option a |
+| The person's own engine config reaches the bots | P61, P103 |
 | The updater loops, sticks or breaks the window | P94 |
 | One slow or stuck part blocks the others | P88, P92 |
 

@@ -21,14 +21,14 @@ this file.
     ignore the id. Only the chat driver checks it. This takes P35 down to
     the trait.
   - Source: research 8.2. `claude.ts:1963`, `codex.ts:1551-1553`,
-    `pi.ts:563-568`, `acp/core.ts:1572`, `openai-chat.ts:961-966`.
+    `pi.ts:563-568`, `acp/core.ts:1572` (`:1534` at `ed8cb7278`), `openai-chat.ts:961-966`.
   - Changes: PR 3.3.
 - **P54 (step 3). A typed busy refusal, and a busy slot that is taken before
   the first `await`.** An entry API of a map, or a guard that frees the slot
   on `Drop`.
   - Why: the compiler refuses the race. Five drivers throw the same untyped
     text. In ACP and Claude, awaits come between the check and the write.
-  - Source: research 8.3. `acp/core.ts:922`, `claude.ts:951`,
+  - Source: research 8.3. `acp/core.ts:922` (`:868` at `ed8cb7278`), `claude.ts:951`,
     `codex.ts:408`, `pi.ts:413`, `openai-chat.ts:518`.
   - Changes: PR 3.2 (`DriverError::Busy`), PR 3.4 (the fake keeps the slot).
 - **P55 (step 3). One meaning of `send_turn`.** `Ok` when the engine took
@@ -113,5 +113,5 @@ when that step is split into pull requests.
 
 | # | Step | Note | Source |
 |---|---|---|---|
-| P61 | 9 | An engine process gets only the environment keys on an allow-list. Today an unknown secret reaches the engine | research 8.11, `acp/core.ts:333-346` |
+| P61 | 9 | An engine process gets only the environment keys on an allow-list. Today an unknown secret reaches the engine | research 8.11, `acp/core.ts:333-346` (`:339-350` at `ed8cb7278`) |
 | P63 | 9 | The fake engine reads one typed script file, not about 100 environment variables, and does not route by the words of a prompt. With P41 | research 8.13, `fake-claude-cli.ts:2-102`, `:506-540` |
