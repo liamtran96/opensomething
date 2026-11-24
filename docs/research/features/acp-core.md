@@ -260,7 +260,7 @@ two corrections below.
 
 ### 3.1 The lines that earlier files cite, at `ed8cb7278`
 
-`core.ts` changed by +194/-126 lines since `d6660e2d7` (commit `343c745d8`,
+`core.ts` changed by +78/-116 lines since `d6660e2d7` (commit `343c745d8`,
 for the Antigravity engine). `host.ts` changed too. This table maps the
 lines that `driver-contract.md`, `queue-and-steer.md`,
 `plan/driver-contract.md` and `changelog.md` section 7 cite.
