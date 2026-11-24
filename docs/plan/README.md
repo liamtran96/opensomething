@@ -38,7 +38,7 @@ this file. The reasons for this order are in decision D14 of [`decisions.md`](..
 
 The research of batches 1 and 2 (`../research/features/`) and the release
 history (`../research/changelog.md`) gave 51 proposals, P1 to P51. Batch 3 (the driver contract) gave P52 to
-P64. Batch 4 (six features, reference `ed8cb7278`) gives P65 and up. Each
+P64. Batch 4 (six features, reference `ed8cb7278`) gave P65 to P121. Batch 5 (six features, reference `ad27f0716`) gives P122 to P163. Each
 proposal is in the plan file of its feature. Each step below links to its
 proposals. The author decides each one. Reply with the numbers, for example
 "accept P1, P2. P5 option a. Reject P9". Then the proposal becomes a
@@ -61,6 +61,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`security-model.md`](security-model.md) | [`security-model.md`](../research/features/security-model.md) | P95 to P101 | 6, before 9, 10, 12 |
 | [`acp-core.md`](acp-core.md) | [`acp-core.md`](../research/features/acp-core.md) | P102 to P109, and new facts for P6, P53, P54, P61, P63 | 8, 9, 10 |
 | [`approval-levels.md`](approval-levels.md) | [`approval-levels.md`](../research/features/approval-levels.md) | P110 to P121, and new facts for P42, P44 to P46, P49 | 3, 10, 12, 14 |
+| [`chat-ui.md`](chat-ui.md) | [`chat-ui.md`](../research/features/chat-ui.md) | P122 to P128, and new facts for P25, P27, P28, P34, P35, P36 | 5, 7, 8, gap |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -252,7 +253,7 @@ The fake driver of step 3 and each real driver must obey them.
   waits for the turn to end (`server/drivers/openai-chat.ts:961-966`). Each
   driver must support it (D22).
 
-**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver).
+**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver), [P124](chat-ui.md).
 
 ### Step 6. Settings and the data folder
 
@@ -305,7 +306,7 @@ The fake driver of step 3 and each real driver must obey them.
   (P28).
 - The name and the payload of the Tauri event (P29).
 
-**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md), [P64](driver-contract.md) (or step 8), [P87](composition-root.md), [P89](composition-root.md), [P90](composition-root.md), [P91](composition-root.md), [P93](composition-root.md).
+**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md), [P64](driver-contract.md) (or step 8), [P87](composition-root.md), [P89](composition-root.md), [P90](composition-root.md), [P91](composition-root.md), [P93](composition-root.md), [P122](chat-ui.md), [P123](chat-ui.md), [P125](chat-ui.md), [P126](chat-ui.md), [P127](chat-ui.md).
 
 - **P26. The composition root. This blocks PR 7.3.**
   - Option a: change the rule of `AGENTS.md`: `bot-cli` and `bot-desktop`
@@ -327,7 +328,7 @@ The fake driver of step 3 and each real driver must obey them.
 - [ ] 9
 - [ ] 10
 
-- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md).
+- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md).
 - **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md).
 - **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md).
 
@@ -357,7 +358,7 @@ desktop application (decision D10).
 
 ## Gaps that have no step
 
-Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md).
+Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md).
 
 ## Notes for steps 8 to 14
 
@@ -381,14 +382,14 @@ and the proposals that answer it.
 | Process control on Windows | P41, P68, P86 |
 | Sign-in to an engine, engine CLIs that change | P10, P11. No other |
 | A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100, P103, P108 |
-| A feature added, then removed | P3, P33 |
+| A feature added, then removed | P3, P33, P126 |
 | "Busy" and races between bots | P3, P27, P34, P104, P109 |
 | The size of the tool list | P48 |
 | State lost at a restart | P34, P37, P44, P69, P79, P82, P84, P86, P87, P90 |
 | A file written over after a failed read | P22, P76, P77, P103 |
 | The approval model changed | P42 to P47, P97, P111, P112, P114, P117, P120 |
 | Memory and the number of processes | P70 |
-| Usage and cost numbers | None. D20 has no usage event yet |
+| Usage and cost numbers | P124 |
 | Tests that fail by chance | P17. Also P16, but only with option a |
 | The person's own engine config reaches the bots | P61, P103 |
 | The updater loops, sticks or breaks the window | P94 |
