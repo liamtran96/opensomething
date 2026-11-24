@@ -63,6 +63,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`approval-levels.md`](approval-levels.md) | [`approval-levels.md`](../research/features/approval-levels.md) | P110 to P121, and new facts for P42, P44 to P46, P49 | 3, 10, 12, 14 |
 | [`chat-ui.md`](chat-ui.md) | [`chat-ui.md`](../research/features/chat-ui.md) | P122 to P128, and new facts for P25, P27, P28, P34, P35, P36 | 5, 7, 8, gap |
 | [`turn-limits.md`](turn-limits.md) | [`turn-limits.md`](../research/features/turn-limits.md) | P129 to P134, and new facts for P33 | 2, 9, 13 |
+| [`question-cards.md`](question-cards.md) | [`question-cards.md`](../research/features/question-cards.md) | P135 to P138, and new facts for P42, P44, P45, P116, P118, P120, P121 | 9, 10, 13, 14 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -330,8 +331,8 @@ The fake driver of step 3 and each real driver must obey them.
 - [ ] 10
 
 - **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md).
-- **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md).
-- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md).
+- **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md).
+- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md).
 
 Write `docs/threat-model.md` before step 9: this is the first step where the
 program starts another program. What it must cover: [P95](security-model.md).
@@ -363,7 +364,7 @@ Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](
 
 ## Notes for steps 8 to 14
 
-Each note is in the file of its feature: [P37](event-bus-fold.md), [P38](chat-turns.md), [P39](event-bus-fold.md), [P40](write-only-secrets.md), [P42](chat-driver-tool-calls.md), [P43](chat-driver-tool-calls.md), [P44](chat-driver-tool-calls.md), [P45](chat-driver-tool-calls.md), [P46](chat-driver-tool-calls.md), [P47](chat-driver-tool-calls.md), [P49](chat-driver-tool-calls.md), [P50](chat-driver-tool-calls.md), [P51](chat-turns.md), [P61](driver-contract.md), [P63](driver-contract.md), [P131](turn-limits.md), [P132](turn-limits.md), [P133](turn-limits.md).
+Each note is in the file of its feature: [P37](event-bus-fold.md), [P38](chat-turns.md), [P39](event-bus-fold.md), [P40](write-only-secrets.md), [P42](chat-driver-tool-calls.md), [P43](chat-driver-tool-calls.md), [P44](chat-driver-tool-calls.md), [P45](chat-driver-tool-calls.md), [P46](chat-driver-tool-calls.md), [P47](chat-driver-tool-calls.md), [P49](chat-driver-tool-calls.md), [P50](chat-driver-tool-calls.md), [P51](chat-turns.md), [P61](driver-contract.md), [P63](driver-contract.md), [P131](turn-limits.md), [P132](turn-limits.md), [P133](turn-limits.md), [P138](question-cards.md).
 Two notes come from the release history, not from a feature:
 
 | # | Step | Note | Source |
@@ -378,8 +379,8 @@ and the proposals that answer it.
 
 | Problem | Proposals |
 |---|---|
-| A turn or a wait that does not end | P6, P14, P30, P36, P65, P73, P133 |
-| The same work done two times, or lost | P1, P2, P34, P72, P80, P83 |
+| A turn or a wait that does not end | P6, P14, P30, P36, P65, P73, P133, P136, P138 |
+| The same work done two times, or lost | P1, P2, P34, P72, P80, P83, P137 |
 | Process control on Windows | P41, P68, P86 |
 | Sign-in to an engine, engine CLIs that change | P10, P11. No other |
 | A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100, P103, P108, P132 |
@@ -388,7 +389,7 @@ and the proposals that answer it.
 | The size of the tool list | P48, P130 |
 | State lost at a restart | P34, P37, P44, P69, P79, P82, P84, P86, P87, P90 |
 | A file written over after a failed read | P22, P76, P77, P103 |
-| The approval model changed | P42 to P47, P97, P111, P112, P114, P117, P120 |
+| The approval model changed | P42 to P47, P97, P111, P112, P114, P117, P120, P135, P136 |
 | Memory and the number of processes | P70 |
 | Usage and cost numbers | P124 |
 | Tests that fail by chance | P17. Also P16, but only with option a |
