@@ -498,7 +498,7 @@ level" (`auto-approve.ts:3-4`), and the unit test checks each level
      them.
    - The card is appended. `askMessageByRequest` and `pendingCommandRules`
      (in memory) get the key `threadId:requestId` (`:6558`,
-     `index.ts:4725-4731`).
+     `index.ts:4726-4731`).
    - A `card-shown` decision row with its source and `unattended`
      (`:6566-6577`).
    - The activity of the task becomes `waiting-on-you`, and a notification
@@ -711,7 +711,7 @@ More facts:
 
 The aim: a bot must not be able to raise its own level. HTTP on the loopback
 address is not safe for this, because "a bot's shell could curl it"
-(`index.ts:3053-3054`).
+(`index.ts:3055-3056`).
 
 1. Custom, a move out of Custom, and Full through the desktop go only
    through the private channel of the Electron utility process. The handler
@@ -1031,7 +1031,7 @@ The state of a card is in **several optional fields**, not one value.
 |---|---|---|
 | Level, grants of the bot and the thread | `bots.json` and the tasks | yes |
 | The card | the messages of the thread | yes |
-| `askMessageByRequest`, `pendingCommandRules` | memory (`index.ts:4725-4731`) | no |
+| `askMessageByRequest`, `pendingCommandRules` | memory (`index.ts:4726-4731`) | no |
 | The waiting ask in the broker or the driver | memory | no |
 | Room levels | memory (`room-turn-level.ts:6-21`) | no |
 | Session allows | memory of the engine or the driver | no |
@@ -1288,7 +1288,7 @@ Our crates today: `bot-protocol` has `ids.rs`, `event.rs` (only
 | `acp/core.ts:564-693` | The ACP request, options by `kind` | `bot-engine`, `acp` module (`docs/comparison.md` already says "by its `kind`, never by its position") |
 | `permission-proxy.ts`, `drivers/claude.ts:405-583` | The MCP proxy and its socket broker | `bot-engine`, later, for a Claude adapter (`tokio::net`, `docs/comparison.md` 4) |
 | `auto-approve.ts:94-123`, `safety-floor-gate.ts:98-143` | The decision | `bot-core`, `approval/decide.rs`: one pure function |
-| `index.ts:6438-6614`, `:4741-4818` | The handler, the card, the answer | `bot-core`, `approval/` with the runtime and the store |
+| `index.ts:6438-6587`, `:4741-4818` | The handler, the card, the answer | `bot-core`, `approval/` with the runtime and the store |
 | `decision-log.ts` | The log | `bot-core`, a table of the SQLite store of step 8 |
 | `command-allowlist.ts` | Saved commands | `bot-core`, a table of the store |
 | `safety-floor.ts` | The never-list | `bot-core` or `bot-engine`, step 12 (P49) |
@@ -1340,7 +1340,7 @@ Each point names a problem of the reference, with the line, and a reason.
    our rule in `AGENTS.md`: write the row and its event in one transaction,
    then act.
 6. **Waiting requests in the store, and a sweep at start.** The keys of a
-   request are in memory (`index.ts:4725-4731`), and no sweep at start
+   request are in memory (`index.ts:4726-4731`), and no sweep at start
    closes an engine permission card (`index.ts:9465-9470`). This is P44 of
    [`../../plan/chat-driver-tool-calls.md`](../../plan/chat-driver-tool-calls.md).
    The new facts here: the same is true for the Claude broker, the ACP
@@ -1360,7 +1360,7 @@ Each point names a problem of the reference, with the line, and a reason.
    with `stopped` as a seventh field (`wire.ts:666`).
 10. **The raise to Full only through the desktop channel.** The reference
     protects Custom and local Auto from "a bot curling the loopback API"
-    (`bot-patch.ts:567-568`, `index.ts:3053-3054`). But its comment says
+    (`bot-patch.ts:567-568`, `index.ts:3055-3056`). But its comment says
     "Full access applies from any client that can reach this API"
     (`bot-patch.ts:538-539`). Whether a bot's shell has the credentials of
     that API is not verified (section 9). Its five-step grant exists
