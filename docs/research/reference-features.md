@@ -3,7 +3,9 @@
 A list of each feature that the documentation of the reference project
 describes, with the part of [`README.md`](README.md) that analyzes it. Eight
 subagents read all Markdown files of the reference on 2026-11-23, every line.
-Nobody read the source code for this list.
+Nobody read the source code for this list. A check on the same day, at
+commit `d6660e2d7`, corrected rows and added rows. Its findings are in
+[`reference-features-check.md`](reference-features-check.md).
 
 "State" is what the document says: **built**, **planned**, **removed**, or
 **not stated**. A plan can describe a feature that was never built.
@@ -17,11 +19,11 @@ wide first, and its base parts came late.
 
 | Group | Meaning | Plan steps | The test | Rows | Research done or partial |
 |---|---|---|---|---|---|
-| **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 11 | 6 |
+| **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 7 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 2 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 93 | 0 |
-| later | We want it, after step 16 | none | none | 106 | 0 |
-| no | Not in our plan. We read it only to understand it | none | none | 131 | 0 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 0 |
+| later | We want it, after step 16 | none | none | 108 | 0 |
+| no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
 - **Ours** is the crate that gets the port: `bot-protocol` (types, no I/O),
   `bot-engine` (the `Driver` trait and the drivers), `bot-core` (the store,
@@ -74,13 +76,13 @@ All 12 files were read completely (5,477 lines).
 | Rule: secrets are write-only; the UI sees only "configured" | `2026-08-31-00-control-plane-roadmap.md` | built | 11 | **1** | `bot-core` | done: [`write-only-secrets.md`](features/write-only-secrets.md) |
 | Rule: files with mode 0600, atomic writes, redaction of text that an agent wrote | `2026-08-31-00-control-plane-roadmap.md` | built | 4, 11 | **1** | `bot-core` | done: [`file-modes-atomic-writes-redaction.md`](features/file-modes-atomic-writes-redaction.md) |
 | Rule: a config from a newer version loads in an older version as "unavailable" | `2026-08-31-00-control-plane-roadmap.md` | built | 2 | **1** | `bot-engine` | done: [`newer-config-unavailable.md`](features/newer-config-unavailable.md) |
-| A fake ACP CLI for protocol tests | `2026-08-15-opencode-go-integration.md` | not stated | 40 | 2 | `bot-engine` | open |
+| A fake ACP CLI for protocol tests | `2026-08-15-opencode-go-integration.md` | built | 40 | 2 | `bot-engine` | open |
 | The engine switch in the middle of a thread, with a replay of the thread | `2026-08-31-00-control-plane-roadmap.md` | built | 17 | 3 | `bot-core` | open |
 | The MCP registry: the person adds an MCP server (stdio or HTTP), tests it and sees its tools | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
 | Grants of one MCP tool to one bot | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
 | The Connections Center UI: "Apps" and "MCP servers" | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
 | Connector grants for each bot, by exact tool name | `2026-08-31-04-connector-scopes.md` | built | 20 | 3 | `bot-engine` | open |
-| Connector grants by verb class (read, draft, send, modify, delete) | `2026-08-31-04-connector-scopes.md` | removed | 20 | 3 | `bot-engine` | open |
+| Connector grants by verb class (read, draft, send, modify, delete) | `2026-08-31-04-connector-scopes.md` | superseded, not built | 20 | 3 | `bot-engine` | open |
 | Memory proposals: a bot proposes a memory change, and a person approves, edits or rejects it | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | open |
 | Typed memory entries: facts, preferences, decisions, procedures | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | open |
 | The memory panel: read, edit and delete memory files, with a capacity gauge | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | open |
@@ -100,9 +102,9 @@ All 12 files were read completely (5,477 lines).
 | Token usage split into new input, cache write and cache read | `2026-08-31-01-usage-accounting-and-budgets.md` | not stated | 21 | later | `bot-core` | open |
 | Spend caps for each bot and for the workspace, checked before a turn starts | `2026-08-31-01-usage-accounting-and-budgets.md` | not stated | 21 | later | `bot-core` | open |
 | The bot profile: one document for all parts of a bot, with a version log and rollback | `2026-08-31-02-bot-profile.md` | not stated | 45 | later | `bot-desktop` | open |
-| Ten mascot body shapes for a bot, made by a generator | `2026-08-31-04-mascot-shape-catalog.md` | not stated | 46 | later | `bot-desktop` | open |
-| The "Living" avatar: an uploaded picture is the body, with the live face on it | `2026-08-31-04-mascot-shape-catalog.md` | not stated | 46 | later | `bot-desktop` | open |
-| The 25 face expressions, the gaze and the mouths of the mascot | `2026-08-31-04-mascot-shape-catalog.md` | not stated | 46 | later | `bot-desktop` | open |
+| Ten mascot body shapes for a bot, made by a generator | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | open |
+| The "Living" avatar: an uploaded picture is the body, with the live face on it | `2026-08-31-04-mascot-shape-catalog.md`, and its specification | removed | 46 | later | `bot-desktop` | open |
+| The 25 face expressions, the gaze and the mouths of the mascot | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | open |
 | The host adapter: what a computer without a desktop session cannot do | `2026-08-31-05-headless-harness.md` | not stated | 29, 33 | later | `bot-desktop` | open |
 | Copy of a skill to another bot | `2026-08-31-06-memory-review-loop.md` | not stated | 19 | later | `bot-core` | open |
 | Search of past sessions | `2026-08-31-06-memory-review-loop.md` | built | 47 | later | `bot-core` | open |
@@ -113,7 +115,7 @@ All 12 files were read completely (5,477 lines).
 | The private team backup: your bots, with transcripts and memory, between your computers | `2026-08-31-00-control-plane-roadmap.md` | built | 44 | no | not planned | open |
 | A test floor: the minimum number of tests | `2026-08-31-00-control-plane-roadmap.md` | built | 41 | no | not planned | open |
 | Export of one bot, and a clone of one bot | `2026-08-31-02-bot-profile.md` | not stated | 44, 45 | no | not planned | open |
-| `serve`: the server without the desktop shell, with a supervisor for its processes | `2026-08-31-05-headless-harness.md` | not stated | 33 | no | not planned | open |
+| `serve`: the server without the desktop shell, with a supervisor for its processes | `2026-08-31-05-headless-harness.md` | built (`serve`); the supervisor not stated | 33 | no | not planned | open |
 | The machine roster: the list of installations, online or not | `2026-08-31-05-headless-harness.md` | not stated | 34, 36 | no | not planned | open |
 | Rule: the server listens on the loopback address and refuses another Host header | `2026-08-31-05-headless-harness.md` | built | 6, 11 | no | not planned | open |
 | Service files for systemd and launchd | `2026-08-31-05-headless-harness.md` | not stated | 36 | no | not planned | open |
@@ -137,8 +139,8 @@ All 12 files were read completely (7,947 lines).
 | The switch of environment: stop, release the lease, start, check, and roll back on failure | `2026-10-07-local-environments.md` | not stated | 29 | later | `bot-desktop` | open |
 | Chat widgets: a bot shows an interactive card, and a press becomes the next message | `2026-10-13-chat-widgets.md` | not stated | 48 | later | `bot-desktop` | open |
 | The DeepSeek engine over ACP | `2026-10-22-deepseek-harness-engine.md` | not stated | 7, 9 | later | `bot-engine` | open |
-| The floating box that shows the live words and the reply | `2026-10-27-talk-shortcut.md` | not stated | 29, 35 | later | `bot-desktop` | open |
-| Notifications and the unread badge | `2026-10-27-waits.md` | not stated | 50 | later | `bot-desktop` | open |
+| The floating box that shows the live words and the reply | `2026-10-27-talk-shortcut.md` | not stated | 29, 35 | no | not planned | open |
+| Notifications and the unread badge | `2026-10-27-waits.md` | not stated | 50 | 3 | `bot-desktop` | open |
 | The gesture core for the phone applications: touch becomes remote mouse and keyboard input | `2026-09-18-gesture-core.md` | not stated | 34 | no | not planned | open |
 | Direct mode and trackpad mode, long press as right click, scroll with momentum, local zoom | `2026-09-18-gesture-core.md` | not stated | 34 | no | not planned | open |
 | One test fixture that the iOS and the Android code must both pass | `2026-09-18-gesture-core.md` | not stated | 34, 40 | no | not planned | open |
@@ -153,7 +155,9 @@ All 12 files were read completely (7,947 lines).
 
 ## Verification records in `docs/verification/`, files 70 to 137
 
-All 68 files were read completely. A verification record describes a feature
+All 68 files were read completely. This section cites `live-calls.md` (file
+69), and the section of files 1 to 69 cites `evidence/bot-attach-file/README.md`
+(file 137). A verification record describes a feature
 that the project checked by hand, so each feature below is built unless a row
 says a different state.
 
@@ -163,7 +167,7 @@ says a different state.
 | Tool calls for the chat API drivers, with approvals, deny and interrupt | `openai-tools.md` | 9, 10 | 2 | `bot-engine` | done: [`chat-driver-tool-calls.md`](features/chat-driver-tool-calls.md) |
 | Turn limits: 64 model steps and 200 tool calls | `openai-tools.md` | 9 | 2 | `bot-engine` | open |
 | The approval level of one thread | `provider-recovery.md` | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
-| Question cards: a bot asks the person with buttons or a reply field; a copy goes to the Inbox | `question-cards.md` | 48 | 2 | `bot-desktop` | open |
+| Question cards: a bot asks the person with buttons or a reply field; on a Team Cloud, a copy goes to the Inbox | `question-cards.md` | 48 | 2 | `bot-desktop` | open |
 | Notification tools that only the helper bot has | `mausbot.md` | 13, 50 | 3 | `bot-engine` | open |
 | The helper bot as the Chief when there is none | `mausbot.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
 | MCP sign-in from another computer: paste the callback address back | `mcp-sign-in.md` | 20 | 3 | `bot-engine` | open |
@@ -179,7 +183,7 @@ says a different state.
 | Coordination in the chat: `coordinate_bots`, receipts, "Teammates working", consult | `room-coordination.md` | 14, 15 | 3 | `bot-core` | open |
 | Recovery after a restart: a cut turn of a teammate runs again one time | `room-coordination.md` | 14 | 3 | `bot-core` | open |
 | Files in a hand-off, with limits for each message and each day | `room-coordination.md` | 15, 30 | 3 | `bot-core`, `bot-engine` | open |
-| Parking: a message waits until the teammates finish | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
+| Parking (an opt-in for each bot; steering is the default): a message waits until the teammates finish | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
 | Stop ends the request and all the work that it gave out | `room-coordination.md` | 14, 15 | 3 | `bot-core` | open |
 | Jobs in a room in parallel, and the room queue | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
 | Limits of the runtime: depth 4, 24 requests for each root, a 24-hour queue | `room-coordination.md` | 14 | 3 | `bot-core` | open |
@@ -216,13 +220,13 @@ says a different state.
 | Model routes of one engine | `qwen-models.md` | 7 | later | `bot-engine` | open |
 | Reactions on a message: thumbs are a yes or no reply, and reactions answer a card | `reactions.md` | 23, 48 | later | `bot-desktop` | open |
 | Rich tables: sort, search, copy and export; previews of CSV files | `rich-tables.md` | 23, 30 | later | `bot-desktop` | open |
-| The safety floor: a list of shell commands that are always denied | `safety-floor.md` | 10, 11 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
+| The safety floor: a list of shell commands that the server never approves by itself; off by default, not on Windows | `safety-floor.md` | 10, 11 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
 | Sign-in to an engine with a device code in the browser | `server-settings.md` | 8, 25 | later | `bot-engine` | open |
 | Who can answer a card | `shared-workspace-trust.md` | 48, 51 | later | `bot-desktop` | open |
 | The decision log, kept for 180 days | `shared-workspace-trust.md` | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
 | The sidebar: confirmations, "mark all as read", notification sounds | `sidebar.md` | 24, 50 | later | `bot-desktop` | open |
 | Departments: groups of bots in the sidebar, by drag | `sidebar.md`, and `teams.md` | 24, 55 | later | `bot-desktop` | open |
-| The "Active threads" menu, and the Inbox row | `sidebar-attention.md` | 24, 48 | later | `bot-desktop` | open |
+| The Inbox row, which replaced the "Active threads" menu | `sidebar-attention.md` | 24, 48 | later | `bot-desktop` | open |
 | The approval card of a learned skill | `skill-approval-lifecycle.md` | 19, 48 | later | `bot-core` | open |
 | A monthly spend cap and sell prices (the document says these need the enterprise layer) | `spend-cap.md` | 21 | later | `bot-core` | open |
 | The loading screen and the tray on Windows | `startup-tray.md` | 29 | later | `bot-desktop` | open |
@@ -261,7 +265,7 @@ says a different state.
 | Tailscale: discovery, "Your other computers", serve, keep this computer awake | `tailscale.md` | 53 | no | not planned | open |
 | Take control of the computer of a bot, and give it back | `take-control.md` | 54 | no | not planned | open |
 | The talk shortcut | `talk-shortcut.md` | 35 | no | not planned | open |
-| Team backups, team templates, skills in a package, restore of archived bots | `team-backups.md` | 44 | no | not planned | open |
+| Team backups (the export is legacy, the import works), team templates, skills in a package, restore of archived bots | `team-backups.md` | 44 | no | not planned | open |
 | Access levels to a bot on a Team Cloud: none, view, chat, edit | `team-bot-access.md` | 51 | no | not planned | open |
 | A new bot is private until it is shared | `team-bot-access.md` | 51 | no | not planned | open |
 | Team cloud computers | `teams.md` | 54 | no | not planned | open |
@@ -272,9 +276,9 @@ says a different state.
 | Many installations on one server, with a fleet agent | `workspaces.md` | 36 | no | not planned | open |
 | The X card in the Apps page | `x-connector.md` | 49 | no | not planned | open |
 
-## Feature pages in `docs/`, 42 files
+## Feature pages in `docs/`, 41 files
 
-All 42 files were read completely. These pages describe what is built, unless
+All 41 files were read completely. These pages describe what is built, unless
 a feature is marked. Each row has all the features of one page.
 
 | Document | Features | Part | Group | Ours | Research |
@@ -295,7 +299,7 @@ a feature is marked. Each row has all the features of one page.
 | `cli-onboarding.md` | Install with `npx`; a set-up wizard in the terminal; sign-in with a device code; a test message; phone access (a managed tunnel, Tailscale, or an existing address); pairing with a QR code; where credentials are stored | 25, 33, 53 | later | `bot-desktop` | open |
 | `desktop-chat-links.md` | "Copy link" to a bot; the `://bot/<id>` link; link handling; links to the Cloud and to the organization | 29 | later | `bot-desktop` | open |
 | `feature-flags.md` | The `features` switches in the config; the opt-out file of the library; three states of server lending; environment overrides; the loop guard; removed flags | 39, 4 | later | `bot-core` | open |
-| `linux-desktop.md` | The Linux desktop (beta): packages, the updater, CLI discovery, the screen preview, local control on Xorg, a GPU switch; Wayland is not available | 29 | later | `bot-desktop` | open |
+| `linux-desktop.md` | The Linux desktop (beta): packages, the updater, CLI discovery, the screen preview, local control on Xorg, a GPU switch; on GNOME Wayland all works except local control | 29 | later | `bot-desktop` | open |
 | `localization.md`, `localization-pt-br.md` | Locale packs with English as the fallback; the language setting; a check script; a draft tool that uses a model; a style guide and a glossary for one language; localization of server messages; vocabulary tests | 28 | later | `bot-desktop` | open |
 | `notification-and-proactivity-qa.md` | The types of notification; notifications off for a bot; quiet threads that a bot opened; a click goes to the exact bot and task; read-on-open across applications; no notification when the window has focus; notifications on iOS | 50 | later | `bot-desktop` | open |
 | `opencode-go.md` | One ACP engine in detail: its key, keys for its other providers, model discovery, a retry at 128 tools, usage limits | 7 | later | `bot-engine` | open |
@@ -328,7 +332,7 @@ describes a check of it. Each row has all the features of one record.
 | Document | Features | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
 | `chat-turns.md` | Chat turns and independent tasks; uploaded pictures for file tools; "Works on": where a turn acts; recovery of queued follow-ups after a restart; hand-offs on the runtime; approval results of a teammate shown to the Chief; Stop for a CLI; the message of the person stops a long tool call; a shared chat on a Team Cloud; parallel threads for each bot | 1, 12, 14 | **1** | `bot-core` | partial: [`turn-flow-comparison.md`](turn-flow-comparison.md) |
-| `chat-ui.md` | A tool that drives the window in a headless browser; the flag for tool rows; the "This run" card and "Save as skill"; the inspector with a run log, events and raw events; usage details; code blocks on a phone; the thinking timer; the live step status and the "Now" card; streaming replies; a queued message can be edited | 23, 40 | **1** | `bot-desktop`, `bot-core` | open |
+| `chat-ui.md` | A tool that drives the window in a headless browser; the flag for tool rows; the Skill Burger card, which saves a run as a skill (it replaced the "This run" card); the inspector with a run log, events and raw events; usage details; code blocks on a phone; the thinking timer; the live step status and the "Now" card; streaming replies; a queued message can be edited | 23, 40 | **1** | `bot-desktop`, `bot-core` | open |
 | `app-settings.md` | The `app_settings` bot tool: a bot finds, reads and changes settings, with an Undo card; secrets go through a secure card only; window preferences through the desktop | 13, 61 | 3 | `bot-engine` | open |
 | `automation-reports.md` | An automation works in a hidden conversation and reports into the chat of the bot; a "Results" chat | 18 | 3 | `bot-core` | open |
 | `bot-contact-cards.md` | Cards that give a bot its own email, phone number and calls | 20, 35 | 3 | `bot-engine` | open |
@@ -393,12 +397,12 @@ says.
 | Document | Features | State | Part | Group | Ours | Research |
 |---|---|---|---|---|---|---|
 | `plans/2026-08-18-001-fix-claude-turn-teardown...` and the two other fix plans of that date | Kill the process tree of an engine when a turn ends; refuse a permission request that arrives after the turn ended; a guard for two requests with the same identifier | planned | 8, 10 | 2 | `bot-engine` | open |
-| `plans/agent-harness-upgrades.md` and `-v2.md` | A list of 17 upgrades: context rebuild on a model switch; attachments; automatic retry; search across threads; cost visibility; a liveness check; portable context; durable delegations; tool deadlines and loop detection; redaction of tool results; approvals that fail closed; activity state on the server; the raw event inspector; a driver for local models; steering in the middle of a turn. Also built: message branches with a version switcher | some built | 1, 9, 17, 47, 64 | 2 | `bot-core` | open |
+| `plans/agent-harness-upgrades.md` and `-v2.md` | A list of 17 upgrades, of which the row names 15: context rebuild on a model switch; attachments; automatic retry; search across threads; cost visibility; a liveness check; portable context; durable delegations; tool deadlines and loop detection; redaction of tool results; approvals that fail closed; activity state on the server; the raw event inspector; a driver for local models; steering in the middle of a turn. Also built: message branches with a version switcher | some built | 1, 9, 17, 47, 64 | 2 | `bot-core` | open |
 | `specs/steer-sigterm-audit.md` | A graceful Stop for one engine; steer and queue never kill | built | 8 | 2 | `bot-engine` | open |
 | `specs/steer-vs-queue.md` | Enter queues a message, and a second Enter steers it into the running turn | specification | 23, 1 | 2 | `bot-core`, `bot-desktop` | done: [`queue-and-steer.md`](features/queue-and-steer.md) |
 | `plans/2026-09-02-bot-concurrency.md` | A busy member of a room is woken later, not skipped; a direct message goes before background work; optional parallel turns for a bot | decision record | 15, 12 | 3 | `bot-core`, `bot-engine` | open |
-| `plans/2026-09-09-independent-threads.md` | Tasks became threads; folders; the thread list and "All threads"; parallel threads (default 3); a working folder for each thread; a claim on the browser or the computer for each turn; the `memory_update` tool; archive of idle threads (later) | built | 12 | 3 | `bot-core`, `bot-desktop` | open |
-| `plans/2026-09-09-thread-aware-bots.md` | The tools `list_threads`, `start_thread` and `close_thread`; "opened by" on a thread; links to a thread with `#Title` | planned | 12, 13 | 3 | `bot-core`, `bot-desktop` | open |
+| `plans/2026-09-09-independent-threads.md` | Tasks became threads; folders; the thread list and "All threads"; parallel threads (default: one for each 2 GB of memory, from 3 to 16); a working folder for each thread; a claim on the browser or the computer for each turn; the `memory_update` tool; archive of idle threads (later) | built | 12 | 3 | `bot-core`, `bot-desktop` | open |
+| `plans/2026-09-09-thread-aware-bots.md` | The tools `list_threads`, `start_thread` and `close_thread`; "opened by" on a thread; links to a thread with `#Title` | planned; `start_thread` is built | 12, 13 | 3 | `bot-core`, `bot-desktop` | open |
 | `plans/2026-09-25-memory-layer.md` | The memory layer: recall, the topic index, until-dates, upkeep, capture, "About me", tidy-up, organize | built | 16 | 3 | `bot-core` | open |
 | `specs/aside-injection-seams.md` | The aside lane: context from a peer goes into a running turn; how each driver takes it | built | 2, 15 | 3 | `bot-core`, `bot-engine` | open |
 | `requirements/` and `design/` for issue 1635 | The thread list in order of update; pinned threads; the 6 newest open threads by default | design | 12, 24 | 3 | `bot-core`, `bot-desktop` | open |
@@ -426,7 +430,7 @@ says.
 
 ## Documents about the Cloud, teams, self-hosting and phones
 
-18 files in `docs/`, all read completely (8,915 lines). Most of these pages
+18 files in `docs/`, all read completely (8,979 lines on 2026-11-23, at `d6660e2d7`). Most of these pages
 describe current behaviour and give no state, so a row has a state only when
 the page gives one.
 
@@ -441,21 +445,25 @@ the page gives one.
 | `team-sharing.md` | Share a bot or a department as a template; import a template from a link or a folder; the template folder format; redaction rules; skill scripts go with the skill; publish to the community or to your own repository; a template library of a team; the `share` bot tool | 44 | no | not planned | open |
 | `team-files.md` | The team files page: upload, folders, download, rename, delete, preview; phone access; bots see team files read-only; a bot setting "can edit team files"; a templates folder; a lock when full; a change log | 30, 51 | no | not planned | open |
 | `team-slack.md` | Slack for a team and for a personal Cloud: a message is the request of that member; the audience; conversation titles; the routes; status reports; cards in Slack runs | 56 | no | not planned | open |
-| `org-library.md`, `organization-branding.md` | The organization library tab; import with organization trust; install stamps; offered skills; a "Required" badge; automatic updates of a release; withdrawn releases; crash recovery of an add; organization presets; the logo and shared icons of an organization | 52 | no | not planned | open |
+| `org-library.md`, `organization-branding.md` | The organization library tab; import with organization trust; install stamps; offered skills; "Required" treated as Available, with a "Recommended by" badge; automatic updates of a release; withdrawn releases; crash recovery of an add; organization presets; the logo and shared icons of an organization | 52 | no | not planned | open |
 | `multi-device.md` | A home for each device: a Cloud, your own server or one of your computers; phone pairing for each home; an old computer lends after a move; a manual move with a backup | 36, 53 | no | not planned | open |
 | `desktop-companion.md` | Two desktops over Tailscale: the "Your other computers" switch; pair a computer; connect as a client; unpair; keep this computer awake; client error messages; a phone code is for phones only | 53 | no | not planned | open |
 | `ios-companion.md`, `ios-privacy.md`, `phone-web-app.md` | The phone application: pairing with a QR code; more than one saved computer; chat, approvals and questions; a resumable event stream; the live view of a cloud computer; remote control of a local VM; Markdown; spoken form; secure credential entry; create a basic bot; alerts; the companion process and its device registry; switches for each way in; route rejection by default; phone apps as bot tools; what the phone stores, and no tracking; the web application on the home screen | 34 | no | not planned | open |
 | `phone-relay-server.md` | A relay for phones: `serve --relay`, `login --relay`, `pair --phone`, device revocation; the server answers through the relay; the QR format; WebSocket through the relay; a relay token; tunnel protection; a connection key; the model of a compromised relay; a list of permitted browser origins; rate limits | 34, 53 | no | not planned | open |
-| `phone-push.md` | Push notifications when the phone application is closed (built, switched off): token registration, decision rules, an outbox, buttons, a payload with no content, live activity, no duplicates, revocation, rate limits | 34, 50 | no | not planned | open |
+| `phone-push.md` | Push notifications when the phone application is closed (built, switched off; not built for a Cloud home): token registration, decision rules, an outbox, buttons, a payload with no content, live activity, no duplicates, revocation, rate limits | 34, 50 | no | not planned | open |
 
 ## Root documents, the docs web site and the other folders
 
-89 files, all read completely: 8 root documents, 58 files of the docs web
-site in `apps/docs/`, and 23 Markdown files in other folders.
+106 files: 8 root documents, 54 files of the docs web
+site in `apps/docs/`, and 44 Markdown files in other folders. The first count
+(89) left out 31 files. The check read 105 of the 106 files completely. In
+one file, it checked a licence table with a filter. Section 6 of
+[`reference-features-check.md`](reference-features-check.md) names the 31
+files.
 
 | Document | Features | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
-| `README.md` | Bots on the agent CLIs of the person, with a custom binary for each engine; one local server that owns all agents; a computer for each bot; the model picker with a provider rail; a model switch in the middle of a conversation; the Computer panel; approval and question cards; the permission broker; the connected apps marketplace; the context menu of a bot; write-only keys with hot reload; channels; automatic routing with the decision model; install of a team from a Markdown file; spoken replies and calls; streaming replies with tool rows; dictation; screenshots in the transcript; the driver interface; the event bus and the event stream; the HTTP API; the desktop shells; the MCP server for other tools; the headless CLI; triggers: schedules, app events and webhooks, with a triggers page and bot tools; a hosted webhook relay; custom engines by config; the open-source edition | 1 to 42 | **1** | `bot-core` | partial: [`features/driver-contract.md`](features/driver-contract.md), [`changelog.md`](changelog.md) |
+| `README.md` | Bots on the agent CLIs of the person, with a custom binary for each engine; one local server that owns all agents; a computer for each bot; the model picker with a provider rail; a model switch in the middle of a conversation; the Computer panel; approval and question cards; the permission broker; the connected apps marketplace; the context menu of a bot; write-only keys with hot reload; channels; automatic routing with the decision model; install of a team from a Markdown file; spoken replies and calls; streaming replies with tool rows; dictation; screenshots in the transcript; the driver interface; the event bus and the event stream; the HTTP API; the desktop shells; the MCP server for other tools; the headless CLI; triggers: schedules, app events and webhooks, with a triggers page and bot tools; webhooks through the local receiver (no hosted relay); custom engines by config; the open-source edition | 1 to 42 | **1** | `bot-core` | partial: [`features/driver-contract.md`](features/driver-contract.md), [`changelog.md`](changelog.md) |
 | `CONTRIBUTING.md` | Development commands; a screenshot tool; the data format marker and the rule that a format change takes two releases; stores that repair themselves; the driver contract; rules for the control CLIs and for MCP tool schemas; how to add a language; no shell command built from a string; the write-only secrets API; CI gates; self-contained fakes | 4, 41, 40 | **1** | `bot-core` | open |
 | `SECURITY.md`, `LICENSING.md` | How to report a vulnerability; loopback binding; the routes that a service can call; the credentials file; pointers to Vault values; the meaning of full access; the edition flag; enterprise entitlements; sign-in to a hosted workspace fails closed | 11 | **1** | `bot-core` | open |
 | `server/host/README.md`, `server/routes/README.md` | The rules for the host modules and the route modules: how `server/index.ts` is split | 5 | **1** | `bot-cli`, `bot-desktop` | open |
@@ -477,7 +485,7 @@ site in `apps/docs/`, and 23 Markdown files in other folders.
 | Docs site: `features/publish-to-netlify.mdx` | A bot publishes a site to the hosting account of the person, or as a shared page link; the token arrives through a secure card; a site record file; delete a site | 37 | no | not planned | open |
 | Docs site: `features/voice-and-memory.mdx` | Spoken replies; voice providers, one of them local; voice notes; call mode; narrated progress; live calls; dictation; memory as plain text | 35, 16 | no | not planned | open |
 | Docs site: `mobile/` | Control of an Android phone over USB by a bot; the phone application as a thin client | 34 | no | not planned | open |
-| Docs site: `self-hosting/` | The connector for a server that the customer runs: seven jobs, four requests, an audit log; data folder locations; "make this my home"; the full backup; dated copies of the config; the installer; port surfaces; plain HTTP on private networks only; a true loopback check; a standby server and the server lease; update of a server from the application | 36, 44, 53, 4 | no | not planned | open |
+| Docs site: `self-hosting/` | The connector for a server that the customer runs (not on sale): seven jobs, four requests, an audit log; data folder locations; "make this my home"; the full backup; dated copies of the config; the installer; port surfaces; plain HTTP on private networks only; a true loopback check; the server lease, and a recipe for a standby server; update of a server from the application | 36, 44, 53, 4 | no | not planned | open |
 | Docs site: `troubleshooting/` | The bug report to the developers; the logs folder and the log files; "Export diagnostics"; the loading screen; the update card and the update flows | 60, 29 | no | not planned | open |
 | `companion/README.md`, `companion/src/e2e/README.md` | The companion process: pairing, a capability for each device, a route allow list, discovery on the local network, a credential relay with encryption, a loopback pairing page; the end-to-end encrypted phone connection: a QR descriptor with a pinned key, multiplexing, the relay protocol, fail-closed rules, test vectors | 34 | no | not planned | open |
 | `cloudflare/control-plane/README.md` | The control plane: account sign-in, installations and credentials, the managed tunnel, capacity errors, the phone push relay, relay tokens | 36, 53 | no | not planned | open |
@@ -486,15 +494,58 @@ site in `apps/docs/`, and 23 Markdown files in other folders.
 | `evals/README.md` and the judge prompts | Behaviour evals in three tiers; a tool-choice eval; an eval of the nightly memory tidy-up; a skill bench; turn routing; rubrics for a live judge | 40 | no | not planned | open |
 | `scripts/testing/fixtures/voice-latency/README.md` | Streamed speech delivery, and a harness that measures voice latency | 35, 40 | no | not planned | open |
 
+## Rows added by the check of 2026-11-23
+
+The check in [`reference-features-check.md`](reference-features-check.md)
+found these features with no row. The main session read each one in the
+reference at `d6660e2d7`. The check also lists features that only a subagent
+read. They are not here yet.
+
+| Feature | Document | State | Part | Group | Ours | Research |
+|---|---|---|---|---|---|---|
+| Rule: never offer a control, tool or attachment that a driver cannot mount; a new integration gets a new capability flag, and the UI reads the flag | `superpowers/plans/2026-08-31-00-control-plane-roadmap.md` | built | 2 | **1** | `bot-engine` | partial: [`features/driver-contract.md`](features/driver-contract.md) |
+| A conversation's own notes: the facts of one matter go to `memory/threads/<id>.md`; `scope: "everywhere"` saves to `MEMORY.md` | `memory.md`, `verification/memory-layer.md` | built | 16 | 3 | `bot-core` | open |
+| A bot can be kept to some accounts of a connected app ("Accounts this bot may use") | `composio.md` | built | 20 | 3 | `bot-engine` | open |
+| The rules and limits of a wait: only a turn that the person started in their own one-to-one chat makes or cancels a wait; 10 waits for each bot, 50 in all, 24 hours by default, 168 at most; the `then` follow-up runs in the same chat | `superpowers/plans/2026-10-27-waits.md` | not stated | 18 | 3 | `bot-core` | open |
+| Provenance notes: each line that a bot reads, except the person's own line in their own chat, starts with `[From <who> · <what> · <authority>]` | `team-cloud.md` | not stated | 15, 11 | 3 | `bot-core` | open |
+| Work from outside stays confined: a webhook or an app event marks the conversation for good, and its effects are fenced | `team-cloud.md`, `cloud-pro.md` | not stated | 18, 11 | 3 | `bot-core` | open |
+| Bot to bot across servers: an admin saves a teammate on another server (address and Bot API key), and local bots give it work with `coordinate_bots` | `bot-api.md`, `runtime-contract.md` | built | 15, 33 | later | `bot-core`, `bot-engine` | open |
+| The Skill Burger card: after a run of two or more real steps, "Add skill" saves the run as a workflow skill, with Undo | `verification/chat-ui.md` | built | 19, 48 | later | `bot-desktop`, `bot-core` | open |
+| Prompt-cache keep-warm: off by default; it holds a Claude process for 3 hours by default, one day at most | `verification/context-compaction.md` | built | 17 | later | `bot-engine` | open |
+| The vendored Open Bot Avatar engine (MIT) | `packages/phone-protocol/src/open-bot-avatar/README.md` | built | 46 | later | `bot-desktop` | open |
+| The computer wait ceiling: a turn waits 30 minutes at most, then parks and continues when the computer is free; the model is told its place in line, never who holds the computer | `verification/computer-wait.md` | built | 32, 54 | no | not planned | open |
+| Ask once before the first action of a bot on the person's own computer, at each approval level, unless the person picked that computer | `superpowers/specs/2026-10-27-saved-steps-design.md` | built | 32, 10 | no | not planned | open |
+| A different computer for one chat: a chat overrides the "Works on" of its bot | docs site: `computers/index.mdx` | built | 54 | no | not planned | open |
+| Settings → Devices: a map of each connected device, with how it connects and what it needs | docs site: `computers/index.mdx` | built | 53 | no | not planned | open |
+| The storage report of a Cloud home: what fills the volume, by category, in the health read | `cloud-pro.md` | not stated | 36 | no | not planned | open |
+| The email send tool of a bot's own mailbox: plain text required, four inline pictures at most, a copy filed in Sent | `server/email/README.md` | built | 37, 20 | no | not planned | open |
+
 ## Conflicts between documents
 
-The agents found these, and a later session must check them in the code:
+The first agents found the first three. The check of 2026-11-23 found four
+more and read the code for each one. The details are in section 7 of
+[`reference-features-check.md`](reference-features-check.md).
 
-- One page says that push to a closed phone application is not available.
-  Another page specifies a push relay. A third says that the code is built
-  and switched off.
-- One page lists four voice providers. Two other pages add a fifth.
-- One page names a "Company Brain" feature. No document defines it.
+- **Push to a closed phone application.** Settled. The code is built and off
+  by default (`server/phone-push.ts`), so a person gets no push today. The part
+  for a Cloud home is not built.
+- **Four or five voice providers.** Settled. The code has eight speech
+  providers (`server/tts/index.ts`). Each document is out of date.
+- **"Company Brain".** Settled. Three documents name it in a list. No code
+  and no other document has it.
+- **Streamed reply text** (group 1). Settled. The reply streams
+  (`src/state/live-reply.ts`). One section of `verification/chat-ui.md` is out
+  of date.
+- **Stop and a teammate in the middle of a turn.** Settled. Stop ends the
+  teammate (`server/runtime/runtime.ts`). Two sections of
+  `verification/room-coordination.md` are out of date.
+- **Widgets in a room.** Not settled: refused, or shown view-only.
+- **Live calls and a plan.** Not settled. The server checks the role of the
+  person for some providers, not a plan. The phone applications are not in
+  the reference repository.
+- **Room voice calls.** Settled. The code has them, and the composer and the
+  room header show the call button. Two documents say that a room has no
+  call, and they are out of date.
 
 ## What this list does not cover
 
@@ -502,6 +553,8 @@ The agents found these, and a later session must check them in the code:
   feature needs it: spend limits, sell prices, and many installations on one
   server.
 - A feature that has code and no document. Part 42 of
-  [`README.md`](README.md) finds these.
+  [`README.md`](README.md) finds these. Section 5 of
+  [`reference-features-check.md`](reference-features-check.md) lists the
+  first 14.
 - The 683 picture files in `docs/verification/`. They are evidence, not
   descriptions.
