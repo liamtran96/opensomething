@@ -74,7 +74,11 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
    `orca terminal list --json` gives the handle of each worktree, and
    `orca terminal send --terminal <handle> --text "approved, go" --enter`.
 3. If the usage limit stops an agent, send `continue` to its terminal
-   after the reset or after a change of account.
+   after the reset. A change of account does not reach a running agent: it
+   keeps the account that it started with. After a change of account, quit
+   the agent with `/exit` ("Exit and stop tasks"), and start it again with
+   the `claude --resume <session id>` that it prints. Then tell it to resume
+   its workflow, or to start again only the readers with no report file.
 4. To get a notice when an agent stops, use the cross-session message
    tool with `notify_when_idle`.
 
@@ -158,6 +162,9 @@ It is the local clone at <ABSOLUTE PATH>, at commit <COMMIT>.
 - Each subagent report ends with "Files read completely" (path and line
   count) and "Not verified".
 - Check the key findings of each subagent against the code.
+- Each subagent writes its report to `.research/<group>.md` in the
+  worktree as soon as it finishes. Git does not track that folder. After a
+  restart, read the reports that exist and start only the missing ones.
 - Load the skill `anthropic-skills:asd-ste100` with the Skill tool before
   you write. If the Skill tool does not list it, read
   `~/.claude/skills/synced/*/asd-ste100/SKILL.md`. Apply it to the prose,
@@ -305,3 +312,68 @@ the code. Some of them:
 
 The proposals are in `../plan/<name>.md` of each feature.
 
+
+## Batch 5, started 2026-11-24
+
+The author chose all six open core rows of groups 1 and 2: "All six". After
+this batch, group 1 has no open rows, and group 2 has no open core rows. The
+reference is at commit `ad27f0716` (2026-11-24). The prompts give each
+agent its scope, the earlier files to build on and the border with the other
+five features.
+
+| # | Rows of `reference-features.md` | Group | Crate | Step | Name | State |
+|---|---|---|---|---|---|---|
+| 1 | `chat-ui.md` | 1 | `bot-desktop`, `bot-core` | 7 | [`chat-ui`](features/chat-ui.md) | done, 2026-11-24, at commit `ad27f0716` |
+| 2 | Question cards | 2 | `bot-desktop`, `bot-protocol`, `bot-core` | 10 | [`question-cards`](features/question-cards.md) | done, 2026-11-24, at commit `ad27f0716` |
+| 3 | Docs site: `features/approvals-and-inspector.mdx`, `security/` | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | 10 | [`approval-cards`](features/approval-cards.md) | done, 2026-11-24, at commit `ad27f0716` |
+| 4 | `cursor.md` | 2 | `bot-engine` | 9 | [`acp-adapter`](features/acp-adapter.md) | done, 2026-11-24, at commit `ad27f0716` |
+| 5 | Turn limits: 64 model steps and 200 tool calls | 2 | `bot-engine` | 5, 9 | [`turn-limits`](features/turn-limits.md) | done, 2026-11-24, at commit `ad27f0716` |
+| 6 | `plans/agent-harness-upgrades.md` and `-v2.md` | 2 | `bot-core` | 8 | [`harness-upgrades`](features/harness-upgrades.md) | done, 2026-11-24, at commit `ad27f0716` |
+
+- Between `ed8cb7278` and `ad27f0716`, the ACP core got a new file,
+  `server/drivers/acp/session-system.ts`, and the adapter hooks
+  `skipsAuthenticate`, `processStarted` and `signInRefused`. The agent of
+  `acp-adapter` lists the lines of `features/acp-core.md` that are now
+  wrong.
+- Two starting paths of the row names are in `docs/verification/`, not in
+  `docs/`: `chat-ui.md` and `question-cards.md`.
+
+The usage limit of one account stopped all six agents. A running agent keeps
+the account that it started with, so `continue` did not help after a change
+of account. The main session quit each agent and started it again with
+`claude --resume <session id>`. Each agent kept its conversation. A reader
+that finished before the limit came back from the journal of the old run. A
+reader that did not finish ran again.
+
+The main session checked 24 key claims at `ad27f0716`. All 24 agree with the
+code. Some of them:
+
+1. `turn-limits`: the chat driver has no limit of model steps now. The limit
+   of 64 came in v0.1.96 (`e5da2fd3e`) and went in v0.1.166 (`d6788b49c`).
+   A turn stops after 200 tool calls (`server/drivers/openai-chat.ts:143`,
+   `:796`). One reply can have 32 calls
+   (`server/drivers/openai-chat-protocol.ts:14`). A chat request has 128
+   tools or fewer (`shared/tool-budget.ts:2`).
+2. `question-cards`: only the answer of the person settles a question card
+   (`packages/phone-protocol/src/ask-question.ts:63-65`). Handed-on work that
+   waits on the person gets a reminder after one day and closes after three
+   (`server/runtime-coordinator.ts:44-46`). A late answer has a fixed
+   `sendId` (`server/person-replies.ts:123`).
+3. `chat-ui`: streamed words go to the window with no masking
+   (`server/harness/public-reply.ts:1-3`). The window masks the text when it
+   draws it, and shows it up to the last space (`src/state/live-reply.ts:183-185`).
+4. `approval-cards`: the start sweep closes three kinds of card only, so an
+   engine permission card stays open after a restart
+   (`server/index.ts:9461-9465`). The outbound rule reads only the tool name,
+   so a saved shell command that sends runs with no question
+   (`packages/phone-protocol/src/outbound.ts`, `server/auto-approve.ts:114-115`).
+5. `acp-adapter`: the Cursor adapter is one `AcpSupport` object
+   (`server/drivers/acp/cursor.ts:468-559`). The approval level becomes a
+   flag: Full gives `--force`, Auto gives `--auto-review`
+   (`cursor.ts:495-500`).
+6. `harness-upgrades`: a thread keeps all versions of its messages as a
+   tree. The visible path goes from the active leaf up through the parents
+   (`server/store.ts:1109-1120`). An edit makes a new branch
+   (`server/store.ts:1199-1224`).
+
+The proposals are in `../plan/<name>.md` of each feature.

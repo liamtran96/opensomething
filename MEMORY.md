@@ -262,6 +262,18 @@ analysis tasks only, not for other worktrees.
   `orca worktree create`. The main session does not start its own subagent
   for a worktree; the Orca agent of the worktree starts them.
 
+- **A report file for each subagent (2026-11-24):** each subagent writes
+  its report to `.research/<group>.md` in the worktree when it finishes.
+  - **Why:** in batch 5, the usage limit stopped all six agents, and the
+    author changed the account. A running agent keeps its old account, so
+    each agent had to start again. The finished readers came back only from
+    the journal of the old workflow run. `chat-ui` lost all six readers. The
+    author asked: "can the new account still continue read the cache of
+    dynamic workflow and keep working".
+  - **How:** the prompt template of `docs/research/progress.md` has the
+    rule. After a restart, the lead reads the files that exist and starts
+    only the missing readers.
+
 ### Look at the real window before you report a UI change (2026-11-20)
 
 For work in `crates/bot-desktop/ui`, capture the application window and
