@@ -382,7 +382,7 @@ Error paths:
   `codex.test.ts:3854`). Claude emits "Claude could not be confirmed stopped;
   its helper processes may still be running." one time and releases the turn
   (`claude.ts:1645-1650`). pi emits a `runtime.error` and sends no
-  `turn.completed` (`pi.ts:544-547`).
+  `turn.completed` (`pi.ts:528-546`).
 - **A system stop** (watchdog, limits) goes through `turnStops`, not
   `personStops`, so it is not shown as the stop of the person
   (`index.ts:7016`, `:7023`).
@@ -543,7 +543,7 @@ id into the name. Now the broker also tries two names with random suffixes
 (`claude.ts:423-438`).
 
 Codex and ACP make the request id on the server (`codex.ts:806`,
-`acp/core.ts:620`), so they need no repeated-id guard. Both finish their
+`acp/core.ts:619`), so they need no repeated-id guard. Both finish their
 open asks at the turn end (`codex.ts:671`, `acp/core.ts:500-508`). Between
 turns, ACP answers a request with `cancelled` (`acp/core.ts:524-531`), and a
 kept Codex process refuses a request with JSON-RPC error -32601
@@ -676,7 +676,7 @@ set.
 |---|---|---|
 | Process control on Windows | `taskkill /T /F` with a fallback that counts the exit of the root. `.cmd` shims resolved without a shell. A command-line limit of 30,000. Pipe names with the server pid and random suffixes. No tree capture, no pid reuse check, no sweep | `procs.ts:670-705`, `env-path.ts:240-243`, `procs.ts:37-57`, `claude.ts:423-438` |
 | Memory and the number of processes | Five gates and a watchdog (3.11). The three lines of `changelog.md` §7 are still correct | `codex-process.ts:11`, `bot-thread-limits.ts:5-18`, `process-room.ts:13-45` |
-| A turn or a wait that does not end | The turn gate and the Codex slot wait with no limit. A question ask has no limit. The Stop route awaits `interruptTurn` with no limit. A stop that is not confirmed: Codex retries for 60 s, pi sends no `turn.completed` | `engine-memory.ts:533-567`, `codex-process.ts:35-54`, `claude.ts:511`, `index.ts:2243`, `pi.ts:544-547` |
+| A turn or a wait that does not end | The turn gate and the Codex slot wait with no limit. A question ask has no limit. The Stop route awaits `interruptTurn` with no limit. A stop that is not confirmed: Codex retries for 60 s, pi sends no `turn.completed` | `engine-memory.ts:533-567`, `codex-process.ts:35-54`, `claude.ts:511`, `index.ts:2243`, `pi.ts:528-546` |
 | The same work done two times, or lost | An ask is finished once. A repeated id is denied. A late ask is answered, never dropped. A turn is not sent again after an answer. The `turnId` fence keeps a second Stop off the next turn | `claude.ts:500`, `:489-497`, `:475-488`, `:1673-1674`, `person-stops.ts:53-55` |
 
 Items of the release notes that this code does not have: "EPERM unlink"
@@ -785,7 +785,7 @@ Process tree (mocked system):
   `false`. Each case runs with and without the children files.
 - `kill-tree-linux.test.ts:181-231`: the fallback to a read of all processes
   when the children files can be incomplete.
-- `kill-tree-windows.test.ts:27-68`: `taskkill` before and after the exit, no
+- `kill-tree-windows.test.ts:26-73`: `taskkill` before and after the exit, no
   exit, and no callback. **No test covers the `taskkill` failure path**
   (`procs.ts:696-703`).
 
@@ -890,7 +890,7 @@ So for our first target, these limits of the reference apply:
    `TreeStop { Gone, NotConfirmed { survivors }, NeverStarted }` makes the
    caller handle each case. Reason: a wrong state that the compiler refuses.
 2. **Each stop has a limit, and `turn.completed` is always sent.** pi sends no
-   `turn.completed` when its kill is not confirmed (`pi.ts:544-547`). Claude
+   `turn.completed` when its kill is not confirmed (`pi.ts:528-546`). Claude
    releases the turn (`claude.ts:1645-1650`). Codex retries for 60 s, then
    completes (`codex.ts:681-686`). The Stop route awaits `interruptTurn` with
    no limit (`index.ts:2243`). Our `interrupt` ends within a fixed time and
@@ -916,7 +916,7 @@ So for our first target, these limits of the reference apply:
 5. **Our side makes the request id.** The Claude broker trusts the id of the
    helper and needs a guard for a repeated id (`claude.ts:489-497`). Codex
    and ACP already make the id on the server (`codex.ts:806`,
-   `acp/core.ts:620`). Our runtime gives each request its own id (D17) and
+   `acp/core.ts:619`). Our runtime gives each request its own id (D17) and
    keeps the JSON-RPC id of the engine only to send the answer. A repeated id
    from the engine then cannot replace a waiting request. Reason: a wrong
    state that the compiler refuses.
@@ -928,7 +928,7 @@ So for our first target, these limits of the reference apply:
    Reason: follows the reference, and the `AGENTS.md` rule on typed refusals.
 7. **One rule for the time of a request.** A Claude permission has 15 minutes,
    a Claude or Codex question has no limit, and an ACP question has 15 minutes
-   (`claude.ts:511`, `codex.ts:837`, `acp/core.ts:672-675`). We use one
+   (`claude.ts:511`, `codex.ts:838`, `acp/core.ts:672-675`). We use one
    limit for each kind, in one place. Reason: a known problem of the
    reference (a wait with no end, and three rules for one thing).
 8. **Each wait for room has a limit and a reason.** The turn gate and the
