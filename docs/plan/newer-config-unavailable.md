@@ -49,5 +49,7 @@ file.
 - **P23 (step 6). A format number in the file (optional).** A newer version raises it
   only when an older version cannot read the file safely. The older version
   then opens it read-only.
-  - Source: `newer-config-unavailable.md` 8.11. This is a proposal, not a
-    fact of the reference.
+  - Source: `newer-config-unavailable.md` 8.11. Batch 4 found that the
+    reference has a format number, on the whole data folder and not in the
+    settings file. It stops the start on a newer format. See
+    [P74](store-and-data-format.md), which replaces P23 if it is accepted.
