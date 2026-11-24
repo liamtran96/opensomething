@@ -258,6 +258,19 @@ a quote or a list item, in the application or in the docs site.
   `Callout`. The rule is about the left accent line, not about all borders
   (interpretation).
 
+### A research pull request can be larger than 200 lines (2026-11-24)
+
+A pull request that adds or corrects research documents in `docs/research/`
+goes in whole, one pull request for one batch or one check. The limit of 200
+lines in `AGENTS.md` is for code and for the other documents.
+
+- **Why:** The two check reports of 2026-11-23 were 357 and 701 lines. The
+  author chose "one PR each" over a split into about nine pull requests.
+  Earlier research pull requests were also larger (1,240 and 5,457 lines).
+- **How:** One pull request for each research worktree. Keep a change to
+  `docs/plan/`, `docs/decisions.md`, `docs/code/` or the code in its own
+  pull request of 200 lines or fewer.
+
 ## Facts about the environment
 
 - **The reference project** is a local clone in a folder next to this
