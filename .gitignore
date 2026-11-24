@@ -8,3 +8,6 @@
 .DS_Store
 /crates/bot-desktop/ui/node_modules
 /crates/bot-desktop/ui/dist
+
+# Reports of research subagents, kept only for a restart
+.research/
