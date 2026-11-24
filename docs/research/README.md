@@ -9,6 +9,21 @@ The reference project is the local clone in the folder next to this
 repository: `../OpenMausBot`. Never open a file in its `enterprise/`
 directory (`AGENTS.md`).
 
+## The files in this folder
+
+| File | What it holds |
+|---|---|
+| [`reference-features.md`](reference-features.md) | Each feature of the reference, with its group (1, 2, 3, later, no), the crate that gets the port, and the state of its research. Start here |
+| [`progress.md`](progress.md) | The research work, batch by batch: what is done, what runs, what is next |
+| [`changelog.md`](changelog.md) | The release history of the reference, the base parts that came late, and what that means for our structure |
+| [`features/`](features/) | One file for each feature that is analyzed |
+| [`turn-flow-comparison.md`](turn-flow-comparison.md) | The analysis of one turn that was made by part, before the work changed to features |
+
+The unit of work is now one row of
+[`reference-features.md`](reference-features.md), not one part. The table
+of parts below stays as the map of the code of the reference: the column
+"Part" of `reference-features.md` points to it.
+
 ## How to do one part
 
 1. Choose a part from the tables below. The parts for the next steps of
