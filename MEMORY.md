@@ -56,21 +56,42 @@ proposal (a P-number in `docs/plan/<feature>.md`), and the author decides.
   - A difference that is neither is an error. Correct it, or raise it as a
     proposal.
 
-### The changelog is correct and up to date (2026-11-23)
+### The changelog is checked and up to date (2026-11-23)
 
-[`docs/research/changelog.md`](docs/research/changelog.md) is a correct and
-complete record of the releases of the reference project. Use it as a
-trusted source. Do not research the release history again.
+[`docs/research/changelog.md`](docs/research/changelog.md) is the record of
+the releases of the reference project. Use it as a trusted source. Do not
+research the release history again unless the author asks.
 
-- **Why:** The author said "please remember that the changelog is correct
-  and up to date". On 2026-11-23 it covered v0.1.0 to v0.1.177, and v0.1.177
+- **Why:** The author first said "please remember that the changelog is
+  correct and up to date". Then the author asked for a re-check. The
+  re-check of 2026-11-23 found 29 claims that were wrong or not exact, and
+  many key changes that the rows of section 8 did not have. It corrected
+  `changelog.md`. The findings and the full list of missing changes are in
+  [`docs/research/changelog-check.md`](docs/research/changelog-check.md).
+  On 2026-11-23 the file covered v0.1.0 to v0.1.177, and v0.1.177
   (2026-11-22) was the latest release of the reference project.
 - **How:**
   - Use sections 5, 6 and 7 for the problems that each feature must check,
-    as "How to run a batch" in `docs/research/progress.md` says.
+    as "How to run a batch" in `docs/research/progress.md` says. For the
+    repeated fixes of one theme, look also in section 6 of
+    `changelog-check.md`.
   - Keep it up to date: when the reference project publishes a release after
     v0.1.177, add its row to section 8. Change sections 3 to 7 only when the
     new release changes them.
+
+### A changelog row has all the key changes of its release (2026-11-23)
+
+When you write or check a row of the release history, read the whole note
+of the release. Put each key change in the row: a new feature, a new base
+part, a removal or a reversal, a breaking change, and a fix of a problem
+that comes again.
+
+- **Why:** The author showed the full note of v0.1.177 as an example, and
+  the row had only two of its changes. The author said: "dont miss the
+  important things and avoid the mistake from them".
+- **How:** Give each change with its exact quote. Check each quote, date
+  and version against the release text before you write it. Put a change
+  that alters a theme or a reversal into sections 5 and 6 too.
 
 ### One plan file for each researched feature (2026-11-23)
 
