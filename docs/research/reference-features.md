@@ -19,8 +19,8 @@ wide first, and its base parts came late.
 
 | Group | Meaning | Plan steps | The test | Rows | Research done or partial |
 |---|---|---|---|---|---|
-| **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 7 |
-| 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 2 |
+| **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 11 |
+| 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 7 |
 | 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 0 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
@@ -66,6 +66,9 @@ wide first, and its base parts came late.
    2026-11-23 (batch 2 of [`progress.md`](progress.md)).
 4. After that, no more research until step 7 is done. One exception: the
    `Driver` contract for step 3 (batch 3 of [`progress.md`](progress.md)).
+5. On 2026-11-24 the author lifted the pause. Batch 4 of
+   [`progress.md`](progress.md) did the last open rows of group 1 and the
+   store, the ACP core, the engine processes and the approvals of group 2.
 
 ## Plans in `docs/superpowers/plans/`, files 1 to 12
 
@@ -76,7 +79,7 @@ All 12 files were read completely (5,477 lines).
 | Rule: secrets are write-only; the UI sees only "configured" | `2026-08-31-00-control-plane-roadmap.md` | built | 11 | **1** | `bot-core` | done: [`write-only-secrets.md`](features/write-only-secrets.md) |
 | Rule: files with mode 0600, atomic writes, redaction of text that an agent wrote | `2026-08-31-00-control-plane-roadmap.md` | built | 4, 11 | **1** | `bot-core` | done: [`file-modes-atomic-writes-redaction.md`](features/file-modes-atomic-writes-redaction.md) |
 | Rule: a config from a newer version loads in an older version as "unavailable" | `2026-08-31-00-control-plane-roadmap.md` | built | 2 | **1** | `bot-engine` | done: [`newer-config-unavailable.md`](features/newer-config-unavailable.md) |
-| A fake ACP CLI for protocol tests | `2026-08-15-opencode-go-integration.md` | built | 40 | 2 | `bot-engine` | open |
+| A fake ACP CLI for protocol tests | `2026-08-15-opencode-go-integration.md` | built | 40 | 2 | `bot-engine` | done: [`acp-core.md`](features/acp-core.md) |
 | The engine switch in the middle of a thread, with a replay of the thread | `2026-08-31-00-control-plane-roadmap.md` | built | 17 | 3 | `bot-core` | open |
 | The MCP registry: the person adds an MCP server (stdio or HTTP), tests it and sees its tools | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
 | Grants of one MCP tool to one bot | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
@@ -163,10 +166,10 @@ says a different state.
 
 | Feature | Document | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
-| A model connection with no tools | `openai-tools.md` | 9 | **1** | `bot-engine` | open |
+| A model connection with no tools | `openai-tools.md` | 9 | **1** | `bot-engine` | done: [`chat-streaming.md`](features/chat-streaming.md) |
 | Tool calls for the chat API drivers, with approvals, deny and interrupt | `openai-tools.md` | 9, 10 | 2 | `bot-engine` | done: [`chat-driver-tool-calls.md`](features/chat-driver-tool-calls.md) |
 | Turn limits: 64 model steps and 200 tool calls | `openai-tools.md` | 9 | 2 | `bot-engine` | open |
-| The approval level of one thread | `provider-recovery.md` | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
+| The approval level of one thread | `provider-recovery.md` | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`approval-levels.md`](features/approval-levels.md) |
 | Question cards: a bot asks the person with buttons or a reply field; on a Team Cloud, a copy goes to the Inbox | `question-cards.md` | 48 | 2 | `bot-desktop` | open |
 | Notification tools that only the helper bot has | `mausbot.md` | 13, 50 | 3 | `bot-engine` | open |
 | The helper bot as the Chief when there is none | `mausbot.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
@@ -284,7 +287,7 @@ a feature is marked. Each row has all the features of one page.
 | Document | Features | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
 | `custom-engines.md` | Provider icons; a custom ACP instance; model refresh for each bot; removal of the keys of other providers; OpenAI-compatible instances; guides for providers; an invalid instance does not stop the others | 2, 7, 9 | **1** | `bot-engine` | partial: [`features/driver-contract.md`](features/driver-contract.md) |
-| `approval-levels.md` | The approval levels (ask, auto-accept edits, approve for me, custom, full access); full access is the default; reads of own files never ask; a new thread gets the level of the conversation; change of level in the middle of a turn; a level for all bots of a department; a receipt with Undo; the level of a Chief flows down; allow once and allow for this session; question cards and `ask_user`; the safety floor and guarded sends | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
+| `approval-levels.md` | The approval levels (ask, auto-accept edits, approve for me, custom, full access); full access is the default; reads of own files never ask; a new thread gets the level of the conversation; change of level in the middle of a turn; a level for all bots of a department; a receipt with Undo; the level of a Chief flows down; allow once and allow for this session; question cards and `ask_user`; the safety floor and guarded sends | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`approval-levels.md`](features/approval-levels.md) |
 | `cursor.md` | One ACP engine in detail: a sign-in card, a version check, install on a Cloud, model discovery, autonomy, a question card, the agent tools on that engine | 7 | 2 | `bot-engine` | open |
 | `agents-tool-bridge.md` | The tool bridge: a short tool list with `find_tool` and `use_tool` (off by default); automatic for local models; the tools that are always listed; which engines can use it; a golden test of the catalog; an eval of tool choice | 13 | 3 | `bot-engine` | open |
 | `composio.md` | Connected apps through a connector service: a project key; more than one account for an app; a managed connection service on the Cloud; automations from app events, with daily limits; apps for each person on a Team Cloud; file uploads; tool grants for each bot; bots that a Chief makes get its apps; named mail and calendar tools; "sending on your behalf" | 20, 18 | 3 | `bot-engine` | open |
@@ -396,9 +399,9 @@ says.
 
 | Document | Features | State | Part | Group | Ours | Research |
 |---|---|---|---|---|---|---|
-| `plans/2026-08-18-001-fix-claude-turn-teardown...` and the two other fix plans of that date | Kill the process tree of an engine when a turn ends; refuse a permission request that arrives after the turn ended; a guard for two requests with the same identifier | planned | 8, 10 | 2 | `bot-engine` | open |
+| `plans/2026-08-18-001-fix-claude-turn-teardown...` and the two other fix plans of that date | Kill the process tree of an engine when a turn ends; refuse a permission request that arrives after the turn ended; a guard for two requests with the same identifier | planned | 8, 10 | 2 | `bot-engine` | done: [`engine-process-lifecycle.md`](features/engine-process-lifecycle.md) |
 | `plans/agent-harness-upgrades.md` and `-v2.md` | A list of 17 upgrades, of which the row names 15: context rebuild on a model switch; attachments; automatic retry; search across threads; cost visibility; a liveness check; portable context; durable delegations; tool deadlines and loop detection; redaction of tool results; approvals that fail closed; activity state on the server; the raw event inspector; a driver for local models; steering in the middle of a turn. Also built: message branches with a version switcher | some built | 1, 9, 17, 47, 64 | 2 | `bot-core` | open |
-| `specs/steer-sigterm-audit.md` | A graceful Stop for one engine; steer and queue never kill | built | 8 | 2 | `bot-engine` | open |
+| `specs/steer-sigterm-audit.md` | A graceful Stop for one engine; steer and queue never kill | built | 8 | 2 | `bot-engine` | done: [`engine-process-lifecycle.md`](features/engine-process-lifecycle.md) |
 | `specs/steer-vs-queue.md` | Enter queues a message, and a second Enter steers it into the running turn | specification | 23, 1 | 2 | `bot-core`, `bot-desktop` | done: [`queue-and-steer.md`](features/queue-and-steer.md) |
 | `plans/2026-09-02-bot-concurrency.md` | A busy member of a room is woken later, not skipped; a direct message goes before background work; optional parallel turns for a bot | decision record | 15, 12 | 3 | `bot-core`, `bot-engine` | open |
 | `plans/2026-09-09-independent-threads.md` | Tasks became threads; folders; the thread list and "All threads"; parallel threads (default: one for each 2 GB of memory, from 3 to 16); a working folder for each thread; a claim on the browser or the computer for each turn; the `memory_update` tool; archive of idle threads (later) | built | 12 | 3 | `bot-core`, `bot-desktop` | open |
@@ -464,9 +467,9 @@ files.
 | Document | Features | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
 | `README.md` | Bots on the agent CLIs of the person, with a custom binary for each engine; one local server that owns all agents; a computer for each bot; the model picker with a provider rail; a model switch in the middle of a conversation; the Computer panel; approval and question cards; the permission broker; the connected apps marketplace; the context menu of a bot; write-only keys with hot reload; channels; automatic routing with the decision model; install of a team from a Markdown file; spoken replies and calls; streaming replies with tool rows; dictation; screenshots in the transcript; the driver interface; the event bus and the event stream; the HTTP API; the desktop shells; the MCP server for other tools; the headless CLI; triggers: schedules, app events and webhooks, with a triggers page and bot tools; webhooks through the local receiver (no hosted relay); custom engines by config; the open-source edition | 1 to 42 | **1** | `bot-core` | partial: [`features/driver-contract.md`](features/driver-contract.md), [`changelog.md`](changelog.md) |
-| `CONTRIBUTING.md` | Development commands; a screenshot tool; the data format marker and the rule that a format change takes two releases; stores that repair themselves; the driver contract; rules for the control CLIs and for MCP tool schemas; how to add a language; no shell command built from a string; the write-only secrets API; CI gates; self-contained fakes | 4, 41, 40 | **1** | `bot-core` | open |
-| `SECURITY.md`, `LICENSING.md` | How to report a vulnerability; loopback binding; the routes that a service can call; the credentials file; pointers to Vault values; the meaning of full access; the edition flag; enterprise entitlements; sign-in to a hosted workspace fails closed | 11 | **1** | `bot-core` | open |
-| `server/host/README.md`, `server/routes/README.md` | The rules for the host modules and the route modules: how `server/index.ts` is split | 5 | **1** | `bot-cli`, `bot-desktop` | open |
+| `CONTRIBUTING.md` | Development commands; a screenshot tool; the data format marker and the rule that a format change takes two releases; stores that repair themselves; the driver contract; rules for the control CLIs and for MCP tool schemas; how to add a language; no shell command built from a string; the write-only secrets API; CI gates; self-contained fakes | 4, 41, 40 | **1** | `bot-core` | done: [`store-and-data-format.md`](features/store-and-data-format.md) |
+| `SECURITY.md`, `LICENSING.md` | How to report a vulnerability; loopback binding; the routes that a service can call; the credentials file; pointers to Vault values; the meaning of full access; the edition flag; enterprise entitlements; sign-in to a hosted workspace fails closed | 11 | **1** | `bot-core` | done: [`security-model.md`](features/security-model.md) |
+| `server/host/README.md`, `server/routes/README.md` | The rules for the host modules and the route modules: how `server/index.ts` is split | 5 | **1** | `bot-cli`, `bot-desktop` | done: [`composition-root.md`](features/composition-root.md) |
 | Docs site: `features/approvals-and-inspector.mdx` | Approval cards; a change that a bot makes to itself applies with Undo; owner approval on a Cloud; the inspector; a retry while streaming | 10, 48, 64 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
 | Docs site: `security/` | Optional analytics; full access by default; credentials injected for one provider only; the record of an approval result, and old cards that close; a narrow "always allow"; the `request_credential` secure card; named secrets of a bot in the Vault; value masking; a website sign-in policy and one-time codes; the "Sign in needed" card; permission for remote browser control; saved logins; scrubbing | 10, 11, 31, 39 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
 | Docs site: `connected-apps/` | Connect an app; the managed service and your own key; the X card and research tools; posting; apps that need your own OAuth; labelled accounts, with a cap of five; tool grants for each bot; disconnect revokes at the provider | 20, 49 | 3 | `bot-engine` | open |

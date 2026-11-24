@@ -158,8 +158,10 @@ It is the local clone at <ABSOLUTE PATH>, at commit <COMMIT>.
 - Each subagent report ends with "Files read completely" (path and line
   count) and "Not verified".
 - Check the key findings of each subagent against the code.
-- Load the anthropic-skills:asd-ste100 skill before you write. Apply it to
-  the prose, not to code, paths or quotes.
+- Load the skill `anthropic-skills:asd-ste100` with the Skill tool before
+  you write. If the Skill tool does not list it, read
+  `~/.claude/skills/synced/*/asd-ste100/SKILL.md`. Apply it to the prose,
+  not to code, paths or quotes.
 
 ## Output
 Write docs/research/features/<NAME>.md with these sections:
@@ -252,3 +254,54 @@ the code:
    (`server/drivers/acp/core.ts:333-346`).
 
 The proposals are in [`../plan/driver-contract.md`](../plan/driver-contract.md).
+
+## Batch 4, started 2026-11-24
+
+The author lifted the pause after batch 2 on 2026-11-24: "please start
+analyze the next features". Step 2 of the plan was not complete. The batch
+does the three open rows of group 1 and one theme for each of steps 8, 9
+and 10 of group 2. The reference is at commit `ed8cb7278` (2026-11-24).
+
+| # | Rows of `reference-features.md` | Group | Crate | Step | Name | State |
+|---|---|---|---|---|---|---|
+| 1 | `CONTRIBUTING.md`; part 4, the store and the data folder | 1, 2 | `bot-core` | 6, 8 | [`store-and-data-format`](features/store-and-data-format.md) | done, 2026-11-24, at commit `ed8cb7278` |
+| 2 | `SECURITY.md`, `LICENSING.md` | 1 | `bot-core`, `bot-cli` | 6, 9 | [`security-model`](features/security-model.md) | done, 2026-11-24, at commit `ed8cb7278` |
+| 3 | `server/host/README.md`, `server/routes/README.md` | 1 | `bot-cli`, `bot-desktop` | 7 | [`composition-root`](features/composition-root.md) | done, 2026-11-24, at commit `ed8cb7278` |
+| 4 | A fake ACP CLI for protocol tests; part 7 | 2 | `bot-engine` | 9 | [`acp-core`](features/acp-core.md) | done, 2026-11-24, at commit `ed8cb7278` |
+| 5 | `specs/steer-sigterm-audit.md`; the fix plans of 2026-08-18 | 2 | `bot-engine` | 9 | [`engine-process-lifecycle`](features/engine-process-lifecycle.md) | done, 2026-11-24, at commit `ed8cb7278` |
+| 6 | `approval-levels.md`; the approval level of one thread | 2 | `bot-core`, `bot-engine`, `bot-desktop` | 10 | [`approval-levels`](features/approval-levels.md) | done, 2026-11-24, at commit `ed8cb7278` |
+
+- The row "A model connection with no tools" needs no worktree.
+  [`features/chat-streaming.md`](features/chat-streaming.md) names it as
+  one of its rows.
+
+The usage limit of one account stopped all subagents of the six agents. The
+main session told each agent to start its failed subagents again, after a
+change of account.
+
+The main session checked 33 key claims at `ed8cb7278`. All 33 agree with
+the code. Some of them:
+
+1. `store-and-data-format`: since v0.1.178 the data format `writes` is 2,
+   so an unreadable marker stops the start (`server/data-format.ts:13`,
+   `:51-60`). The restart rule has a fourth branch, `restartCut`, from
+   commit `01bcd69ed` (`server/runtime/runtime.ts:140-142`).
+2. `security-model`: an unset `OMB_LOOPBACK_TRUST` gives `owner`, except on
+   a hosted workspace (`server/request-auth.ts:88-111`). A credential that
+   is not valid gives 401 and never falls back to loopback (`:707-711`).
+3. `composition-root`: no file of `server/host/` (209 source files) or
+   `server/routes/` (133 source files) imports `server/index.ts`. The
+   desktop waits 9.5 s for the server to stop (`electron/main.mjs:293`).
+4. `acp-core`: the environment of an ACP engine still starts from all of
+   `process.env` and removes only listed keys
+   (`server/drivers/acp/core.ts:339-354`).
+5. `engine-process-lifecycle`: a stop sends SIGTERM to the group, waits
+   5 s, then sends SIGKILL and waits 1 s (`server/procs.ts:604-668`).
+6. `approval-levels`: the load of the store deletes an `approvalMode` that
+   is not valid (`server/store.ts:351-354`, `:521-524`). The default level
+   then applies, and it is Full (`packages/phone-protocol/src/approval-mode.ts:74`).
+   So an unknown stored level becomes Full, not the Ask that the comment
+   at `:85-86` says.
+
+The proposals are in `../plan/<name>.md` of each feature.
+
