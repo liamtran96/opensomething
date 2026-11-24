@@ -812,8 +812,8 @@ What a crash loses (group 3):
   (`index.ts:656`).
 
 **The comment and the code do not agree.** The comment at `index.ts:15276`
-and the header at `crash-guard.ts:12-14` say that running turns "stay
-running" and that the next start runs them again. But the crash path also
+says that running turns "stay running". The header at `crash-guard.ts:12-14`
+says that the server marks them cut, so the next start runs them again. But the crash path also
 calls `noteTurnsCutByShutdown()`. So a busy thread that the runtime does not
 hold gets the failed "restart interrupted" line, and the person must press
 Retry. Only the turns that the runtime holds run again.
@@ -1123,8 +1123,8 @@ or a known problem of the reference.
    `Arc<Settings>` that the root swaps gives each reader a whole old or a
    whole new value.
 9. **Deps as constructor arguments that name a trait, not a slice of a
-   class.** Reason: less code. The reference uses `Pick<Store, ...>` in 79
-   modules and `as unknown as XDeps` casts in its tests
+   class.** Reason: less code. The reference uses `Pick<Store, ...>` in 128
+   files that are not tests under `server/` (74 in `server/host/`), and `as unknown as XDeps` casts in its tests
    (`host/person-stop.test.ts:8-17`). A Rust trait for the narrow need gives
    a fake for tests with no cast.
 10. **Typed errors, not an HTTP status on an `Error`.** Reason: a wrong
