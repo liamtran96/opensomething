@@ -957,8 +957,8 @@ Each point has a reason of one of these kinds:
    backup, fails at once with `SQLITE_BUSY`.
 7. **Keep the pragmas of the reference:** WAL, `synchronous = NORMAL`, and
    `FULL` for a commit whose result goes out at once
-   (`server/message-db.ts:49-50`, `:228-238`). Reason: the reference measured
-   this (`docs/verification/persistence-performance.md`).
+   (`server/message-db.ts:49-50`, `:228-238`). Reason: the reference uses these
+   settings. Its performance record measures the search, not the pragmas.
 8. **Identifiers and order for D17.** The reference makes random UUIDs or
    takes the identifier of the caller, and orders events by `AUTOINCREMENT`,
    never by time (`server/runtime/store.ts:142`, `server/runtime/tree.ts:1`).
