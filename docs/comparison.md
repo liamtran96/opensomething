@@ -105,7 +105,7 @@ Points that a port must keep:
 
 | Feature | Technique | TypeScript | Rust |
 |---|---|---|---|
-| Own tools for engines | A small stdio proxy is given to each engine as an MCP server. It calls the server on loopback with a token for the turn. | Hand-written MCP, `node:readline`, `node:http` | `rmcp` 3, or the line codec |
+| Own tools for engines | A small stdio proxy is given to each engine as an MCP server. It calls the server on loopback with a token for each bot, thread and set of grants; the record behind the token is for one turn. | Hand-written MCP, `node:readline`, `node:http` | `rmcp` 3, or the line codec |
 | Tool schemas | JSON Schema written as literals; calls checked by hand-written code | Hand-written | `schemars` 1 to generate |
 | Schema check of outside tools | Validate arguments against the schema that the tool server listed | `ajv`, `ajv-formats` | `jsonschema` 0.61 |
 | Delegation | `coordinate_bots` writes an assignment; the runtime owns the hand-off | Hand-written | `bot-core` runtime |

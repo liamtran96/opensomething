@@ -68,6 +68,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`assignment-runtime.md`](assignment-runtime.md) | [`assignment-runtime.md`](../research/features/assignment-runtime.md) | P164 to P172, and new facts for P83, P85, P138 | 13, 14 |
 | [`automations.md`](automations.md) | [`automations.md`](../research/features/automations.md) | P173 to P181 | 15, later |
 | [`threads.md`](threads.md) | [`threads.md`](../research/features/threads.md) | P182 to P193 | 8, 11, 12 |
+| [`agent-tools.md`](agent-tools.md) | [`agent-tools.md`](../research/features/agent-tools.md) | P194 to P203 | 12, D8 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -347,6 +348,8 @@ program starts another program. What it must cover: [P95](security-model.md).
 |---|---|---|---|
 | 11 | Tasks: a bot has more than one thread ([P182 to P193](threads.md)) | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
 | 12 | Our own tools for engines, given as an MCP server: `list_bots` first | `bot-engine` | An engine lists the bots through the tool |
+| 11 | Tasks: a bot has more than one thread | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
+| 12 | Our own tools for engines, given as an MCP server: `list_bots` first ([P194 to P203](agent-tools.md)) | `bot-engine` | An engine lists the bots through the tool |
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
