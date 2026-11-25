@@ -21,7 +21,7 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 32 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 41 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
@@ -88,10 +88,10 @@ All 12 files were read completely (5,477 lines).
 | The Connections Center UI: "Apps" and "MCP servers" | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
 | Connector grants for each bot, by exact tool name | `2026-08-31-04-connector-scopes.md` | built | 20 | 3 | `bot-engine` | open |
 | Connector grants by verb class (read, draft, send, modify, delete) | `2026-08-31-04-connector-scopes.md` | superseded, not built | 20 | 3 | `bot-engine` | open |
-| Memory proposals: a bot proposes a memory change, and a person approves, edits or rejects it | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | open |
-| Typed memory entries: facts, preferences, decisions, procedures | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | open |
-| The memory panel: read, edit and delete memory files, with a capacity gauge | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | open |
-| The memory journal: each memory change of a turn, with revert | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | open |
+| Memory proposals: a bot proposes a memory change, and a person approves, edits or rejects it | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
+| Typed memory entries: facts, preferences, decisions, procedures | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
+| The memory panel: read, edit and delete memory files, with a capacity gauge | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
+| The memory journal: each memory change of a turn, with revert | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | The task board for delegated work: owner, state, deadline, artifacts | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
 | The supervisor role: one more level of delegation | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
 | A limit on delegations that run at the same time | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
@@ -176,8 +176,8 @@ says a different state.
 | Notification tools that only the helper bot has | `mausbot.md` | 13, 50 | 3 | `bot-engine` | open |
 | The helper bot as the Chief when there is none | `mausbot.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
 | MCP sign-in from another computer: paste the callback address back | `mcp-sign-in.md` | 20 | 3 | `bot-engine` | open |
-| Memory: automatic recall, a topic index, until-dates, background capture, a nightly tidy-up with undo | `memory-layer.md` | 16 | 3 | `bot-core` | open |
-| Reply habits in each prompt, and "Remember:" and "Forget" in the chat | `memory-layer.md` | 16, 17 | 3 | `bot-core` | open |
+| Memory: automatic recall, a topic index, until-dates, background capture, a nightly tidy-up with undo | `memory-layer.md` | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
+| Reply habits in each prompt, and "Remember:" and "Forget" in the chat | `memory-layer.md` | 16, 17 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | Mentions: a picker in the composer, colours for each bot, `@everyone` in a room | `mentions.md` | 23 | 3 | `bot-desktop` | open |
 | A tool directory when a bot has more than 128 MCP tools | `openai-tools.md` | 13, 20 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | A bot says where another bot lives | `own-home.md` | 15, 36 | 3 | `bot-core`, `bot-engine` | open |
@@ -208,7 +208,7 @@ says a different state.
 | A connection to a hosted application with OAuth and no key | `whop.md` | 20 | 3 | `bot-engine` | open |
 | Local environments in the settings | `local-environments.md` | 29 | later | `bot-desktop` | open |
 | The default helper bot: each installation has one, and it cannot be deleted | `mausbot.md` | 45 | later | `bot-desktop` | open |
-| The helper model: one model for background calls, with a switch for each bot | `memory-layer.md` | 9, 16 | later | `bot-engine` | open |
+| The helper model: one model for background calls, with a switch for each bot | `memory-layer.md` | 9, 16 | later | `bot-engine` | partial: [`memory.md`](features/memory.md) has the helper model of memory |
 | The welcome flow: two screens, then the chat of the Chief | `onboarding.md` | 25 | later | `bot-desktop` | open |
 | The guided tour of the application | `onboarding.md` | 25 | later | `bot-desktop` | open |
 | The default model after the first start | `onboarding.md` | 9, 25 | later | `bot-engine` | open |
@@ -294,7 +294,7 @@ a feature is marked. Each row has all the features of one page.
 | `agents-tool-bridge.md` | The tool bridge: a short tool list with `find_tool` and `use_tool` (off by default); automatic for local models; the tools that are always listed; which engines can use it; a golden test of the catalog; an eval of tool choice | 13 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | `composio.md` | Connected apps through a connector service: a project key; more than one account for an app; a managed connection service on the Cloud; automations from app events, with daily limits; apps for each person on a Team Cloud; file uploads; tool grants for each bot; bots that a Chief makes get its apps; named mail and calendar tools; "sending on your behalf" | 20, 18 | 3 | `bot-engine` | partial: [`automations.md`](features/automations.md) gives the border of app events |
 | `custom-mcp-servers.md` | Add a server by paste; an edit form; a test when added; a restart action; "only for me" on a Team Cloud; built-in cards; bot access for each card; OAuth sign-in, also from another computer; bulk import; "bring what you already use"; imported skills; the choice of MCP servers for each bot; the MCP servers of one bot; health checks at the start of a bot; tool search for a large server; a table of which engine reaches what; also use the MCP servers and skills of another CLI; project skills; an allow list from the organization; safety rules; a result gate | 20, 19 | 3 | `bot-engine` | open |
-| `memory.md` | Memory files; a switch for each bot; the memory panel; redaction of credentials on write; the load budget; until-dates; the topic index; automatic recall; upkeep that notices facts; learning from group chats; organization into topics; "About me" facts; a nightly tidy-up; a warning for a heavy bot; the helper model; remember, forget and prefer in the chat; safe editing on conflict; a brief of recent work; a daily turn log line; `session_search` with dates; the memory journal with Undo; the routes; a memory layer for each person on a Team Cloud; shared team memory; fact checks | 16 | 3 | `bot-core` | open |
+| `memory.md` | Memory files; a switch for each bot; the memory panel; redaction of credentials on write; the load budget; until-dates; the topic index; automatic recall; upkeep that notices facts; learning from group chats; organization into topics; "About me" facts; a nightly tidy-up; a warning for a heavy bot; the helper model; remember, forget and prefer in the chat; safe editing on conflict; a brief of recent work; a daily turn log line; `session_search` with dates; the memory journal with Undo; the routes; a memory layer for each person on a Team Cloud; shared team memory; fact checks | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | `proactive-routines.md` | The default routine "keep an eye on my day"; the daily brief card; a meeting preparation card and a 10-minute reminder; routine checks; read-and-draft runs; inbox triage with the helper model; reliability rules; state files; a morning brief on a personal Cloud | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `routine-schedules.md` | Routines from natural language with cron; the schedule types; the `check_back` tool; an on/off switch; one-time routines; delete cascade; where a routine runs; keep the computer awake; catch-up after downtime and "Missed" rows; a ledger of occurrences; a cap on run rows; restart of a lost run; run time limits; a busy bot misses after 60 minutes; safety for an unreadable routines file; waits for approval | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `runtime-contract.md` | The assignment record and its database; the lifecycle; one answer to the same request; a question from a child interrupts the wait; a requester with full access answers; typed questions become cards; continue and loop guards; wake, cancel, stop; the level rule; the envelope; the restart policy; budgets and clocks; ten invariants; ports; the tool surface | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
@@ -408,7 +408,7 @@ says.
 | `plans/2026-09-02-bot-concurrency.md` | A busy member of a room is woken later, not skipped; a direct message goes before background work; optional parallel turns for a bot | decision record | 15, 12 | 3 | `bot-core`, `bot-engine` | open |
 | `plans/2026-09-09-independent-threads.md` | Tasks became threads; folders; the thread list and "All threads"; parallel threads (default: one for each 2 GB of memory, from 3 to 16); a working folder for each thread; a claim on the browser or the computer for each turn; the `memory_update` tool; archive of idle threads (later) | built | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | `plans/2026-09-09-thread-aware-bots.md` | The tools `list_threads`, `start_thread` and `close_thread`; "opened by" on a thread; links to a thread with `#Title` | planned; `start_thread` is built | 12, 13 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
-| `plans/2026-09-25-memory-layer.md` | The memory layer: recall, the topic index, until-dates, upkeep, capture, "About me", tidy-up, organize | built | 16 | 3 | `bot-core` | open |
+| `plans/2026-09-25-memory-layer.md` | The memory layer: recall, the topic index, until-dates, upkeep, capture, "About me", tidy-up, organize | built | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | `specs/aside-injection-seams.md` | The aside lane: context from a peer goes into a running turn; how each driver takes it | built | 2, 15 | 3 | `bot-core`, `bot-engine` | open |
 | `requirements/` and `design/` for issue 1635 | The thread list in order of update; pinned threads; the 6 newest open threads by default | design | 12, 24 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | `requirements/` and `design/` for issue 1641 | New coordinated work waits while an approval card of a peer is open | design | 15 | 3 | `bot-core`, `bot-engine` | open |
@@ -509,7 +509,7 @@ read. They are not here yet.
 | Feature | Document | State | Part | Group | Ours | Research |
 |---|---|---|---|---|---|---|
 | Rule: never offer a control, tool or attachment that a driver cannot mount; a new integration gets a new capability flag, and the UI reads the flag | `superpowers/plans/2026-08-31-00-control-plane-roadmap.md` | built | 2 | **1** | `bot-engine` | partial: [`features/driver-contract.md`](features/driver-contract.md) |
-| A conversation's own notes: the facts of one matter go to `memory/threads/<id>.md`; `scope: "everywhere"` saves to `MEMORY.md` | `memory.md`, `verification/memory-layer.md` | built | 16 | 3 | `bot-core` | open |
+| A conversation's own notes: the facts of one matter go to `memory/threads/<id>.md`; `scope: "everywhere"` saves to `MEMORY.md` | `memory.md`, `verification/memory-layer.md` | built | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | A bot can be kept to some accounts of a connected app ("Accounts this bot may use") | `composio.md` | built | 20 | 3 | `bot-engine` | open |
 | The rules and limits of a wait: only a turn that the person started in their own one-to-one chat makes or cancels a wait; 10 waits for each bot, 50 in all, 24 hours by default, 168 at most; the `then` follow-up runs in the same chat | `superpowers/plans/2026-10-27-waits.md` | not stated | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | Provenance notes: each line that a bot reads, except the person's own line in their own chat, starts with `[From <who> · <what> · <authority>]` | `team-cloud.md` | not stated | 15, 11 | 3 | `bot-core` | open |
