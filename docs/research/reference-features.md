@@ -21,7 +21,7 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 61 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 72 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
@@ -83,9 +83,9 @@ All 12 files were read completely (5,477 lines).
 | Rule: a config from a newer version loads in an older version as "unavailable" | `2026-08-31-00-control-plane-roadmap.md` | built | 2 | **1** | `bot-engine` | done: [`newer-config-unavailable.md`](features/newer-config-unavailable.md) |
 | A fake ACP CLI for protocol tests | `2026-08-15-opencode-go-integration.md` | built | 40 | 2 | `bot-engine` | done: [`acp-core.md`](features/acp-core.md) |
 | The engine switch in the middle of a thread, with a replay of the thread | `2026-08-31-00-control-plane-roadmap.md` | built | 17 | 3 | `bot-core` | open |
-| The MCP registry: the person adds an MCP server (stdio or HTTP), tests it and sees its tools | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
-| Grants of one MCP tool to one bot | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
-| The Connections Center UI: "Apps" and "MCP servers" | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | open |
+| The MCP registry: the person adds an MCP server (stdio or HTTP), tests it and sees its tools | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
+| Grants of one MCP tool to one bot | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
+| The Connections Center UI: "Apps" and "MCP servers" | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | partial: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | Connector grants for each bot, by exact tool name | `2026-08-31-04-connector-scopes.md` | built | 20 | 3 | `bot-engine` | open |
 | Connector grants by verb class (read, draft, send, modify, delete) | `2026-08-31-04-connector-scopes.md` | superseded, not built | 20 | 3 | `bot-engine` | open |
 | Memory proposals: a bot proposes a memory change, and a person approves, edits or rejects it | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
@@ -131,9 +131,9 @@ All 12 files were read completely (7,947 lines).
 
 | Feature | Document | State | Part | Group | Ours | Research |
 |---|---|---|---|---|---|---|
-| Sign-in to a remote MCP server with OAuth, from the desktop only | `2026-09-30-mcp-sign-in.md` | not stated | 20 | 3 | `bot-engine` | open |
-| The OAuth token store, token refresh, and the token in each turn | `2026-09-30-mcp-sign-in.md` | not stated | 11, 20 | 3 | `bot-engine` | open |
-| A remote MCP server goes through a local stdio proxy | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 20 | 3 | `bot-engine` | open |
+| Sign-in to a remote MCP server with OAuth, from the desktop only | `2026-09-30-mcp-sign-in.md` | not stated | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
+| The OAuth token store, token refresh, and the token in each turn | `2026-09-30-mcp-sign-in.md` | not stated | 11, 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
+| A remote MCP server goes through a local stdio proxy | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | Waits: "tell me when": code with no model checks a file, a process, a page or a bot | `2026-10-27-waits.md` | not stated | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | The tools `wait_until`, `list_waits` and `cancel_wait` | `2026-10-27-waits.md` | not stated | 13, 18 | 3 | `bot-engine` | done: [`automations.md`](features/automations.md) |
 | The page check with an egress rule: public addresses only, limited redirects and size | `2026-10-27-waits.md` | not stated | 11, 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
@@ -175,7 +175,7 @@ says a different state.
 | Question cards: a bot asks the person with buttons or a reply field; on a Team Cloud, a copy goes to the Inbox | `question-cards.md` | 48 | 2 | `bot-desktop` | done: [`question-cards.md`](features/question-cards.md) |
 | Notification tools that only the helper bot has | `mausbot.md` | 13, 50 | 3 | `bot-engine` | open |
 | The helper bot as the Chief when there is none | `mausbot.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
-| MCP sign-in from another computer: paste the callback address back | `mcp-sign-in.md` | 20 | 3 | `bot-engine` | open |
+| MCP sign-in from another computer: paste the callback address back | `mcp-sign-in.md` | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | Memory: automatic recall, a topic index, until-dates, background capture, a nightly tidy-up with undo | `memory-layer.md` | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | Reply habits in each prompt, and "Remember:" and "Forget" in the chat | `memory-layer.md` | 16, 17 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | Mentions: a picker in the composer, colours for each bot, `@everyone` in a room | `mentions.md` | 23 | 3 | `bot-desktop` | open |
@@ -293,7 +293,7 @@ a feature is marked. Each row has all the features of one page.
 | `cursor.md` | One ACP engine in detail: a sign-in card, a version check, install on a Cloud, model discovery, autonomy, a question card, the agent tools on that engine | 7 | 2 | `bot-engine` | done: [`acp-adapter.md`](features/acp-adapter.md) |
 | `agents-tool-bridge.md` | The tool bridge: a short tool list with `find_tool` and `use_tool` (off by default); automatic for local models; the tools that are always listed; which engines can use it; a golden test of the catalog; an eval of tool choice | 13 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | `composio.md` | Connected apps through a connector service: a project key; more than one account for an app; a managed connection service on the Cloud; automations from app events, with daily limits; apps for each person on a Team Cloud; file uploads; tool grants for each bot; bots that a Chief makes get its apps; named mail and calendar tools; "sending on your behalf" | 20, 18 | 3 | `bot-engine` | partial: [`automations.md`](features/automations.md) gives the border of app events |
-| `custom-mcp-servers.md` | Add a server by paste; an edit form; a test when added; a restart action; "only for me" on a Team Cloud; built-in cards; bot access for each card; OAuth sign-in, also from another computer; bulk import; "bring what you already use"; imported skills; the choice of MCP servers for each bot; the MCP servers of one bot; health checks at the start of a bot; tool search for a large server; a table of which engine reaches what; also use the MCP servers and skills of another CLI; project skills; an allow list from the organization; safety rules; a result gate | 20, 19 | 3 | `bot-engine` | open |
+| `custom-mcp-servers.md` | Add a server by paste; an edit form; a test when added; a restart action; "only for me" on a Team Cloud; built-in cards; bot access for each card; OAuth sign-in, also from another computer; bulk import; "bring what you already use"; imported skills; the choice of MCP servers for each bot; the MCP servers of one bot; health checks at the start of a bot; tool search for a large server; a table of which engine reaches what; also use the MCP servers and skills of another CLI; project skills; an allow list from the organization; safety rules; a result gate | 20, 19 | 3 | `bot-engine` | partial: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | `memory.md` | Memory files; a switch for each bot; the memory panel; redaction of credentials on write; the load budget; until-dates; the topic index; automatic recall; upkeep that notices facts; learning from group chats; organization into topics; "About me" facts; a nightly tidy-up; a warning for a heavy bot; the helper model; remember, forget and prefer in the chat; safe editing on conflict; a brief of recent work; a daily turn log line; `session_search` with dates; the memory journal with Undo; the routes; a memory layer for each person on a Team Cloud; shared team memory; fact checks | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | `proactive-routines.md` | The default routine "keep an eye on my day"; the daily brief card; a meeting preparation card and a 10-minute reminder; routine checks; read-and-draft runs; inbox triage with the helper model; reliability rules; state files; a morning brief on a personal Cloud | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `routine-schedules.md` | Routines from natural language with cron; the schedule types; the `check_back` tool; an on/off switch; one-time routines; delete cascade; where a routine runs; keep the computer awake; catch-up after downtime and "Missed" rows; a ledger of occurrences; a cap on run rows; restart of a lost run; run time limits; a busy bot misses after 60 minutes; safety for an unreadable routines file; waits for approval | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
@@ -412,10 +412,10 @@ says.
 | `specs/aside-injection-seams.md` | The aside lane: context from a peer goes into a running turn; how each driver takes it | built | 2, 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `requirements/` and `design/` for issue 1635 | The thread list in order of update; pinned threads; the 6 newest open threads by default | design | 12, 24 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | `requirements/` and `design/` for issue 1641 | New coordinated work waits while an approval card of a peer is open | design | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
-| `superpowers/plans/2026-11-01-mcp-in-chat.md` and its specification | The `mcp_server` tool: a bot lists, adds, changes, tests and removes MCP servers from the chat, with approval cards and a sign-in card | planned | 13, 20 | 3 | `bot-engine` | open |
+| `superpowers/plans/2026-11-01-mcp-in-chat.md` and its specification | The `mcp_server` tool: a bot lists, adds, changes, tests and removes MCP servers from the chat, with approval cards and a sign-in card | planned | 13, 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | `superpowers/specs/2026-08-19-configurable-room-turn-timeout-design.md` | A setting for the turn timeout of a room | not stated | 15, 61 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
-| `superpowers/specs/2026-09-30-mcp-sign-in-and-plugin-catalog-design.md` | OAuth sign-in for MCP servers; a "Plugins" tab with a featured catalog; search of the MCP registry | waits for review | 20 | 3 | `bot-engine` | open |
-| `superpowers/specs/2026-10-06-configurable-mcp-call-timeout-design.md` | A setting for the timeout of an MCP call | not stated | 20, 61 | 3 | `bot-engine` | open |
+| `superpowers/specs/2026-09-30-mcp-sign-in-and-plugin-catalog-design.md` | OAuth sign-in for MCP servers; a "Plugins" tab with a featured catalog; search of the MCP registry | waits for review | 20 | 3 | `bot-engine` | partial: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
+| `superpowers/specs/2026-10-06-configurable-mcp-call-timeout-design.md` | A setting for the timeout of an MCP call | not stated | 20, 61 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | `plans/2026-09-02-goal-mode-v2.md` | Goals: a stored goal record; a live goal card; the `/goal` command; a goal loop for one bot with detectors for "stuck" and "no progress"; a routine that starts a goal in a room | partly built | 63 | later | `bot-core` | open |
 | `plans/2026-09-09-onboarding.md` | The welcome flow; a feature reel of six scenes; the guided tour; the first conversation tour; onboarding state in the config; replay from the settings | built | 25 | later | `bot-desktop` | open |
 | `plans/2026-09-14-phase-0-foundation.md` | A work digest for each turn; engine hooks; typed turns with an output schema; a global launch budget; commands with receipts; metrics; replay by bytes and a manual compact route; a benchmark driver | partly built | 62, 17, 8 | later | `bot-core` | open |
