@@ -38,7 +38,7 @@ this file. The reasons for this order are in decision D14 of [`decisions.md`](..
 
 The research of batches 1 and 2 (`../research/features/`) and the release
 history (`../research/changelog.md`) gave 51 proposals, P1 to P51. Batch 3 (the driver contract) gave P52 to
-P64. Batch 4 (six features, reference `ed8cb7278`) gave P65 to P121. Batch 5 (six features, reference `ad27f0716`) gives P122 to P163. Each
+P64. Batch 4 (six features, reference `ed8cb7278`) gave P65 to P121. Batch 5 (six features, reference `ad27f0716`) gives P122 to P163. Batch 6 (group 3, reference `eee23ebbe`) gives P164 and after. Each
 proposal is in the plan file of its feature. Each step below links to its
 proposals. The author decides each one. Reply with the numbers, for example
 "accept P1, P2. P5 option a. Reject P9". Then the proposal becomes a
@@ -65,6 +65,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`turn-limits.md`](turn-limits.md) | [`turn-limits.md`](../research/features/turn-limits.md) | P129 to P134, and new facts for P33 | 2, 9, 13 |
 | [`question-cards.md`](question-cards.md) | [`question-cards.md`](../research/features/question-cards.md) | P135 to P138, and new facts for P42, P44, P45, P116, P118, P120, P121 | 9, 10, 13, 14 |
 | [`approval-cards.md`](approval-cards.md) | [`approval-cards.md`](../research/features/approval-cards.md) | P139 to P144, and new facts for P25, P44, P45, P121, P128 | 6, 10, 11 to 16 |
+| [`assignment-runtime.md`](assignment-runtime.md) | [`assignment-runtime.md`](../research/features/assignment-runtime.md) | P164 to P172, and new facts for P83, P85, P138 | 13, 14 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -344,7 +345,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 |---|---|---|---|
 | 11 | Tasks: a bot has more than one thread | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
 | 12 | Our own tools for engines, given as an MCP server: `list_bots` first | `bot-engine` | An engine lists the bots through the tool |
-| 13 | The assignment runtime and its invariant tests | `bot-core` | Each scenario test passes the invariant checks |
+| 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
 | 16 | Outside tools: custom MCP servers, then Composio (decision D12) | `bot-engine` | A bot calls a tool of a custom MCP server |
