@@ -21,7 +21,7 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 72 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 74 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
@@ -82,7 +82,7 @@ All 12 files were read completely (5,477 lines).
 | Rule: files with mode 0600, atomic writes, redaction of text that an agent wrote | `2026-08-31-00-control-plane-roadmap.md` | built | 4, 11 | **1** | `bot-core` | done: [`file-modes-atomic-writes-redaction.md`](features/file-modes-atomic-writes-redaction.md) |
 | Rule: a config from a newer version loads in an older version as "unavailable" | `2026-08-31-00-control-plane-roadmap.md` | built | 2 | **1** | `bot-engine` | done: [`newer-config-unavailable.md`](features/newer-config-unavailable.md) |
 | A fake ACP CLI for protocol tests | `2026-08-15-opencode-go-integration.md` | built | 40 | 2 | `bot-engine` | done: [`acp-core.md`](features/acp-core.md) |
-| The engine switch in the middle of a thread, with a replay of the thread | `2026-08-31-00-control-plane-roadmap.md` | built | 17 | 3 | `bot-core` | open |
+| The engine switch in the middle of a thread, with a replay of the thread | `2026-08-31-00-control-plane-roadmap.md` | built | 17 | 3 | `bot-core` | done: [`context.md`](features/context.md) |
 | The MCP registry: the person adds an MCP server (stdio or HTTP), tests it and sees its tools | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | Grants of one MCP tool to one bot | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | The Connections Center UI: "Apps" and "MCP servers" | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | partial: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
@@ -344,7 +344,7 @@ describes a check of it. Each row has all the features of one record.
 | `channels.md` | Channels (rooms): create, send, read; the tools of the Chief for rooms | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `check-backs.md` | The `check_back` tool: a bot asks to return at a time | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `connected-apps-oauth.md` | Recovery of the sign-in to connected apps | 20 | 3 | `bot-engine` | open |
-| `context-compaction.md` | Compaction by the engine or by the server; summaries made while idle; the context breakdown; context of a room; room sessions; the helper model for summaries; tool history in a rebuilt session | 17 | 3 | `bot-core` | open |
+| `context-compaction.md` | Compaction by the engine or by the server; summaries made while idle; the context breakdown; context of a room; room sessions; the helper model for summaries; tool history in a rebuilt session | 17 | 3 | `bot-core` | done: [`context.md`](features/context.md) |
 | `evidence/bot-attach-file/README.md` | The `attach_file` tool; the `vm_exec` tool; audio and video attachments that play in the chat | 13, 30 | 3 | `bot-engine` | open |
 | `full-access.md` | With full access, the Chief changes profiles, routines, skills and teams directly | 10, 15 | 3 | `bot-core` | open |
 | `group-local-vm.md` | Which computer a room, a goal or a channel uses | 15, 54 | 3 | `bot-core`, `bot-engine` | open |
