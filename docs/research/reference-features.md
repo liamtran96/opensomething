@@ -21,7 +21,7 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 28 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 32 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
@@ -100,7 +100,7 @@ All 12 files were read completely (5,477 lines).
 | The depth limit of delegation, and the limit of queued hand-offs for a thread | `2026-08-31-07-delegation-task-board.md`, and `2026-09-12-delegation-mailbox.md` | built | 15 | 3 | `bot-core`, `bot-engine` | open |
 | A hand-off waits up to 24 hours for a busy bot, then expires | `2026-09-12-delegation-mailbox.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
 | The state of a teammate: available, working, waiting on the person, not responding, unavailable | `2026-09-12-delegation-mailbox.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
-| `list_bots` and `check_delegation` show the state of the target | `2026-09-12-delegation-mailbox.md` | not stated | 13 | 3 | `bot-engine` | open |
+| `list_bots` and `check_delegation` show the state of the target | `2026-09-12-delegation-mailbox.md` | not stated | 13 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | The Chief of Staff role and its roster | `2026-09-12-delegation-mailbox.md` | built | 15 | 3 | `bot-core`, `bot-engine` | open |
 | The OpenCode Go engine over ACP: a model list from the engine, a write-only key, set-up screens | `2026-08-15-opencode-go-integration.md` | not stated | 7, 9 | later | `bot-engine` | open |
 | The decision log: each allow and each deny writes an audit row | `2026-08-31-00-control-plane-roadmap.md` | built | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
@@ -179,7 +179,7 @@ says a different state.
 | Memory: automatic recall, a topic index, until-dates, background capture, a nightly tidy-up with undo | `memory-layer.md` | 16 | 3 | `bot-core` | open |
 | Reply habits in each prompt, and "Remember:" and "Forget" in the chat | `memory-layer.md` | 16, 17 | 3 | `bot-core` | open |
 | Mentions: a picker in the composer, colours for each bot, `@everyone` in a room | `mentions.md` | 23 | 3 | `bot-desktop` | open |
-| A tool directory when a bot has more than 128 MCP tools | `openai-tools.md` | 13, 20 | 3 | `bot-engine` | open |
+| A tool directory when a bot has more than 128 MCP tools | `openai-tools.md` | 13, 20 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | A bot says where another bot lives | `own-home.md` | 15, 36 | 3 | `bot-core`, `bot-engine` | open |
 | A connection to a social posting service | `postiz.md` | 20 | 3 | `bot-engine` | open |
 | Proactive routines: checks of mail and calendar with no model, and a daily brief | `proactive-routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
@@ -203,7 +203,7 @@ says a different state.
 | Threads: a model for each thread, folders, rename, reorder, snooze | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | A limit on parallel threads, and the queued state | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | A new thread in a working folder | `threads.md` | 12, 30 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
-| Large tool results: a prefix, and a tool to read the remainder | `tool-results.md` | 13 | 3 | `bot-engine` | open |
+| Large tool results: a prefix, and a tool to read the remainder | `tool-results.md` | 13 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | Waits | `waits.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | A connection to a hosted application with OAuth and no key | `whop.md` | 20 | 3 | `bot-engine` | open |
 | Local environments in the settings | `local-environments.md` | 29 | later | `bot-desktop` | open |
@@ -291,7 +291,7 @@ a feature is marked. Each row has all the features of one page.
 | `custom-engines.md` | Provider icons; a custom ACP instance; model refresh for each bot; removal of the keys of other providers; OpenAI-compatible instances; guides for providers; an invalid instance does not stop the others | 2, 7, 9 | **1** | `bot-engine` | partial: [`features/driver-contract.md`](features/driver-contract.md) |
 | `approval-levels.md` | The approval levels (ask, auto-accept edits, approve for me, custom, full access); full access is the default; reads of own files never ask; a new thread gets the level of the conversation; change of level in the middle of a turn; a level for all bots of a department; a receipt with Undo; the level of a Chief flows down; allow once and allow for this session; question cards and `ask_user`; the safety floor and guarded sends | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`approval-levels.md`](features/approval-levels.md) |
 | `cursor.md` | One ACP engine in detail: a sign-in card, a version check, install on a Cloud, model discovery, autonomy, a question card, the agent tools on that engine | 7 | 2 | `bot-engine` | done: [`acp-adapter.md`](features/acp-adapter.md) |
-| `agents-tool-bridge.md` | The tool bridge: a short tool list with `find_tool` and `use_tool` (off by default); automatic for local models; the tools that are always listed; which engines can use it; a golden test of the catalog; an eval of tool choice | 13 | 3 | `bot-engine` | open |
+| `agents-tool-bridge.md` | The tool bridge: a short tool list with `find_tool` and `use_tool` (off by default); automatic for local models; the tools that are always listed; which engines can use it; a golden test of the catalog; an eval of tool choice | 13 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | `composio.md` | Connected apps through a connector service: a project key; more than one account for an app; a managed connection service on the Cloud; automations from app events, with daily limits; apps for each person on a Team Cloud; file uploads; tool grants for each bot; bots that a Chief makes get its apps; named mail and calendar tools; "sending on your behalf" | 20, 18 | 3 | `bot-engine` | partial: [`automations.md`](features/automations.md) gives the border of app events |
 | `custom-mcp-servers.md` | Add a server by paste; an edit form; a test when added; a restart action; "only for me" on a Team Cloud; built-in cards; bot access for each card; OAuth sign-in, also from another computer; bulk import; "bring what you already use"; imported skills; the choice of MCP servers for each bot; the MCP servers of one bot; health checks at the start of a bot; tool search for a large server; a table of which engine reaches what; also use the MCP servers and skills of another CLI; project skills; an allow list from the organization; safety rules; a result gate | 20, 19 | 3 | `bot-engine` | open |
 | `memory.md` | Memory files; a switch for each bot; the memory panel; redaction of credentials on write; the load budget; until-dates; the topic index; automatic recall; upkeep that notices facts; learning from group chats; organization into topics; "About me" facts; a nightly tidy-up; a warning for a heavy bot; the helper model; remember, forget and prefer in the chat; safe editing on conflict; a brief of recent work; a daily turn log line; `session_search` with dates; the memory journal with Undo; the routes; a memory layer for each person on a Team Cloud; shared team memory; fact checks | 16 | 3 | `bot-core` | open |
