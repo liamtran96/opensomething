@@ -21,7 +21,7 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 22 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 28 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
@@ -200,9 +200,9 @@ says a different state.
 | The authority of a Chief over more departments | `team-access.md` | 15, 55 | 3 | `bot-core`, `bot-engine` | open |
 | Team set-up by the Chief, with one review card | `team-setup.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | open |
 | A bot proposes the deletion of a bot | `team-setup.md` | 15, 45 | 3 | `bot-core`, `bot-engine` | open |
-| Threads: a model for each thread, folders, rename, reorder, snooze | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | open |
-| A limit on parallel threads, and the queued state | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | open |
-| A new thread in a working folder | `threads.md` | 12, 30 | 3 | `bot-core`, `bot-desktop` | open |
+| Threads: a model for each thread, folders, rename, reorder, snooze | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
+| A limit on parallel threads, and the queued state | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
+| A new thread in a working folder | `threads.md` | 12, 30 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | Large tool results: a prefix, and a tool to read the remainder | `tool-results.md` | 13 | 3 | `bot-engine` | open |
 | Waits | `waits.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | A connection to a hosted application with OAuth and no key | `whop.md` | 20 | 3 | `bot-engine` | open |
@@ -406,11 +406,11 @@ says.
 | `specs/steer-sigterm-audit.md` | A graceful Stop for one engine; steer and queue never kill | built | 8 | 2 | `bot-engine` | done: [`engine-process-lifecycle.md`](features/engine-process-lifecycle.md) |
 | `specs/steer-vs-queue.md` | Enter queues a message, and a second Enter steers it into the running turn | specification | 23, 1 | 2 | `bot-core`, `bot-desktop` | done: [`queue-and-steer.md`](features/queue-and-steer.md) |
 | `plans/2026-09-02-bot-concurrency.md` | A busy member of a room is woken later, not skipped; a direct message goes before background work; optional parallel turns for a bot | decision record | 15, 12 | 3 | `bot-core`, `bot-engine` | open |
-| `plans/2026-09-09-independent-threads.md` | Tasks became threads; folders; the thread list and "All threads"; parallel threads (default: one for each 2 GB of memory, from 3 to 16); a working folder for each thread; a claim on the browser or the computer for each turn; the `memory_update` tool; archive of idle threads (later) | built | 12 | 3 | `bot-core`, `bot-desktop` | open |
-| `plans/2026-09-09-thread-aware-bots.md` | The tools `list_threads`, `start_thread` and `close_thread`; "opened by" on a thread; links to a thread with `#Title` | planned; `start_thread` is built | 12, 13 | 3 | `bot-core`, `bot-desktop` | open |
+| `plans/2026-09-09-independent-threads.md` | Tasks became threads; folders; the thread list and "All threads"; parallel threads (default: one for each 2 GB of memory, from 3 to 16); a working folder for each thread; a claim on the browser or the computer for each turn; the `memory_update` tool; archive of idle threads (later) | built | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
+| `plans/2026-09-09-thread-aware-bots.md` | The tools `list_threads`, `start_thread` and `close_thread`; "opened by" on a thread; links to a thread with `#Title` | planned; `start_thread` is built | 12, 13 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | `plans/2026-09-25-memory-layer.md` | The memory layer: recall, the topic index, until-dates, upkeep, capture, "About me", tidy-up, organize | built | 16 | 3 | `bot-core` | open |
 | `specs/aside-injection-seams.md` | The aside lane: context from a peer goes into a running turn; how each driver takes it | built | 2, 15 | 3 | `bot-core`, `bot-engine` | open |
-| `requirements/` and `design/` for issue 1635 | The thread list in order of update; pinned threads; the 6 newest open threads by default | design | 12, 24 | 3 | `bot-core`, `bot-desktop` | open |
+| `requirements/` and `design/` for issue 1635 | The thread list in order of update; pinned threads; the 6 newest open threads by default | design | 12, 24 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | `requirements/` and `design/` for issue 1641 | New coordinated work waits while an approval card of a peer is open | design | 15 | 3 | `bot-core`, `bot-engine` | open |
 | `superpowers/plans/2026-11-01-mcp-in-chat.md` and its specification | The `mcp_server` tool: a bot lists, adds, changes, tests and removes MCP servers from the chat, with approval cards and a sign-in card | planned | 13, 20 | 3 | `bot-engine` | open |
 | `superpowers/specs/2026-08-19-configurable-room-turn-timeout-design.md` | A setting for the turn timeout of a room | not stated | 15, 61 | 3 | `bot-core`, `bot-engine` | open |
