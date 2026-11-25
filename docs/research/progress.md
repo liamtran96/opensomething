@@ -398,7 +398,7 @@ the agent of `threads` reads the two commits with `git show`.
 |---|---|---|---|---|---|---|
 | 1 | `threads.md`; `plans/2026-09-09-independent-threads.md`; `plans/2026-09-09-thread-aware-bots.md`; issue 1635 | 12 | `bot-core`, `bot-desktop` | 11 | `threads` | paused, waits for its turn |
 | 2 | `agents-tool-bridge.md`; `tool-results.md`; the tool directory past 128 tools; `list_bots` | 13 | `bot-engine` | 12 | `agent-tools` | paused, waits for its turn |
-| 3 | `runtime-contract.md`; the limits of the runtime; recovery after a restart; Stop ends the request | 14 | `bot-core` | 13 | `assignment-runtime` | running |
+| 3 | `runtime-contract.md`; the limits of the runtime; recovery after a restart; Stop ends the request | 14 | `bot-core` | 13 | [`assignment-runtime`](features/assignment-runtime.md) | done, 2026-11-25, at commit `eee23ebbe` |
 | 4 | `room-coordination.md`; `channels.md`; `handoff-status.md`; `specs/aside-injection-seams.md`; `plans/2026-09-02-bot-concurrency.md`; the delegation plans; issue 1641 | 15 | `bot-core`, `bot-engine` | 14 | `bot-coordination` | paused, waits for its turn |
 | 5 | `memory.md`; `memory-layer.md`; `plans/2026-09-25-memory-layer.md`; the two memory plans of 2026-08-31 | 16 | `bot-core` | 15 | `memory` | paused, waits for its turn |
 | 6 | `routine-schedules.md`; `proactive-routines.md`; `routines.md`; `check-backs.md`; `waits.md`; `automation-reports.md`; `interval-restrictions.md`; docs site `features/automation.mdx` | 18 | `bot-core` | 15 | `automations` | running |
@@ -415,6 +415,26 @@ the agent of `threads` reads the two commits with `git show`.
   starting one by one". The other four continue one at a time, in the
   order of the plan steps: `threads`, `agent-tools`, `bot-coordination`,
   `memory`.
+- The main session checked these key claims of `assignment-runtime` at
+  `eee23ebbe`. All agree with the code:
+  1. The product limits are depth 4, 64 requests and 96 turns for each
+     root (`server/runtime-coordinator.ts:48-49`, `:180`), not the
+     defaults 24 and 48 (`server/runtime/types.ts:374-386`). The defaults
+     are merged under the options, so the 24-hour queue stays
+     (`server/runtime/runtime.ts:100`).
+  2. At a restart, a running row has five branches in this order: it gave
+     out work, it did an outward action, it was cut two times, the host
+     hook `restartCut`, else it runs again one time
+     (`server/runtime/runtime.ts:109-158`).
+  3. Stop cancels running children too (`server/runtime/runtime.ts:675-693`).
+     The contract says that they "keep their process and still report"
+     (`docs/runtime-contract.md:48`), so the contract is old.
+  4. `checkInvariants` has checks for I1 to I9 only
+     (`server/runtime/invariants.ts`).
+  5. A brief is clipped to 12,000 characters (`server/runtime/runtime.ts:54`,
+     `:224`).
+  6. The partial index `assignments_live` reads only open rows
+     (`server/runtime/store.ts:140`).
 - Open themes of group 3 after this batch: context (part 17: compaction,
   summaries, the engine switch) and outside tools (part 20: custom MCP
   servers, connected apps, step 16). They are for batch 7.
