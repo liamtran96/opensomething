@@ -401,7 +401,7 @@ the agent of `threads` reads the two commits with `git show`.
 | 3 | `runtime-contract.md`; the limits of the runtime; recovery after a restart; Stop ends the request | 14 | `bot-core` | 13 | [`assignment-runtime`](features/assignment-runtime.md) | done, 2026-11-25, at commit `eee23ebbe` |
 | 4 | `room-coordination.md`; `channels.md`; `handoff-status.md`; `specs/aside-injection-seams.md`; `plans/2026-09-02-bot-concurrency.md`; the delegation plans; issue 1641 | 15 | `bot-core`, `bot-engine` | 14 | `bot-coordination` | paused, waits for its turn |
 | 5 | `memory.md`; `memory-layer.md`; `plans/2026-09-25-memory-layer.md`; the two memory plans of 2026-08-31 | 16 | `bot-core` | 15 | `memory` | paused, waits for its turn |
-| 6 | `routine-schedules.md`; `proactive-routines.md`; `routines.md`; `check-backs.md`; `waits.md`; `automation-reports.md`; `interval-restrictions.md`; docs site `features/automation.mdx` | 18 | `bot-core` | 15 | `automations` | running |
+| 6 | `routine-schedules.md`; `proactive-routines.md`; `routines.md`; `check-backs.md`; `waits.md`; `automation-reports.md`; `interval-restrictions.md`; docs site `features/automation.mdx` | 18 | `bot-core` | 15 | [`automations`](features/automations.md) | done, 2026-11-25, at commit `eee23ebbe` |
 
 - The 5-hour limit stopped all six agents at about 22:30 on 2026-11-24,
   and the weekly limit of the first model stopped them again after the
@@ -435,6 +435,17 @@ the agent of `threads` reads the two commits with `git show`.
      `:224`).
   6. The partial index `assignments_live` reads only open rows
      (`server/runtime/store.ts:140`).
+- The main session checked seven key claims of `automations` at
+  `eee23ebbe`. All agree with the code. Some of them:
+  1. Catch-up runs only the newest occurrence, up to 12 hours late
+     (`server/routine-catch-up.ts:16-21`).
+  2. After 3 failed runs the runs are spaced by 1 hour, then 4 hours, and
+     the routine stays on (`server/routine-failure-spacing.ts:23-25`).
+  3. `waits.json` and `check-backs.json` load as empty after a failed read
+     (`server/waits.ts:169-179`, `server/host/check-backs.ts:87-97`).
+  4. A delivery identifier is kept 7 days in the run store
+     (`server/routine-event-receipts.ts:12-13`), and the webhook manager
+     keeps the last 2,000 by count (`server/webhooks.ts:96`).
 - Open themes of group 3 after this batch: context (part 17: compaction,
   summaries, the engine switch) and outside tools (part 20: custom MCP
   servers, connected apps, step 16). They are for batch 7.
