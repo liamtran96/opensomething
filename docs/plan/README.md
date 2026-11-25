@@ -67,6 +67,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`approval-cards.md`](approval-cards.md) | [`approval-cards.md`](../research/features/approval-cards.md) | P139 to P144, and new facts for P25, P44, P45, P121, P128 | 6, 10, 11 to 16 |
 | [`assignment-runtime.md`](assignment-runtime.md) | [`assignment-runtime.md`](../research/features/assignment-runtime.md) | P164 to P172, and new facts for P83, P85, P138 | 13, 14 |
 | [`automations.md`](automations.md) | [`automations.md`](../research/features/automations.md) | P173 to P181 | 15, later |
+| [`threads.md`](threads.md) | [`threads.md`](../research/features/threads.md) | P182 to P193 | 8, 11, 12 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first. They change the types of `bot-protocol`, and step
@@ -344,7 +345,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 
 | Step | What to build | Crate | Done when |
 |---|---|---|---|
-| 11 | Tasks: a bot has more than one thread | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
+| 11 | Tasks: a bot has more than one thread ([P182 to P193](threads.md)) | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
 | 12 | Our own tools for engines, given as an MCP server: `list_bots` first | `bot-engine` | An engine lists the bots through the tool |
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
