@@ -21,7 +21,7 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 41 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 61 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
@@ -92,16 +92,16 @@ All 12 files were read completely (5,477 lines).
 | Typed memory entries: facts, preferences, decisions, procedures | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | The memory panel: read, edit and delete memory files, with a capacity gauge | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | The memory journal: each memory change of a turn, with revert | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
-| The task board for delegated work: owner, state, deadline, artifacts | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
+| The task board for delegated work: owner, state, deadline, artifacts | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | The supervisor role: one more level of delegation | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
 | A limit on delegations that run at the same time | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
 | A reviewer stage: a second bot checks the work | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
-| `ask_bot` and `delegate_bot`: a bot asks or gives work to a bot | `2026-08-31-07-delegation-task-board.md` | built | 13, 15 | 3 | `bot-engine` | open |
-| The depth limit of delegation, and the limit of queued hand-offs for a thread | `2026-08-31-07-delegation-task-board.md`, and `2026-09-12-delegation-mailbox.md` | built | 15 | 3 | `bot-core`, `bot-engine` | open |
-| A hand-off waits up to 24 hours for a busy bot, then expires | `2026-09-12-delegation-mailbox.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
-| The state of a teammate: available, working, waiting on the person, not responding, unavailable | `2026-09-12-delegation-mailbox.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
+| `ask_bot` and `delegate_bot`: a bot asks or gives work to a bot | `2026-08-31-07-delegation-task-board.md` | built | 13, 15 | 3 | `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
+| The depth limit of delegation, and the limit of queued hand-offs for a thread | `2026-08-31-07-delegation-task-board.md`, and `2026-09-12-delegation-mailbox.md` | built | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
+| A hand-off waits up to 24 hours for a busy bot, then expires | `2026-09-12-delegation-mailbox.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
+| The state of a teammate: available, working, waiting on the person, not responding, unavailable | `2026-09-12-delegation-mailbox.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | partial: [`bot-coordination.md`](features/bot-coordination.md) |
 | `list_bots` and `check_delegation` show the state of the target | `2026-09-12-delegation-mailbox.md` | not stated | 13 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
-| The Chief of Staff role and its roster | `2026-09-12-delegation-mailbox.md` | built | 15 | 3 | `bot-core`, `bot-engine` | open |
+| The Chief of Staff role and its roster | `2026-09-12-delegation-mailbox.md` | built | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | The OpenCode Go engine over ACP: a model list from the engine, a write-only key, set-up screens | `2026-08-15-opencode-go-integration.md` | not stated | 7, 9 | later | `bot-engine` | open |
 | The decision log: each allow and each deny writes an audit row | `2026-08-31-00-control-plane-roadmap.md` | built | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
 | Token usage split into new input, cache write and cache read | `2026-08-31-01-usage-accounting-and-budgets.md` | not stated | 21 | later | `bot-core` | open |
@@ -174,7 +174,7 @@ says a different state.
 | The approval level of one thread | `provider-recovery.md` | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`approval-levels.md`](features/approval-levels.md) |
 | Question cards: a bot asks the person with buttons or a reply field; on a Team Cloud, a copy goes to the Inbox | `question-cards.md` | 48 | 2 | `bot-desktop` | done: [`question-cards.md`](features/question-cards.md) |
 | Notification tools that only the helper bot has | `mausbot.md` | 13, 50 | 3 | `bot-engine` | open |
-| The helper bot as the Chief when there is none | `mausbot.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
+| The helper bot as the Chief when there is none | `mausbot.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | MCP sign-in from another computer: paste the callback address back | `mcp-sign-in.md` | 20 | 3 | `bot-engine` | open |
 | Memory: automatic recall, a topic index, until-dates, background capture, a nightly tidy-up with undo | `memory-layer.md` | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | Reply habits in each prompt, and "Remember:" and "Forget" in the chat | `memory-layer.md` | 16, 17 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
@@ -183,14 +183,14 @@ says a different state.
 | A bot says where another bot lives | `own-home.md` | 15, 36 | 3 | `bot-core`, `bot-engine` | open |
 | A connection to a social posting service | `postiz.md` | 20 | 3 | `bot-engine` | open |
 | Proactive routines: checks of mail and calendar with no model, and a daily brief | `proactive-routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| Question routing: the Chief answers, or the person answers | `question-cards.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | open |
-| A follow-up from a teammate in the middle of a turn | `question-cards.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
-| Coordination in the chat: `coordinate_bots`, receipts, "Teammates working", consult | `room-coordination.md` | 14, 15 | 3 | `bot-core` | open |
+| Question routing: the Chief answers, or the person answers | `question-cards.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
+| A follow-up from a teammate in the middle of a turn | `question-cards.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
+| Coordination in the chat: `coordinate_bots`, receipts, "Teammates working", consult | `room-coordination.md` | 14, 15 | 3 | `bot-core` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | Recovery after a restart: a cut turn of a teammate runs again one time | `room-coordination.md` | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
-| Files in a hand-off, with limits for each message and each day | `room-coordination.md` | 15, 30 | 3 | `bot-core`, `bot-engine` | open |
-| Parking (an opt-in for each bot; steering is the default): a message waits until the teammates finish | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
+| Files in a hand-off, with limits for each message and each day | `room-coordination.md` | 15, 30 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
+| Parking (an opt-in for each bot; steering is the default): a message waits until the teammates finish | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | Stop ends the request and all the work that it gave out | `room-coordination.md` | 14, 15 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
-| Jobs in a room in parallel, and the room queue | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
+| Jobs in a room in parallel, and the room queue | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | Limits of the runtime: depth 4, 24 requests for each root, a 24-hour queue | `room-coordination.md` | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
 | Pages and applications in a room are view-only | `room-pages.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | open |
 | Routines: schedules by month and by cron, with an editor | `routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
@@ -341,14 +341,14 @@ describes a check of it. Each row has all the features of one record.
 | `app-settings.md` | The `app_settings` bot tool: a bot finds, reads and changes settings, with an Undo card; secrets go through a secure card only; window preferences through the desktop | 13, 61 | 3 | `bot-engine` | open |
 | `automation-reports.md` | An automation works in a hidden conversation and reports into the chat of the bot; a "Results" chat | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `bot-contact-cards.md` | Cards that give a bot its own email, phone number and calls | 20, 35 | 3 | `bot-engine` | open |
-| `channels.md` | Channels (rooms): create, send, read; the tools of the Chief for rooms | 15 | 3 | `bot-core`, `bot-engine` | open |
+| `channels.md` | Channels (rooms): create, send, read; the tools of the Chief for rooms | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `check-backs.md` | The `check_back` tool: a bot asks to return at a time | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `connected-apps-oauth.md` | Recovery of the sign-in to connected apps | 20 | 3 | `bot-engine` | open |
 | `context-compaction.md` | Compaction by the engine or by the server; summaries made while idle; the context breakdown; context of a room; room sessions; the helper model for summaries; tool history in a rebuilt session | 17 | 3 | `bot-core` | open |
 | `evidence/bot-attach-file/README.md` | The `attach_file` tool; the `vm_exec` tool; audio and video attachments that play in the chat | 13, 30 | 3 | `bot-engine` | open |
 | `full-access.md` | With full access, the Chief changes profiles, routines, skills and teams directly | 10, 15 | 3 | `bot-core` | open |
 | `group-local-vm.md` | Which computer a room, a goal or a channel uses | 15, 54 | 3 | `bot-core`, `bot-engine` | open |
-| `handoff-status.md` | The state row of a hand-off: claimed, working, waiting, done, failed | 15 | 3 | `bot-core`, `bot-engine` | open |
+| `handoff-status.md` | The state row of a hand-off: claimed, working, waiting, done, failed | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `interval-restrictions.md` | A routine "each X minutes" with limits by weekday, hours and an end date | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `automatic-recovery.md` | Backup models for each bot (up to 5); a backup engine for all bots; take-over when a usage limit is reached; recovery from a refused sign-in | 21 | later | `bot-core` | open |
 | `avatar-providers.md` | Providers for avatar pictures | 46 | later | `bot-desktop` | open |
@@ -405,15 +405,15 @@ says.
 | `plans/agent-harness-upgrades.md` and `-v2.md` | A list of 17 upgrades, of which the row names 15: context rebuild on a model switch; attachments; automatic retry; search across threads; cost visibility; a liveness check; portable context; durable delegations; tool deadlines and loop detection; redaction of tool results; approvals that fail closed; activity state on the server; the raw event inspector; a driver for local models; steering in the middle of a turn. Also built: message branches with a version switcher | some built | 1, 9, 17, 47, 64 | 2 | `bot-core` | done: [`harness-upgrades.md`](features/harness-upgrades.md) |
 | `specs/steer-sigterm-audit.md` | A graceful Stop for one engine; steer and queue never kill | built | 8 | 2 | `bot-engine` | done: [`engine-process-lifecycle.md`](features/engine-process-lifecycle.md) |
 | `specs/steer-vs-queue.md` | Enter queues a message, and a second Enter steers it into the running turn | specification | 23, 1 | 2 | `bot-core`, `bot-desktop` | done: [`queue-and-steer.md`](features/queue-and-steer.md) |
-| `plans/2026-09-02-bot-concurrency.md` | A busy member of a room is woken later, not skipped; a direct message goes before background work; optional parallel turns for a bot | decision record | 15, 12 | 3 | `bot-core`, `bot-engine` | open |
+| `plans/2026-09-02-bot-concurrency.md` | A busy member of a room is woken later, not skipped; a direct message goes before background work; optional parallel turns for a bot | decision record | 15, 12 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `plans/2026-09-09-independent-threads.md` | Tasks became threads; folders; the thread list and "All threads"; parallel threads (default: one for each 2 GB of memory, from 3 to 16); a working folder for each thread; a claim on the browser or the computer for each turn; the `memory_update` tool; archive of idle threads (later) | built | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | `plans/2026-09-09-thread-aware-bots.md` | The tools `list_threads`, `start_thread` and `close_thread`; "opened by" on a thread; links to a thread with `#Title` | planned; `start_thread` is built | 12, 13 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | `plans/2026-09-25-memory-layer.md` | The memory layer: recall, the topic index, until-dates, upkeep, capture, "About me", tidy-up, organize | built | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
-| `specs/aside-injection-seams.md` | The aside lane: context from a peer goes into a running turn; how each driver takes it | built | 2, 15 | 3 | `bot-core`, `bot-engine` | open |
+| `specs/aside-injection-seams.md` | The aside lane: context from a peer goes into a running turn; how each driver takes it | built | 2, 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `requirements/` and `design/` for issue 1635 | The thread list in order of update; pinned threads; the 6 newest open threads by default | design | 12, 24 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
-| `requirements/` and `design/` for issue 1641 | New coordinated work waits while an approval card of a peer is open | design | 15 | 3 | `bot-core`, `bot-engine` | open |
+| `requirements/` and `design/` for issue 1641 | New coordinated work waits while an approval card of a peer is open | design | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `superpowers/plans/2026-11-01-mcp-in-chat.md` and its specification | The `mcp_server` tool: a bot lists, adds, changes, tests and removes MCP servers from the chat, with approval cards and a sign-in card | planned | 13, 20 | 3 | `bot-engine` | open |
-| `superpowers/specs/2026-08-19-configurable-room-turn-timeout-design.md` | A setting for the turn timeout of a room | not stated | 15, 61 | 3 | `bot-core`, `bot-engine` | open |
+| `superpowers/specs/2026-08-19-configurable-room-turn-timeout-design.md` | A setting for the turn timeout of a room | not stated | 15, 61 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `superpowers/specs/2026-09-30-mcp-sign-in-and-plugin-catalog-design.md` | OAuth sign-in for MCP servers; a "Plugins" tab with a featured catalog; search of the MCP registry | waits for review | 20 | 3 | `bot-engine` | open |
 | `superpowers/specs/2026-10-06-configurable-mcp-call-timeout-design.md` | A setting for the timeout of an MCP call | not stated | 20, 61 | 3 | `bot-engine` | open |
 | `plans/2026-09-02-goal-mode-v2.md` | Goals: a stored goal record; a live goal card; the `/goal` command; a goal loop for one bot with detectors for "stuck" and "no progress"; a routine that starts a goal in a room | partly built | 63 | later | `bot-core` | open |
@@ -512,7 +512,7 @@ read. They are not here yet.
 | A conversation's own notes: the facts of one matter go to `memory/threads/<id>.md`; `scope: "everywhere"` saves to `MEMORY.md` | `memory.md`, `verification/memory-layer.md` | built | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | A bot can be kept to some accounts of a connected app ("Accounts this bot may use") | `composio.md` | built | 20 | 3 | `bot-engine` | open |
 | The rules and limits of a wait: only a turn that the person started in their own one-to-one chat makes or cancels a wait; 10 waits for each bot, 50 in all, 24 hours by default, 168 at most; the `then` follow-up runs in the same chat | `superpowers/plans/2026-10-27-waits.md` | not stated | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| Provenance notes: each line that a bot reads, except the person's own line in their own chat, starts with `[From <who> · <what> · <authority>]` | `team-cloud.md` | not stated | 15, 11 | 3 | `bot-core` | open |
+| Provenance notes: each line that a bot reads, except the person's own line in their own chat, starts with `[From <who> · <what> · <authority>]` | `team-cloud.md` | not stated | 15, 11 | 3 | `bot-core` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | Work from outside stays confined: a webhook or an app event marks the conversation for good, and its effects are fenced | `team-cloud.md`, `cloud-pro.md` | not stated | 18, 11 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | Bot to bot across servers: an admin saves a teammate on another server (address and Bot API key), and local bots give it work with `coordinate_bots` | `bot-api.md`, `runtime-contract.md` | built | 15, 33 | later | `bot-core`, `bot-engine` | open |
 | The Skill Burger card: after a run of two or more real steps, "Add skill" saves the run as a workflow skill, with Undo | `verification/chat-ui.md` | built | 19, 48 | later | `bot-desktop`, `bot-core` | open |
