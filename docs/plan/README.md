@@ -70,9 +70,10 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`threads.md`](threads.md) | [`threads.md`](../research/features/threads.md) | P182 to P193 | 8, 11, 12 |
 | [`agent-tools.md`](agent-tools.md) | [`agent-tools.md`](../research/features/agent-tools.md) | P194 to P203 | 12, D8 |
 | [`memory.md`](memory.md) | [`memory.md`](../research/features/memory.md) | P204 to P217 | 15, D8 |
+| [`bot-coordination.md`](bot-coordination.md) | [`bot-coordination.md`](../research/features/bot-coordination.md) | P218 to P229, and new facts for P64, P120, P182 | 2, 12, 14, gap |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
-- Decide P1 to P7 first. They change the types of `bot-protocol`, and step
+- Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
   2.5 is not typed yet.
 - Decide [P65 to P67](engine-process-lifecycle.md) before step 3 is
   typed. They change the `interrupt` method of the `Driver` trait.
@@ -354,6 +355,8 @@ program starts another program. What it must cover: [P95](security-model.md).
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
+| 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
+| 15 | Memory, then routines ([P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
 | 16 | Outside tools: custom MCP servers, then Composio (decision D12) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
 - [ ] 11
