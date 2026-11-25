@@ -155,7 +155,7 @@ number of its part. This table has a part for each of them.
 | 17 | Context: the transcript rebuild, compaction, summaries, the context budget, a model switch | `server/context-rebuild.ts`, `server/delta-context.ts`, `server/turn-context.ts`, `server/host/conversation-compaction.ts` | 8, 15 | partial: [`features/harness-upgrades.md`](features/harness-upgrades.md) |
 | 18 | Automations: routines, schedules, webhooks, app events, check-backs, waits, the daily brief | `docs/routine-schedules.md`, `docs/proactive-routines.md`, `server/routines.ts`, `server/waits.ts`, `server/webhook-ingress.ts` | 15 | done: [`features/automations.md`](features/automations.md) |
 | 19 | Skills: for each bot, learned skills, import, the built-in skills | `skills/` (19 files), `server/skills.ts`, `server/native-skills.ts`, `server/imported-skills.ts`, `server/skill-review.ts` | later | open |
-| 20 | Outside tools: custom MCP servers, sign-in to them, connected apps, grants | `docs/custom-mcp-servers.md`, `docs/composio.md`, `server/mcp-registry.ts`, `server/mcp-oauth.ts`, `server/composio.ts` | 16 | open |
+| 20 | Outside tools: custom MCP servers, sign-in to them, connected apps, grants | `docs/custom-mcp-servers.md`, `docs/composio.md`, `server/mcp-registry.ts`, `server/mcp-oauth.ts`, `server/composio.ts` | 16 | partial: [`features/custom-mcp-servers.md`](features/custom-mcp-servers.md); connected apps open |
 | 21 | Usage: the ledger, cost, caps, traces, backup models | `docs/usage-caps.md`, `server/usage-ledger.ts`, `server/usage-trace/`, `server/automatic-recovery.ts`, `server/engine-limits.ts` | later | open |
 
 ### C. The window
