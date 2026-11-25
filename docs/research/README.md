@@ -151,7 +151,7 @@ number of its part. This table has a part for each of them.
 | 55 | Departments: groups of bots, shared instructions, who is in charge | `server/section-context.ts`, `src/lib/team-map.ts` | 14 | open |
 | 63 | Goals: the goal record, the goal loop, the `/goal` command | `server/group-goal-run.ts`, `server/host/one-on-one-goals.ts`, `server/host/goal-turns.ts`, `docs/plans/2026-09-02-goal-mode-v2.md` | later | open |
 | 66 | Incidents: the server detects a problem and the Chief reports | `docs/team-incidents.md` | later | open |
-| 16 | Memory: the files, recall, upkeep, the tidy-up, the journal, proposals | `docs/memory.md`, `server/recall.ts`, `server/memory-upkeep.ts`, `server/memory-journal.ts` | 15 | open |
+| 16 | Memory: the files, recall, upkeep, the tidy-up, the journal, proposals | `docs/memory.md`, `server/recall.ts`, `server/memory-upkeep.ts`, `server/memory-journal.ts` | 15 | done: [`features/memory.md`](features/memory.md) |
 | 17 | Context: the transcript rebuild, compaction, summaries, the context budget, a model switch | `server/context-rebuild.ts`, `server/delta-context.ts`, `server/turn-context.ts`, `server/host/conversation-compaction.ts` | 8, 15 | partial: [`features/harness-upgrades.md`](features/harness-upgrades.md) |
 | 18 | Automations: routines, schedules, webhooks, app events, check-backs, waits, the daily brief | `docs/routine-schedules.md`, `docs/proactive-routines.md`, `server/routines.ts`, `server/waits.ts`, `server/webhook-ingress.ts` | 15 | done: [`features/automations.md`](features/automations.md) |
 | 19 | Skills: for each bot, learned skills, import, the built-in skills | `skills/` (19 files), `server/skills.ts`, `server/native-skills.ts`, `server/imported-skills.ts`, `server/skill-review.ts` | later | open |
