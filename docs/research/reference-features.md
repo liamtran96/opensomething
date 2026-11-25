@@ -21,7 +21,7 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 0 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 4 |
 | later | We want it, after step 16 | none | none | 108 | 0 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
@@ -186,12 +186,12 @@ says a different state.
 | Question routing: the Chief answers, or the person answers | `question-cards.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | open |
 | A follow-up from a teammate in the middle of a turn | `question-cards.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
 | Coordination in the chat: `coordinate_bots`, receipts, "Teammates working", consult | `room-coordination.md` | 14, 15 | 3 | `bot-core` | open |
-| Recovery after a restart: a cut turn of a teammate runs again one time | `room-coordination.md` | 14 | 3 | `bot-core` | open |
+| Recovery after a restart: a cut turn of a teammate runs again one time | `room-coordination.md` | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
 | Files in a hand-off, with limits for each message and each day | `room-coordination.md` | 15, 30 | 3 | `bot-core`, `bot-engine` | open |
 | Parking (an opt-in for each bot; steering is the default): a message waits until the teammates finish | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
-| Stop ends the request and all the work that it gave out | `room-coordination.md` | 14, 15 | 3 | `bot-core` | open |
+| Stop ends the request and all the work that it gave out | `room-coordination.md` | 14, 15 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
 | Jobs in a room in parallel, and the room queue | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | open |
-| Limits of the runtime: depth 4, 24 requests for each root, a 24-hour queue | `room-coordination.md` | 14 | 3 | `bot-core` | open |
+| Limits of the runtime: depth 4, 24 requests for each root, a 24-hour queue | `room-coordination.md` | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
 | Pages and applications in a room are view-only | `room-pages.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | open |
 | Routines: schedules by month and by cron, with an editor | `routines.md` | 18 | 3 | `bot-core` | open |
 | The Automations page: a list, a calendar, "Run now", run logs | `routines.md` | 18 | 3 | `bot-core` | open |
@@ -297,7 +297,7 @@ a feature is marked. Each row has all the features of one page.
 | `memory.md` | Memory files; a switch for each bot; the memory panel; redaction of credentials on write; the load budget; until-dates; the topic index; automatic recall; upkeep that notices facts; learning from group chats; organization into topics; "About me" facts; a nightly tidy-up; a warning for a heavy bot; the helper model; remember, forget and prefer in the chat; safe editing on conflict; a brief of recent work; a daily turn log line; `session_search` with dates; the memory journal with Undo; the routes; a memory layer for each person on a Team Cloud; shared team memory; fact checks | 16 | 3 | `bot-core` | open |
 | `proactive-routines.md` | The default routine "keep an eye on my day"; the daily brief card; a meeting preparation card and a 10-minute reminder; routine checks; read-and-draft runs; inbox triage with the helper model; reliability rules; state files; a morning brief on a personal Cloud | 18 | 3 | `bot-core` | open |
 | `routine-schedules.md` | Routines from natural language with cron; the schedule types; the `check_back` tool; an on/off switch; one-time routines; delete cascade; where a routine runs; keep the computer awake; catch-up after downtime and "Missed" rows; a ledger of occurrences; a cap on run rows; restart of a lost run; run time limits; a busy bot misses after 60 minutes; safety for an unreadable routines file; waits for approval | 18 | 3 | `bot-core` | open |
-| `runtime-contract.md` | The assignment record and its database; the lifecycle; one answer to the same request; a question from a child interrupts the wait; a requester with full access answers; typed questions become cards; continue and loop guards; wake, cancel, stop; the level rule; the envelope; the restart policy; budgets and clocks; ten invariants; ports; the tool surface | 14 | 3 | `bot-core` | open |
+| `runtime-contract.md` | The assignment record and its database; the lifecycle; one answer to the same request; a question from a child interrupts the wait; a requester with full access answers; typed questions become cards; continue and loop guards; wake, cancel, stop; the level rule; the envelope; the restart policy; budgets and clocks; ten invariants; ports; the tool surface | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
 | `avatar-storage.md` | Bot avatars in the attachment store; an avatar made with AI | 46 | later | `bot-desktop` | open |
 | `bitwarden.md` | A password manager in the Vault: server choice, a check before save, a CLI runner, `bw://` references, a secrets manager, a pinned download | 11 | later | `bot-core` | open |
 | `bot-box.md` | The bot box: a sandbox for the process of a bot on Linux; a list of permitted environment variables; an egress gate; a credential broker; a broker for MCP headers; a system-call filter; a self-check | 11, 57 | later | `bot-core` | open |
