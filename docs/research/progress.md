@@ -411,8 +411,10 @@ the agent of `threads` reads the two commits with `git show`.
   `scheduler-tests.md`). All other readers start again.
 - On 2026-11-25 the author changed the model of the agents to Opus 5.5 and
   said: "keep the two running, pause the other four". `assignment-runtime`
-  and `automations` run. The others continue two at a time, in this order:
-  `threads` and `agent-tools`, then `bot-coordination` and `memory`.
+  and `automations` run. After those two, the author said: "after 2
+  starting one by one". The other four continue one at a time, in the
+  order of the plan steps: `threads`, `agent-tools`, `bot-coordination`,
+  `memory`.
 - Open themes of group 3 after this batch: context (part 17: compaction,
   summaries, the engine switch) and outside tools (part 20: custom MCP
   servers, connected apps, step 16). They are for batch 7.
