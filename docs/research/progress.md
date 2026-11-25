@@ -33,6 +33,9 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
    the crate and the module that get the port of each feature.
 5. Choose three to six features. Give each one a short name. Its file is
    `features/<name>.md`.
+6. Run at most two workflows at the same time. Start the next feature when
+   one finishes. Six workflows at the same time used the usage limit
+   before any reader finished (batch 6).
 
 ### 2. Prepare the reference project
 
@@ -163,8 +166,10 @@ It is the local clone at <ABSOLUTE PATH>, at commit <COMMIT>.
   count) and "Not verified".
 - Check the key findings of each subagent against the code.
 - Each subagent writes its report to `.research/<group>.md` in the
-  worktree as soon as it finishes. Git does not track that folder. After a
-  restart, read the reports that exist and start only the missing ones.
+  worktree, a part at a time: it makes the file with a list of its files
+  first, and adds its notes after each file that it reads. Git does not
+  track that folder. After a restart, a subagent reads its report and
+  continues from the first file that is not done.
 - Load the skill `anthropic-skills:asd-ste100` with the Skill tool before
   you write. If the Skill tool does not list it, read
   `~/.claude/skills/synced/*/asd-ste100/SKILL.md`. Apply it to the prose,
@@ -377,3 +382,37 @@ code. Some of them:
    (`server/store.ts:1199-1224`).
 
 The proposals are in `../plan/<name>.md` of each feature.
+
+## Batch 6, started 2026-11-24
+
+The author said: "start analyzing the remaining features". Groups 1 and 2
+have no open core rows, so this batch starts group 3 (steps 11 to 16 of the
+plan). It does one theme for each of steps 11 to 14 and the two themes of
+step 15. The reference is at commit `eee23ebbe` (2026-11-24). Its version
+is 0.1.179, which has no tag and no release. The next release, v0.1.180, is
+three commits later (`5478065c4`): two commits of the thread tabs and the
+version commit. Each agent reads the note of v0.1.180 for its feature, and
+the agent of `threads` reads the two commits with `git show`.
+
+| # | Rows of `reference-features.md` | Part | Crate | Step | Name | State |
+|---|---|---|---|---|---|---|
+| 1 | `threads.md`; `plans/2026-09-09-independent-threads.md`; `plans/2026-09-09-thread-aware-bots.md`; issue 1635 | 12 | `bot-core`, `bot-desktop` | 11 | `threads` | paused, waits for its turn |
+| 2 | `agents-tool-bridge.md`; `tool-results.md`; the tool directory past 128 tools; `list_bots` | 13 | `bot-engine` | 12 | `agent-tools` | paused, waits for its turn |
+| 3 | `runtime-contract.md`; the limits of the runtime; recovery after a restart; Stop ends the request | 14 | `bot-core` | 13 | `assignment-runtime` | running |
+| 4 | `room-coordination.md`; `channels.md`; `handoff-status.md`; `specs/aside-injection-seams.md`; `plans/2026-09-02-bot-concurrency.md`; the delegation plans; issue 1641 | 15 | `bot-core`, `bot-engine` | 14 | `bot-coordination` | paused, waits for its turn |
+| 5 | `memory.md`; `memory-layer.md`; `plans/2026-09-25-memory-layer.md`; the two memory plans of 2026-08-31 | 16 | `bot-core` | 15 | `memory` | paused, waits for its turn |
+| 6 | `routine-schedules.md`; `proactive-routines.md`; `routines.md`; `check-backs.md`; `waits.md`; `automation-reports.md`; `interval-restrictions.md`; docs site `features/automation.mdx` | 18 | `bot-core` | 15 | `automations` | running |
+
+- The 5-hour limit stopped all six agents at about 22:30 on 2026-11-24,
+  and the weekly limit of the first model stopped them again after the
+  reset. About 55 readers ran at the same time. Each reader saved its
+  report only at its end, so 2 reports were complete
+  (`assignment-runtime`: `runtime-tests.md`; `automations`:
+  `scheduler-tests.md`). All other readers start again.
+- On 2026-11-25 the author changed the model of the agents to Opus 5.5 and
+  said: "keep the two running, pause the other four". `assignment-runtime`
+  and `automations` run. The others continue two at a time, in this order:
+  `threads` and `agent-tools`, then `bot-coordination` and `memory`.
+- Open themes of group 3 after this batch: context (part 17: compaction,
+  summaries, the engine switch) and outside tools (part 20: custom MCP
+  servers, connected apps, step 16). They are for batch 7.

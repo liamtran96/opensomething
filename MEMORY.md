@@ -68,15 +68,16 @@ research the release history again unless the author asks.
   many key changes that the rows of section 8 did not have. It corrected
   `changelog.md`. The findings and the full list of missing changes are in
   [`docs/research/changelog-check.md`](docs/research/changelog-check.md).
-  On 2026-11-24 the file covered v0.1.0 to v0.1.178, and v0.1.178
-  (2026-11-23) was the latest release of the reference project.
+  On 2026-11-24 the file covered v0.1.0 to v0.1.180, and v0.1.180
+  (2026-11-24) was the latest release of the reference project. v0.1.179
+  has no tag and no release.
 - **How:**
   - Use sections 5, 6 and 7 for the problems that each feature must check,
     as "How to run a batch" in `docs/research/progress.md` says. For the
     repeated fixes of one theme, look also in section 6 of
     `changelog-check.md`.
   - Keep it up to date: when the reference project publishes a release after
-    v0.1.178, add its row to section 8. Change sections 3 to 7 only when the
+    v0.1.180, add its row to section 8. Change sections 3 to 7 only when the
     new release changes them.
 
 ### A changelog row has all the key changes of its release (2026-11-23)
@@ -273,6 +274,19 @@ analysis tasks only, not for other worktrees.
   - **How:** the prompt template of `docs/research/progress.md` has the
     rule. After a restart, the lead reads the files that exist and starts
     only the missing readers.
+
+- **At most two analysis workflows at a time (2026-11-25):** start the
+  next worktree when one finishes. A reader adds its notes to its report
+  after each file, not only at its end.
+  - **Why:** in batch 6, six workflows (about 55 readers) ran at the same
+    time. The 5-hour limit stopped all of them before any of them
+    finished, and only 2 reports were saved. Each restart began again and
+    used the weekly limit. The author asked: "because of limit 5 hours I
+    run it many time but did not finish the workflow maybe because 6
+    workflow cost many token right?", then said "keep the two running,
+    pause the other four".
+  - **How:** step 1.6 of "How to run a batch" and the "Rules" of the
+    prompt template in `docs/research/progress.md`.
 
 ### Look at the real window before you report a UI change (2026-11-20)
 
