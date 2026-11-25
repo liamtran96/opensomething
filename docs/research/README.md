@@ -145,7 +145,7 @@ number of its part. This table has a part for each of them.
 | # | Part | Where to start | For our step | State |
 |---|---|---|---|---|
 | 12 | Threads: a bot with more than one conversation, folders, pins, parallel threads, snooze | `docs/plans/2026-09-09-independent-threads.md`, `server/store.ts`, `server/task-record.ts` | 11 | done: [`features/threads.md`](features/threads.md) |
-| 13 | The tools that the server gives to an engine: the catalog, the proxy, the tool bridge, large results | `server/drivers/agents-*.ts`, `docs/agents-tool-bridge.md`, `server/tool-results.ts` | 12 | open |
+| 13 | The tools that the server gives to an engine: the catalog, the proxy, the tool bridge, large results | `server/drivers/agents-*.ts`, `docs/agents-tool-bridge.md`, `server/tool-results.ts` | 12 | done: [`features/agent-tools.md`](features/agent-tools.md) |
 | 14 | The assignment runtime | `server/runtime/` (25 files), `docs/runtime-contract.md` | 13 | done: [`features/assignment-runtime.md`](features/assignment-runtime.md) |
 | 15 | Work between bots: rooms, hand-offs, the Chief, questions between bots, the aside lane | `server/host/` (376 files), `server/peer-roster.ts`, `docs/specs/aside-injection-seams.md` | 14 | open |
 | 55 | Departments: groups of bots, shared instructions, who is in charge | `server/section-context.ts`, `src/lib/team-map.ts` | 14 | open |
