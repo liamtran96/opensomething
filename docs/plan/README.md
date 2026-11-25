@@ -72,6 +72,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`memory.md`](memory.md) | [`memory.md`](../research/features/memory.md) | P204 to P217 | 15, D8 |
 | [`bot-coordination.md`](bot-coordination.md) | [`bot-coordination.md`](../research/features/bot-coordination.md) | P218 to P229, and new facts for P64, P120, P182 | 2, 12, 14, gap |
 | [`custom-mcp-servers.md`](custom-mcp-servers.md) | [`custom-mcp-servers.md`](../research/features/custom-mcp-servers.md) | P230 to P245 | 4, 9, 12, 16, D12, gap |
+| [`context.md`](context.md) | [`context.md`](../research/features/context.md) | P246 to P255 | 3, 5, 8, 13, D22, new step, later |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -214,7 +215,7 @@ The fake driver of step 3 and each real driver must obey them.
 - Where the fake driver lives until `bot-testkit` exists (decision D8): a
   public module behind a Cargo feature.
 
-**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md), [P53 to P60](driver-contract.md), [P65](engine-process-lifecycle.md), [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P113](approval-levels.md).
+**Proposals:** [P2](chat-turns.md), [P6](chat-turns.md), [P8](chat-turns.md), [P9](chat-turns.md), [P53 to P60](driver-contract.md), [P65](engine-process-lifecycle.md), [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P113](approval-levels.md), [P254](context.md).
 
 ### Step 4. The registry
 
@@ -263,7 +264,7 @@ The fake driver of step 3 and each real driver must obey them.
   waits for the turn to end (`server/drivers/openai-chat.ts:961-966`). Each
   driver must support it (D22).
 
-**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver), [P124](chat-ui.md).
+**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver), [P124](chat-ui.md), [P251](context.md).
 
 ### Step 6. Settings and the data folder
 
@@ -338,7 +339,7 @@ The fake driver of step 3 and each real driver must obey them.
 - [ ] 9
 - [ ] 10
 
-- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md).
+- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md).
 - **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md).
 - **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md).
 
@@ -368,7 +369,7 @@ desktop application (decision D10).
 
 ## Gaps that have no step
 
-Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md).
+Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later.
 
 ## Notes for steps 8 to 14
 
