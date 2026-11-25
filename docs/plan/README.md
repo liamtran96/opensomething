@@ -38,7 +38,7 @@ this file. The reasons for this order are in decision D14 of [`decisions.md`](..
 
 The research of batches 1 and 2 (`../research/features/`) and the release
 history (`../research/changelog.md`) gave 51 proposals, P1 to P51. Batch 3 (the driver contract) gave P52 to
-P64. Batch 4 (six features, reference `ed8cb7278`) gave P65 to P121. Batch 5 (six features, reference `ad27f0716`) gives P122 to P163. Batch 6 (group 3, reference `eee23ebbe`) gives P164 and after. Each
+P64. Batch 4 (six features, reference `ed8cb7278`) gave P65 to P121. Batch 5 (six features, reference `ad27f0716`) gives P122 to P163. Batch 6 (group 3, reference `eee23ebbe`) gives P164 to P229. Batch 7 (reference `96ff84455`) gives P230 and after. Each
 proposal is in the plan file of its feature. Each step below links to its
 proposals. The author decides each one. Reply with the numbers, for example
 "accept P1, P2. P5 option a. Reject P9". Then the proposal becomes a
@@ -71,6 +71,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`agent-tools.md`](agent-tools.md) | [`agent-tools.md`](../research/features/agent-tools.md) | P194 to P203 | 12, D8 |
 | [`memory.md`](memory.md) | [`memory.md`](../research/features/memory.md) | P204 to P217 | 15, D8 |
 | [`bot-coordination.md`](bot-coordination.md) | [`bot-coordination.md`](../research/features/bot-coordination.md) | P218 to P229, and new facts for P64, P120, P182 | 2, 12, 14, gap |
+| [`custom-mcp-servers.md`](custom-mcp-servers.md) | [`custom-mcp-servers.md`](../research/features/custom-mcp-servers.md) | P230 to P245 | 4, 9, 12, 16, D12, gap |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -349,15 +350,11 @@ program starts another program. What it must cover: [P95](security-model.md).
 | Step | What to build | Crate | Done when |
 |---|---|---|---|
 | 11 | Tasks: a bot has more than one thread ([P182 to P193](threads.md)) | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
-| 12 | Our own tools for engines, given as an MCP server: `list_bots` first | `bot-engine` | An engine lists the bots through the tool |
-| 11 | Tasks: a bot has more than one thread | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
 | 12 | Our own tools for engines, given as an MCP server: `list_bots` first ([P194 to P203](agent-tools.md)) | `bot-engine` | An engine lists the bots through the tool |
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
-| 14 | Several bots: `coordinate_bots` writes an assignment | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
-| 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
 | 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
-| 15 | Memory, then routines ([P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
-| 16 | Outside tools: custom MCP servers, then Composio (decision D12) | `bot-engine` | A bot calls a tool of a custom MCP server |
+| 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
+| 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
 - [ ] 11
 - [ ] 12
@@ -371,7 +368,7 @@ desktop application (decision D10).
 
 ## Gaps that have no step
 
-Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md).
+Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md).
 
 ## Notes for steps 8 to 14
 
