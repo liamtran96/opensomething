@@ -68,8 +68,8 @@ research the release history again unless the author asks.
   many key changes that the rows of section 8 did not have. It corrected
   `changelog.md`. The findings and the full list of missing changes are in
   [`docs/research/changelog-check.md`](docs/research/changelog-check.md).
-  On 2026-11-24 the file covered v0.1.0 to v0.1.180, and v0.1.180
-  (2026-11-24) was the latest release of the reference project. v0.1.179
+  On 2026-11-26 the file covered v0.1.0 to v0.1.181, and v0.1.181
+  (2026-11-25) was the latest release of the reference project. v0.1.179
   has no tag and no release.
 - **How:**
   - Use sections 5, 6 and 7 for the problems that each feature must check,
@@ -77,7 +77,7 @@ research the release history again unless the author asks.
     repeated fixes of one theme, look also in section 6 of
     `changelog-check.md`.
   - Keep it up to date: when the reference project publishes a release after
-    v0.1.180, add its row to section 8. Change sections 3 to 7 only when the
+    v0.1.181, add its row to section 8. Change sections 3 to 7 only when the
     new release changes them.
 
 ### A changelog row has all the key changes of its release (2026-11-23)
@@ -287,6 +287,38 @@ analysis tasks only, not for other worktrees.
     pause the other four".
   - **How:** step 1.6 of "How to run a batch" and the "Rules" of the
     prompt template in `docs/research/progress.md`.
+
+- **One analysis workflow at a time (2026-11-25):** this replaces the
+  limit of two above. Approve the next worktree only when the one before
+  it is done.
+  - **Why:** at the start of batch 7, the main session made two worktrees
+    for two workflows. The author said: "wait start one by one".
+  - **How:** a worktree can exist and wait at its approval step. Send the
+    approval to one agent at a time.
+
+- **Watch the worktrees with a background watcher (2026-11-26):** after
+  the main session approves analysis worktrees, it starts one background
+  shell job that watches all of them and exits when all are finished. Then
+  it does the next work, such as the pull requests.
+  - **Why:** the author said "after all worktree finisnh create pr for
+    me", then "please note the back watcher to memory".
+  - **How:** step 4.5 of "How to run a batch" in
+    [`docs/research/progress.md`](docs/research/progress.md). A worktree is
+    finished when its `docs/research/features/<name>.md` exists and its
+    agent is idle. Do not use `orca terminal wait --for tui-idle` alone:
+    the agent is idle while its workflow runs in the background.
+
+- **After the pull request, delete the worktree, not the branch
+  (2026-11-26):** when an analysis worktree is done, open its pull request
+  from its branch, then remove the worktree with
+  `orca worktree rm`. Keep the branch: the pull request needs it. Remove
+  only a worktree that is done, never one that still runs or waits.
+  - **Why:** the author said "create pr for the worktree are done and
+    delete it", then "remember the worktree not the branch", then "please
+    just remove the worktree are done not running".
+  - **How:** before the removal, save what only the worktree has: ask its
+    agent to write its proposals to a file outside the repository (step
+    5.6 of "How to run a batch"), and push the branch.
 
 ### Look at the real window before you report a UI change (2026-11-20)
 

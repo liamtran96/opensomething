@@ -33,9 +33,9 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
    the crate and the module that get the port of each feature.
 5. Choose three to six features. Give each one a short name. Its file is
    `features/<name>.md`.
-6. Run at most two workflows at the same time. Start the next feature when
-   one finishes. Six workflows at the same time used the usage limit
-   before any reader finished (batch 6).
+6. Run one workflow at a time. Start the next feature when it finishes.
+   Six workflows at the same time used the usage limit before any reader
+   finished (batch 6), and the author asked for one at a time (batch 7).
 
 ### 2. Prepare the reference project
 
@@ -84,6 +84,20 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
    its workflow, or to start again only the readers with no report file.
 4. To get a notice when an agent stops, use the cross-session message
    tool with `notify_when_idle`.
+5. To act when all worktrees are finished, start one background shell
+   job (`run_in_background`) that loops every 3 minutes, with a limit of
+   5 hours. For each worktree, it checks two things:
+   - the file `docs/research/features/<name>.md` exists in the worktree;
+   - the agent is idle: the last lines of
+     `orca terminal read --terminal <handle> --json` do not contain
+     "esc to interrupt".
+
+   It prints one status line for each loop, and exits when one worktree
+   is finished. The main session opens the pull request of that worktree,
+   removes the worktree (not the branch), and starts the job again for
+   the rest. Do not use `orca terminal wait --for tui-idle` alone: the
+   agent is idle while its workflow runs in the background. If a line
+   shows a usage limit, send `continue` after the reset (step 4.3).
 
 ### 5. Check and copy the results
 
@@ -429,3 +443,94 @@ the agent of `threads` reads the two commits with `git show`.
 - Open themes of group 3 after this batch: context (part 17: compaction,
   summaries, the engine switch) and outside tools (part 20: custom MCP
   servers, connected apps, step 16). They are for batch 7.
+
+## Batch 7, started 2026-11-25
+
+The author chose four features: the two open themes of group 3 and the
+open rows of part 15. Later the same day, the author added three more
+(rows 5 to 7). The reference is at commit `96ff84455`
+(2026-11-25), 127 commits after batch 6. No release came after v0.1.180.
+The author said: "wait start one by one". One workflow runs at a time, in
+the order of this table.
+
+| # | Rows of `reference-features.md` | Part | Crate | Step | Name | State |
+|---|---|---|---|---|---|---|
+| 1 | `custom-mcp-servers.md`; `verification/mcp-sign-in.md`; the MCP registry, sign-in, per-bot tool scoping and MCP-in-chat plans; the MCP call timeout specification | 20 | `bot-engine` | 16 | [`custom-mcp-servers`](features/custom-mcp-servers.md) | done, 2026-11-25, at commit `96ff84455`: research #66, plan #68 (P230 to P245) |
+| 2 | `verification/context-compaction.md`; the engine switch with a replay | 17 | `bot-core` | none yet | [`context`](features/context.md) | done, 2026-11-25, at commit `96ff84455`: research #67, plan #69 (P246 to P255) |
+| 3 | `composio.md`; `plans/2026-08-31-04-connector-scopes.md`; `verification/connected-apps-oauth.md`; docs site `connected-apps/`; `cloudflare/composio-broker/README.md` | 20 | `bot-engine` | 16 | [`connected-apps`](features/connected-apps.md) | done, 2026-11-26, at commit `96ff84455`: research #71, plan #82 |
+| 4 | `plans/2026-08-31-07-delegation-task-board.md`; `verification/team-setup.md`; `verification/team-access.md`; `verification/full-access.md`; `verification/own-home.md` | 15 | `bot-core`, `bot-engine` | 14 | [`team-structure`](features/team-structure.md) | done, 2026-11-26, at commit `96ff84455`: research #74, plan #83 |
+| 5 | `app-settings.md`; `specs/2026-11-12-app-settings-tool-design.md` | 13, 61 | `bot-engine` | 12 | [`app-settings`](features/app-settings.md) | done, 2026-11-26, at commit `96ff84455`: research #70, plan #84 |
+| 6 | `evidence/bot-attach-file/README.md`; docs site `features/attachments-and-search.mdx` | 13, 30 | `bot-engine`, `bot-desktop` | 12 | [`bot-attachments`](features/bot-attachments.md) | done, 2026-11-26, at commit `96ff84455`: research #73, plan #85 |
+| 7 | Notifications and the unread badge; the notification tools of the helper bot; `notification-and-proactivity-qa.md` | 50 | `bot-desktop`, `bot-core` | none yet | [`notifications`](features/notifications.md) | done, 2026-11-26, at commit `96ff84455`: research #72, plan #86 |
+| 8 | Mentions: the picker, colours for each bot, `@everyone` (`verification/mentions.md`) | 23 | `bot-desktop`, `bot-core` | 14 | [`mentions`](features/mentions.md) | done, 2026-11-26, at commit `96ff84455`: research #76, plan #87 |
+| 9 | `verification/bot-contact-cards.md`; the sign-in of `verification/whop.md` | 20, 35 | `bot-engine` | 16 | [`bot-contact-cards`](features/bot-contact-cards.md) | done, 2026-11-26, at commit `96ff84455`: research #75, plan #88 |
+| 10 | Docs site `features/chat-and-teams.mdx`, the features that no research file covers | 23, 55, 15, 48, 64 | `bot-core`, `bot-desktop` | 14 and others | `chat-and-teams-site` | done, 2026-11-26, at commit `96ff84455`: research #81, plan #89 |
+| 11 | `verification/postiz.md`; `verification/whop.md` | 20 | `bot-engine` | 16 | [`hosted-app-connections`](features/hosted-app-connections.md) | done, 2026-11-26, at commit `96ff84455`: research #79, plan #90 |
+| 12 | `plans/2026-08-31-01-usage-accounting-and-budgets.md` | 21 | `bot-core` | none yet | [`usage-and-budgets`](features/usage-and-budgets.md) | done, 2026-11-26, at commit `96ff84455`: research #80, plan #91 |
+| 13 | `verification/safety-floor.md`; the decision log of `plans/2026-08-31-00-control-plane-roadmap.md` | 10, 11 | `bot-core`, `bot-engine` | 10 | [`safety-floor`](features/safety-floor.md) | done, 2026-11-26, at commit `96ff84455`: research #77, plan #92 |
+| 14 | `plans/2026-10-13-chat-widgets.md`; `verification/proposal-cards.md`; `verification/shared-workspace-trust.md` | 48, 51 | `bot-desktop`, `bot-core` | none yet | [`chat-widgets-and-proposals`](features/chat-widgets-and-proposals.md) | done, 2026-11-26, at commit `96ff84455`: research #78, plan #93 |
+
+- The worktrees of rows 1 and 2 exist. The agent of row 2 gets its
+  approval only after row 1 is done.
+- Row 3 started on 2026-11-25 in the worktree `research-connected-apps`,
+  after rows 1 and 2 were done. Its prompt gives the borders with
+  `custom-mcp-servers`, `automations`, `approval-cards`,
+  `approval-levels` and `agent-tools`. Its first proposal number is P256.
+- On 2026-11-25 the author said "start 3 more analyzing features" and
+  chose rows 4 to 7. The main session asked how to approve them, because
+  of the rule of one workflow at a time. The author chose "All four now",
+  so rows 4 to 7 started together while row 3 read its last group. Their
+  plans estimate about 4 to 5.5M tokens together.
+- On 2026-11-26 the author said "start 2 more feature analyzing" and chose
+  rows 8 to 10. The author first chose to approve them when rows 3 to 7 are
+  done. Then the author said "start the remaing worktree pleaes", so rows
+  8 to 10 started while rows 3 to 7 still ran. In scope for row 10: the
+  team inbox, people in the sidebar and the assistant; the paid plans and
+  billing are not.
+- On 2026-11-26 the author said "start 2 more feature analyzing" and
+  chose rows 11 to 14. Rows 11 and 12 are group 3; rows 13 and 14 are group
+  later. Most of the safety floor is already in `approval-levels.md`, so
+  row 13 analyzes only what that file does not cover. The author approved
+  rows 11 to 14 when rows 4 to 10 still ran.
+- Later on 2026-11-26 the author said "please pending 2 worktrees with
+  many agent is running". The two with the most readers (7 each) were
+  paused: `chat-and-teams-site` with "p" in its workflow panel, and
+  `usage-and-budgets` with TaskStop. To resume, send "resume" (or "p" in
+  the panel): each agent starts only the readers with no complete report. Their agents number the proposals T1, T2, ..., and the main
+  session gives the P-numbers. Their prompts tell the agents not to run
+  `git checkout` in the shared clone of the reference project.
+- Most starting documents of these rows are in `docs/verification/`, not
+  in `docs/`.
+- The main session checked nine key claims of each done file at
+  `96ff84455`, and all agree with the code. #67 is stacked on #66, and #69
+  on #68, because each pair changes the same tables.
+
+## Batch 8, started 2026-11-26
+
+Group 3 has no open rows now. The 25 rows of group 3 that
+`reference-features.md` still marks "open" are in the files of batch 7. The
+author said "start the next analyzing features" and chose four features of
+the group "later". The reference is at commit `83d18e3af` (2026-11-26).
+Its version is 0.1.181: v0.1.181 is the first release after
+`changelog.md`, so each agent reads its note for its feature. The agents number their
+proposals T1, T2, ..., and the main session gives the P-numbers from P406.
+The author approved all four at the same time: "aprroved all". A
+background job sent the approval to each agent when it waited at its plan.
+
+| # | Rows of `reference-features.md` | Crate | Step | Name | State |
+|---|---|---|---|---|---|
+| 1 | `2026-08-31-02-bot-profile.md`; `bot-settings.md`; `bot-continuity.md`; `presets.md`; `specs/2026-09-05-bot-folder-and-self-setup-design.md` | `bot-core`, `bot-desktop` | none yet | [`bot-profile`](features/bot-profile.md) | done, 2026-11-26, at commit `83d18e3af`: research #94 |
+| 2 | Docs site `features/skills.mdx`; `skill-approval-lifecycle.md`; the skill parts of `2026-08-31-06-memory-review-loop.md`; `skills/` | `bot-core`, `bot-engine` | none yet | [`skills`](features/skills.md) | done, 2026-11-26, at commit `83d18e3af`: research #95 |
+| 3 | `2026-09-30-per-bot-tool-scoping.md`; `tool-selection.md` | `bot-engine`, `bot-core` | none yet | [`tool-selection`](features/tool-selection.md) | done, 2026-11-26, at commit `83d18e3af`: research #96 |
+| 4 | `automatic-recovery.md`; `provider-recovery.md`; `pausing-bots.md`; `team-incidents.md` | `bot-engine`, `bot-core` | none yet | [`recovery-and-pausing`](features/recovery-and-pausing.md) | done, 2026-11-26, at commit `83d18e3af`: research #97 |
+
+- All four agents finished between 20:25 and 20:36. The main session
+  checked four or five key claims of each file at `83d18e3af`, and all
+  agree with the code. Two line numbers of `skills.md` were wrong
+  (`PendingApproval.tsx:167`, `:236`); the main session corrected them to
+  `:168` and `:273-283` before the pull request.
+- The worktrees are removed and the branches are kept. The proposals of
+  each agent are in `/private/tmp/batch8-<name>-proposals.md`, numbered
+  T1, T2, ... The plan pull requests give them P-numbers from P406.
+- The batch also adds v0.1.181 to `changelog.md`, and points the 25 rows
+  of group 3 that still said "open" to their batch 7 files.
