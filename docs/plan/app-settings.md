@@ -25,6 +25,13 @@ the reference project.
 - **P289 (decision, adds to D8). A bot changes only its own bot settings,
   and never an approval level.** Approval mode and a change to another bot
   are owner-only.
+  - **Problem in the reference:** In a turn that the owner started, a bot
+    can set any bot, or all bots, to Full access with one call. So a bot
+    that reads a poisoned page in that turn can raise its own level
+    (`server/app-settings/registry-bots.ts:12-17`, `:88-100`, `:197-211`;
+    `server/app-settings/host.test.ts:547-554`). The release problem: "A
+    secret or an access right in the wrong place" (v0.1.113, v0.1.141) and
+    "The approval model changed" (v0.1.99, v0.1.115).
   - Why: better than the reference, where a bot changes any bot, or all
     bots, with approval mode to Full access. Its own spec names "raise its
     own permissions" as a threat. The turn record knows the caller (P194),
@@ -35,6 +42,14 @@ the reference project.
 - **P290 (decision). Some settings are owner-only.** Provider addresses,
   engines with `keyFrom`, ways in (Wi-Fi, the relay, Tailscale) and
   `computer.sharing`.
+  - **Problem in the reference:** A bot can set a provider address, or add
+    an engine at its own address with a saved key. Both apply at once, so a
+    hijacked bot can send the requests and the key to an attacker
+    (`server/app-settings/registry.ts:252-262`, `:295-297`, `:313-315`). It
+    can also turn on Wi-Fi, the relay, Tailscale and computer sharing
+    (`server/app-settings/registry-window.ts:17-20`, `:58-62`;
+    `server/app-settings/registry-config.ts:154-156`). The release problem:
+    "A secret or an access right in the wrong place" (v0.1.77, v0.1.181).
   - Why: better than the reference. A bot can send the requests and their
     key to a new address, and open the computer to the network. The spec
     says a hijacked bot must not do either (spec `:33`).
@@ -45,6 +60,11 @@ the reference project.
 - **P291 (decision, a note for steps 8 and 10). The Undo record is stored
   with its card in one transaction.** For a key or an address, store a
   reference, not the value.
+  - **Problem in the reference:** The Undo record is only in memory. After a
+    restart the card still shows Undo, and a tap gets "This change can't be
+    undone here." (`server/app-settings/host.ts:88`, `:149`, `:266-267`;
+    `src/components/ApprovalCard.tsx:164`). The release problem: "State lost
+    at a restart or a crash" (v0.1.74, v0.1.165).
   - Why: better than the reference. It keeps the record in memory, so after
     a restart the card still shows Undo, and a tap gets "This change can't
     be undone here."
@@ -71,12 +91,23 @@ the reference project.
 - **P294 (plan, a note to D10). One write path with a typed caller.** The
   caller is `Actor::Bot(id)`, not admin HTTP. The bot tool and the Tauri
   commands of step 7.6 call the same `bot-core` functions.
+  - **Problem in the reference:** The tool calls the routes of the Settings
+    window as an admin loopback client. The routes cannot tell a bot from
+    the person, so no route can refuse a change because a bot asked for it
+    (`server/app-settings/registry.ts:365-389`, `:374`). The release
+    problem: "A secret or an access right in the wrong place" (v0.1.113,
+    v0.1.130).
   - Why: better than the reference, which calls its own routes as an admin
     loopback client, so the routes do not know that a bot is the caller.
     Less code (no HTTP server, D10).
   - Source: `server/app-settings/registry.ts:365-386`, `:374`.
 - **P295 (plan, step 12). The write budget is in the turn record.** Every
   refusal gives back its write. The limit stays 10 for each turn.
+  - **Problem in the reference:** A refused batch gives its write back, but
+    a refused single write keeps it. So refusals can use up the limit of 10
+    writes for each turn, although the spec says that a refusal does not
+    spend (`server/app-settings/host.ts:19`, `:100-106`, `:124-126` compared
+    with `:134-135`). The release problem: none; this is a judgment call.
   - Why: better than the reference. A refused batch gives the write back,
     a refused single write does not. The spec says a refusal does not spend.
   - Source: `server/app-settings/host.ts:19`, `:99-104`, `:124` compared
@@ -84,12 +115,26 @@ the reference project.
 - **P296 (plan, step 7, or a gap). The setter answers first.** A window
   preference change returns the result of the setter before the tool says
   "Changed".
+  - **Problem in the reference:** The server stores the new value and the
+    bot hears "Changed" before the window applies it. The window drops each
+    error, so a refused change (for example, Tailscale not installed) still
+    reads as done (`server/routes/app-settings.ts:43-48`;
+    `src/lib/window-prefs.ts:100-104`;
+    `docs/superpowers/specs/2026-11-12-app-settings-tool-design.md:250-253`).
+    The release problem: none; this is a judgment call.
   - Why: better than the reference. It stores the value before the window
     applies it, and the window ignores errors (a gap the spec names).
   - Source: `server/routes/app-settings.ts:43-49`;
     `src/lib/window-prefs.ts:100-104`; spec `:250-252`.
 - **P297 (plan, step 6). Redaction by type, not by field name.** One
   redaction function runs at each exit.
+  - **Problem in the reference:** The read filter hides only fields whose
+    name holds key, token, secret or password. So the custom endpoint
+    address, which the write refuses as sensitive, shows on read, and a
+    secret under another field name can show too
+    (`server/app-settings/registry-config.ts:15-18`, `:54-57`). The release
+    problem: "A secret or an access right in the wrong place" (v0.1.101,
+    v0.1.154).
   - Why: better than the reference. It removes fields that match
     `/key|token|secret|password/i`, so `decider.customBaseUrl` is refused on
     write as sensitive but shown on read.
@@ -107,6 +152,12 @@ the reference project.
     `server/app-settings/registry.ts:252`; `server/config.ts:892-902`.
 - **P299 (plan, a test of step 12). Undo restores every field that the
   change touched.**
+  - **Problem in the reference:** Archive of a Chief also ends its Chief of
+    Staff role and clears its departments, but Undo restores only the
+    archived flag. The bot comes back without its role
+    (`server/app-settings/registry-bots.ts:245`, `:252-253`;
+    `server/routes/bot-patch.ts:607`). The release problem: none; this is a
+    judgment call.
   - Why: better than the reference. Archive clears Chief of Staff, and its
     Undo does not restore it.
   - Source: `server/app-settings/registry-bots.ts:252-253`.
