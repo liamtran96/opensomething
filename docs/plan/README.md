@@ -74,6 +74,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`custom-mcp-servers.md`](custom-mcp-servers.md) | [`custom-mcp-servers.md`](../research/features/custom-mcp-servers.md) | P230 to P245 | 4, 9, 12, 16, D12, gap |
 | [`context.md`](context.md) | [`context.md`](../research/features/context.md) | P246 to P255 | 3, 5, 8, 13, D22, new step, later |
 | [`connected-apps.md`](connected-apps.md) | [`connected-apps.md`](../research/features/connected-apps.md) | P256 to P268, and new facts for P44, P232, P240 | 10, 16, D12, gap |
+| [`team-structure.md`](team-structure.md) | [`team-structure.md`](../research/features/team-structure.md) | P272 to P288, and new facts for P113, P120, P142, P164, P165, P182, P219, P222 | 14, D10, gap, not planned |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -354,7 +355,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 | 11 | Tasks: a bot has more than one thread ([P182 to P193](threads.md)) | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
 | 12 | Our own tools for engines, given as an MCP server: `list_bots` first ([P194 to P203](agent-tools.md)) | `bot-engine` | An engine lists the bots through the tool |
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
-| 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
+| 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md), [P272](team-structure.md), [P273](team-structure.md), [P275](team-structure.md), [P277](team-structure.md), [P279 to P284](team-structure.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
 | 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md), [P257 to P267](connected-apps.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
@@ -370,7 +371,7 @@ desktop application (decision D10).
 
 ## Gaps that have no step
 
-Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later. Connected apps: the Email app has no step: [P268](connected-apps.md).
+Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later. Connected apps: the Email app has no step: [P268](connected-apps.md). The rooms of a team have no step: [P286](team-structure.md).
 
 ## Notes for steps 8 to 14
 
