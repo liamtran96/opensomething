@@ -38,7 +38,7 @@ this file. The reasons for this order are in decision D14 of [`decisions.md`](..
 
 The research of batches 1 and 2 (`../research/features/`) and the release
 history (`../research/changelog.md`) gave 51 proposals, P1 to P51. Batch 3 (the driver contract) gave P52 to
-P64. Batch 4 (six features, reference `ed8cb7278`) gave P65 to P121. Batch 5 (six features, reference `ad27f0716`) gives P122 to P163. Batch 6 (group 3, reference `eee23ebbe`) gives P164 to P229. Batch 7 (reference `96ff84455`) gives P230 and after. Batch 8 (reference `83d18e3af`) gives P406 and after. Each
+P64. Batch 4 (six features, reference `ed8cb7278`) gave P65 to P121. Batch 5 (six features, reference `ad27f0716`) gives P122 to P163. Batch 6 (group 3, reference `eee23ebbe`) gives P164 to P229. Batch 7 (reference `96ff84455`) gives P230 and after. Batch 8 (reference `83d18e3af`) gives P406 and after. Batch 9 (reference `140172d88`) gives P471 and after. Each
 proposal is in the plan file of its feature. Each step below links to its
 proposals. The author decides each one. Reply with the numbers, for example
 "accept P1, P2. P5 option a. Reject P9". Then the proposal becomes a
@@ -89,6 +89,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`skills.md`](skills.md) | [`skills.md`](../research/features/skills.md) | P428 to P442, and new facts for P48, P61, P103, P112, P139 to P144, P194 to P203, P275 | 9, 10, 12, 15, new step, later |
 | [`tool-selection.md`](tool-selection.md) | [`tool-selection.md`](../research/features/tool-selection.md) | P443 to P452, and new facts for P202, P234, P237, P238, P243 | 9, 12, 16, new step, later |
 | [`recovery-and-pausing.md`](recovery-and-pausing.md) | [`recovery-and-pausing.md`](../research/features/recovery-and-pausing.md) | P453 to P470, and new facts for P55, P60, P165, P249 | 3, 9, 13, 15, new step, gap |
+| [`github-sign-in.md`](github-sign-in.md) | [`github-sign-in.md`](../research/features/github-sign-in.md) | P471 to P483, and a correction of `acp-adapter.md` | 6, 9, 10, 16 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -306,7 +307,7 @@ The fake driver of step 3 and each real driver must obey them.
 - The default data folder comes from the shell (`bot-desktop` or `bot-cli`),
   and the environment variable that overrides it.
 
-**Proposals:** [P18](file-modes-atomic-writes-redaction.md), [P19](write-only-secrets.md), [P20](write-only-secrets.md), [P21](write-only-secrets.md), [P22](newer-config-unavailable.md), [P23](newer-config-unavailable.md), [P24](file-modes-atomic-writes-redaction.md), [P74](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P86](composition-root.md), [P91](composition-root.md), [P100](security-model.md), [P144](approval-cards.md), [P297](app-settings.md), [P374](hosted-app-connections.md), [P419](bot-profile.md).
+**Proposals:** [P18](file-modes-atomic-writes-redaction.md), [P19](write-only-secrets.md), [P20](write-only-secrets.md), [P21](write-only-secrets.md), [P22](newer-config-unavailable.md), [P23](newer-config-unavailable.md), [P24](file-modes-atomic-writes-redaction.md), [P74](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P86](composition-root.md), [P91](composition-root.md), [P100](security-model.md), [P144](approval-cards.md), [P297](app-settings.md), [P374](hosted-app-connections.md), [P419](bot-profile.md), [P475](github-sign-in.md), [P480](github-sign-in.md).
 
 ### Step 7. The event bus and the streamed reply in the window
 
@@ -356,8 +357,8 @@ The fake driver of step 3 and each real driver must obey them.
 - [ ] 10
 
 - **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md), [P291](app-settings.md), [P301](bot-attachments.md), [P304](bot-attachments.md), [P309](bot-attachments.md), [P354](chat-and-teams-site.md), [P380](usage-and-budgets.md), [P386](safety-floor.md), [P419](bot-profile.md).
-- **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md), [P311](bot-attachments.md), [P388](safety-floor.md), [P432](skills.md), [P451](tool-selection.md), [P466](recovery-and-pausing.md), [P467](recovery-and-pausing.md), [P470](recovery-and-pausing.md).
-- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md), [P291](app-settings.md), [P314](notifications.md), [P341](bot-contact-cards.md), [P365](hosted-app-connections.md), [P366](hosted-app-connections.md), [P386](safety-floor.md), [P387](safety-floor.md), [P389](safety-floor.md), [P390](safety-floor.md), [P391](safety-floor.md), [P394](chat-widgets-and-proposals.md), [P398](chat-widgets-and-proposals.md), [P429](skills.md), [P437](skills.md).
+- **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md), [P311](bot-attachments.md), [P388](safety-floor.md), [P432](skills.md), [P451](tool-selection.md), [P466](recovery-and-pausing.md), [P467](recovery-and-pausing.md), [P470](recovery-and-pausing.md), [P478](github-sign-in.md).
+- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md), [P291](app-settings.md), [P314](notifications.md), [P341](bot-contact-cards.md), [P365](hosted-app-connections.md), [P366](hosted-app-connections.md), [P386](safety-floor.md), [P387](safety-floor.md), [P389](safety-floor.md), [P390](safety-floor.md), [P391](safety-floor.md), [P394](chat-widgets-and-proposals.md), [P398](chat-widgets-and-proposals.md), [P429](skills.md), [P437](skills.md), [P479](github-sign-in.md).
 
 Write `docs/threat-model.md` before step 9: this is the first step where the
 program starts another program. What it must cover: [P95](security-model.md).
@@ -371,7 +372,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md), [P309](bot-attachments.md), [P318](notifications.md), [P458](recovery-and-pausing.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md), [P272](team-structure.md), [P273](team-structure.md), [P275](team-structure.md), [P277](team-structure.md), [P279 to P284](team-structure.md), [P307](bot-attachments.md), [P327](mentions.md), [P328](mentions.md), [P330](mentions.md), [P332](mentions.md), [P356](chat-and-teams-site.md), [P363](chat-and-teams-site.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md), [P314](notifications.md), [P322](notifications.md), [P435](skills.md), [P458](recovery-and-pausing.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
-| 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md), [P257 to P267](connected-apps.md), [P342 to P350](bot-contact-cards.md), [P365](hosted-app-connections.md), [P367](hosted-app-connections.md), [P368](hosted-app-connections.md), [P370 to P373](hosted-app-connections.md), [P375](hosted-app-connections.md), [P377](hosted-app-connections.md), [P443](tool-selection.md), [P444](tool-selection.md), [P451](tool-selection.md), [P452](tool-selection.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
+| 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md), [P257 to P267](connected-apps.md), [P342 to P350](bot-contact-cards.md), [P365](hosted-app-connections.md), [P367](hosted-app-connections.md), [P368](hosted-app-connections.md), [P370 to P373](hosted-app-connections.md), [P375](hosted-app-connections.md), [P377](hosted-app-connections.md), [P443](tool-selection.md), [P444](tool-selection.md), [P451](tool-selection.md), [P452](tool-selection.md), [P471 to P474](github-sign-in.md), [P476](github-sign-in.md), [P477](github-sign-in.md), [P481 to P483](github-sign-in.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
 - [ ] 11
 - [ ] 12
@@ -404,31 +405,31 @@ and the proposals that answer it.
 
 | Problem | Proposals |
 |---|---|
-| A turn or a wait that does not end | P6, P14, P30, P36, P65, P73, P133, P136, P138, P233, P465 |
+| A turn or a wait that does not end | P6, P14, P30, P36, P65, P73, P133, P136, P138, P233, P465, P476, P479, P481 |
 | The same work done two times, or lost | P1, P2, P34, P72, P79, P80, P83, P137, P252, P261, P262, P282, P303, P310, P462 |
-| Process control on Windows | P41, P66, P68, P82, P86 |
+| Process control on Windows | P41, P66, P68, P82, P86, P478 |
 | Sign-in to an engine, engine CLIs that change | P10, P11, P109, P422, P462, P470 |
-| A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100, P103, P108, P117, P132, P143, P144, P232, P236, P257, P258, P259, P267, P273, P274, P287, P289, P290, P294, P297, P306, P329, P392, P395, P407, P425, P434, P435, P436, P445 |
+| A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100, P103, P108, P117, P132, P143, P144, P232, P236, P257, P258, P259, P267, P273, P274, P287, P289, P290, P294, P297, P306, P329, P392, P395, P407, P425, P434, P435, P436, P445, P472, P473, P474, P480 |
 | A feature added, then removed | P3, P33, P126, P185, P188 (section 6, "One conversation for each bot") |
 | "Busy" and races between bots | P3, P27, P34, P72, P96, P104, P109, P184, P281, P282, P286, P412, P420 |
 | The size of the tool list | P48, P130, P431, P444, P446, P449 |
-| State lost at a restart | P34, P37, P44, P69, P79, P82, P83, P84, P86, P87, P90, P116, P189, P206, P262, P278, P279, P286, P291, P408, P430, P456, P458, P459 |
-| A file written over after a failed read | P22, P76, P77, P103, P114, P174, P232, P415, P419 |
+| State lost at a restart | P34, P37, P44, P69, P79, P82, P83, P84, P86, P87, P90, P116, P189, P206, P262, P278, P279, P286, P291, P408, P430, P456, P458, P459, P476 |
+| A file written over after a failed read | P22, P76, P77, P103, P114, P174, P232, P415, P419, P475 |
 | The approval model changed | P42 to P47, P73, P97, P111, P112, P113, P114, P117, P119, P120, P135, P136, P140, P236, P260, P272, P289, P407, P409, P410, P425, P436, P447 |
 | Memory and the number of processes | P66, P68, P70, P105, P306 |
 | Usage and cost numbers | P124, P378, P379, P380, P381, P383 |
 | Tests that fail by chance | P17. Also P16, but only with option a |
-| The person's own engine config reaches the bots | P61, P103, P429, P432 |
+| The person's own engine config reaches the bots | P61, P103, P429, P432, P477 |
 | The updater loops, sticks or breaks the window | P75, P94 |
 | One slow or stuck part blocks the others | P88, P92, P240, P465 |
 
 A proposal in the table avoids a problem that the reference had in its
 releases. Its "Problem in the reference" line names the problem and the
-releases. These proposals of batches 4 to 8 answer no release problem. They
+releases. These proposals of batches 4 to 9 answer no release problem. They
 are judgment calls, and the author can keep the reference for them: P67,
 P85, P89, P91, P187, P191, P201, P218, P248, P265, P266, P277, P280, P283,
 P284, P295, P296, P299, P315, P382, P387, P411, P413, P416, P421, P437,
-P441, P450, P452, P453, P455. P90 and P231 have no "Problem in the
+P441, P450, P452, P453, P455, P482, P483. P90 and P231 have no "Problem in the
 reference" line, because the research shows no failure in the reference.
 
 ## What to expect
