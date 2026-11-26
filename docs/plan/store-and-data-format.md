@@ -29,6 +29,11 @@ this file.
   A database above the known version is refused with the same line as the
   marker.
   - Kind: better than the reference.
+  - **Problem in the reference:** The databases have no schema version. An
+    older release does not see a newer schema until a query fails, and a
+    format change can lose data on a rollback (`CONTRIBUTING.md:189-201`,
+    `:223-224`). The release problem: "The updater loops, sticks or breaks
+    the window" (v0.1.144, v0.1.153).
   - Why: the reference finds its schema by its columns, so it does not see
     a change that breaks an older query. It names this as its own gap.
   - Source: `CONTRIBUTING.md:189-193`, `:207-218`, `server/message-db.ts:51-112`,
@@ -40,6 +45,14 @@ this file.
   2. The next room change writes over a corrupt `groups.json`.
   3. A one-time marker is written after a failed load.
   - Kind: better than the reference.
+  - **Problem in the reference:** A corrupt `bots.json` loads as no bots, so
+    the start seeds a default bot and writes it over the file
+    (`server/store.ts:299-302`, `:2248-2254`; `server/index.ts:2808`). A
+    corrupt `groups.json` loads as no rooms, and the next room change writes
+    over it (`server/store.ts:304-308`). The grant recovery writes its
+    one-time marker after it ran on no bots (`server/store.ts:428`;
+    `server/always-allow.ts:85`). The release problem: "A file written over
+    after a failed read" (v0.1.103, v0.1.107).
   - Source: `server/store.ts:296-307`, `:427-432`, `:2249-2254`,
     `server/index.ts:2808`, `server/tested-ai.ts:316-319`,
     `server/always-allow.ts:62-85`.
@@ -48,6 +61,11 @@ this file.
   read, stops the start with one line.** It does not load as empty. P22
   stays the rule for one bad section in a file that is valid JSON.
   - Kind: better than the reference.
+  - **Problem in the reference:** A corrupt `bots.json` starts the app with
+    no bots. An invalid `config.json` starts it with the defaults and only a
+    log line. The person sees an empty or reset app, not the cause
+    (`server/store.ts:299-302`; `server/config.ts:699-713`). The release
+    problem: "A file written over after a failed read" (v0.1.103, v0.1.151).
   - Why: one rule, and the person sees the problem at once. The reference
     stops for the marker but starts empty on a corrupt store.
   - Source: `server/data-format.ts:55-59`, `server/store.ts:296-301`,
@@ -62,6 +80,11 @@ this file.
 - **P79 (step 8). A database file deleted while the program runs gives a
   typed error.** It never opens a new empty database.
   - Kind: better than the reference, which loses the data with no message.
+  - **Problem in the reference:** When `messages.db` is deleted while the
+    program runs, the next read opens a new empty database. The messages are
+    gone and the person gets no message (`server/message-db.ts:35-36`,
+    `:144-158`). The release problem: "The same work done or delivered two
+    times, or lost" (v0.1.95).
   - Source: `server/message-db.ts:35`, `:144-158`, `server/message-db.test.ts:130-143`.
 - **P80 (step 8). The form of an identifier, and one order of events.** The
   caller makes a random identifier for a thread, a turn and a message. Each
@@ -78,12 +101,25 @@ this file.
 - **P82 (step 8). No deferred save.** Each change commits at once.
   - Kind: better than the reference, which loses up to 1 s of changes at a
     kill. Its desktop app stops the server with a kill on Windows.
+  - **Problem in the reference:** A kill or a crash loses the changes of up
+    to the last 1 s, because they wait in memory. On Windows the desktop app
+    stops the server with a kill (`server/save-batch.ts:45`, `:74-83`). The
+    release problem: "State lost at a restart or a crash" (v0.1.74,
+    v0.1.165) and "Process control on Windows" (v0.1.140).
   - Source: `server/save-batch.ts:44-85`, `server/store-deferred-saves.test.ts:104-117`.
 - **P83 (step 13). One transaction for each restart decision, and a stated
   delivery rule.** The `restart_reconciled` event and the settle are one
   transaction. The parked state and its inbox item are one transaction. A
   type states "at least once" or "at most once" for each output.
   - Kind: better than the reference, which uses two transactions here.
+  - **Problem in the reference:** A crash between the `restart_reconciled`
+    event and the settle leaves a "failed" event on a row that still runs
+    (`server/runtime/runtime.ts:135-142`, `:766-768`). A poll marks items
+    delivered before the host uses them, so a crash can lose an item
+    (`:733`). A report goes out before its mark, so a crash can send it two
+    times (`:794-799`). The release problem: "State lost at a restart or a
+    crash" (v0.1.165) and "The same work done or delivered two times, or
+    lost" (v0.1.108, v0.1.150).
   - Source: `server/runtime/runtime.ts:135-142`, `:157`, `:568-572`, `:733`,
     `:790-803`.
 - **P84 (step 13). Do we take the fifth restart branch?** A cut turn fails
@@ -96,6 +132,11 @@ this file.
 - **P85 (step 13). After a restart, run the invariant checks one time and
   log each broken rule.**
   - Kind: better than the reference, which runs them only in tests.
+  - **Problem in the reference:** No code outside the tests calls the
+    invariant checks. A rule that a restart breaks in a real data folder
+    stays hidden (`server/runtime/invariants.ts:37`;
+    `server/runtime/index.ts:7`). The release problem: none; this is a
+    judgment call.
   - Source: `server/runtime/invariants.ts:37-126`.
 
 ## New facts for choices and proposals that exist

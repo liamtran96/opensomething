@@ -30,6 +30,12 @@ the reference project.
   `cost: Option<Cost>`. This amends decision D20. With no usage, the JSON
   leaves the field out, so the test of step 2.4 (`event.rs:66-77`) still
   passes.
+  - **Problem in the reference:** The word `input` has three meanings, so
+    the live and the settled Claude figures for one turn disagree
+    (`server/drivers/claude.ts:1475`, `:1552`). The ledger can store a
+    cached count larger than the input
+    (`server/drivers/openai-chat-cached-input.test.ts:32`). The release
+    problem: "Usage and cost numbers corrected" (v0.1.92, v0.1.170).
   - Why: follows the reference, which puts one usage figure for each turn
     on the last event. Better than the reference: the token fields are
     separate. The reference has three meanings of `input`, and it stores a
@@ -44,6 +50,10 @@ the reference project.
   `turn.completed`. A driver always gives the figures of one turn, so the
   core needs no capability flag for the ledger. If a later trace of each step
   needs the kind of report, it is a driver capability, not an engine name.
+  - **Problem in the reference:** The trace recorder reads the token updates
+    by engine name, so an engine that is not on its lists gets no tokens for
+    its steps (`server/usage-trace/recorder.ts:87-90`). The release problem:
+    "Usage and cost numbers corrected" (v0.1.90, v0.1.170).
   - Why: follows the reference. Better than the reference: its recorder
     chooses by engine name, which `AGENTS.md` forbids.
   - Source: `server/drivers/openai-compat.ts:423`;
@@ -55,6 +65,12 @@ the reference project.
   same transaction as the end of the turn. A stalled turn and a failed
   dispatch also write a row, with what they reported. The totals of a thread
   are a query of this table, not a second store.
+  - **Problem in the reference:** A failed append loses the usage row
+    (`server/usage-ledger.ts:129-140`). A stalled turn and a failed dispatch
+    delete their tokens and write no row (`server/index.ts:4958`, `:8395`).
+    The thread totals in `bots.json` are a second store, so two pages can
+    show different totals for one bot (`server/store.ts:1804-1841`). The
+    release problem: "Usage and cost numbers corrected" (v0.1.90, v0.1.178).
   - Why: follows the reference, which writes one row for each settled turn,
     for a success or a failure. Better than the reference: there a failed
     write loses the row, the stall path and the failed dispatch drop the
@@ -72,6 +88,11 @@ the reference project.
   is not checked again, and a running turn is never cut. Each cap and period
   has one notice, kept on disk. A refused hand-off gets its text from stored
   data.
+  - **Problem in the reference:** The cap totals come from a file cache and
+    a set in memory. When an append fails, the turn leaves the totals, so
+    its spend does not count against a cap (`server/usage-caps.ts:157-174`,
+    `server/spend.test.ts:86-91`). The release problem: "Usage and cost
+    numbers corrected" (v0.1.92, v0.1.165).
   - Why: follows the reference. Better than the reference: the totals are a
     SQL sum with an index on `(bot_id, at)`. The reference reads a file cache
     again every 15 s, with a set in memory to stop a double count.
@@ -80,6 +101,11 @@ the reference project.
     `server/host/usage-cap-gate.ts:116-175`; `docs/usage-caps.md:58-62`.
 - **P382 (decision). One cap system.** Keep only the caps of P381. Do not
   port the separate monthly spend limit.
+  - **Problem in the reference:** Two limit systems refuse with the same
+    `spend_cap` code but use different rules. The monthly limit stops a
+    person who waits, and the usage caps let that person's turn start
+    (`server/spend.ts:47-60`, `server/usage-caps.ts:259-262`). The release
+    problem: none; this is a judgment call.
   - Why: better than the reference: less code, and one rule for a person who
     waits. The reference has two systems with the same `spend_cap` code and
     different rules. The monthly limit exists only with the `budgets`
@@ -92,6 +118,11 @@ the reference project.
   list price with dated changes, then the operator's own prices, in the order
   of the reference. An unknown price stays `None` and never shows as $0. A
   partial sum carries the count of rows with no price.
+  - **Problem in the reference:** The server decides "not billed" from the
+    sign-in of today, so a change of sign-in changes past figures
+    (`server/routes/usage.ts:49-62`). The client sum skips unknown costs and
+    shows the result as the total (`src/lib/usage.ts:11-23`). The release
+    problem: "Usage and cost numbers corrected" (v0.1.155, v0.1.178).
   - Why: follows the reference for the price order. Better than the
     reference: it decides "not billed" from today's sign-in. It prices a
     cache write as fresh input, but its own cost split weights a cache write
