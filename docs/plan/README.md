@@ -79,6 +79,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`bot-attachments.md`](bot-attachments.md) | [`bot-attachments.md`](../research/features/bot-attachments.md) | P301 to P313, and new facts for P41, P194, P201, P203 | 7, 8, 9, 12, 13, 14, D10, D17, gap |
 | [`notifications.md`](notifications.md) | [`notifications.md`](../research/features/notifications.md) | P314 to P325 | 10, 11, 12, 13, 15, D10, D17, D20, new step |
 | [`mentions.md`](mentions.md) | [`mentions.md`](../research/features/mentions.md) | P326 to P340, and new facts for P34, P218, P229 | 2, 14, D17, D18, gap, later |
+| [`bot-contact-cards.md`](bot-contact-cards.md) | [`bot-contact-cards.md`](../research/features/bot-contact-cards.md) | P341 to P350 | 10, 16, D12 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -347,7 +348,7 @@ The fake driver of step 3 and each real driver must obey them.
 
 - **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md), [P291](app-settings.md), [P301](bot-attachments.md), [P304](bot-attachments.md), [P309](bot-attachments.md).
 - **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md), [P311](bot-attachments.md).
-- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md), [P291](app-settings.md), [P314](notifications.md).
+- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md), [P291](app-settings.md), [P314](notifications.md), [P341](bot-contact-cards.md).
 
 Write `docs/threat-model.md` before step 9: this is the first step where the
 program starts another program. What it must cover: [P95](security-model.md).
@@ -361,7 +362,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md), [P309](bot-attachments.md), [P318](notifications.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md), [P272](team-structure.md), [P273](team-structure.md), [P275](team-structure.md), [P277](team-structure.md), [P279 to P284](team-structure.md), [P307](bot-attachments.md), [P327](mentions.md), [P328](mentions.md), [P330](mentions.md), [P332](mentions.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md), [P314](notifications.md), [P322](notifications.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
-| 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md), [P257 to P267](connected-apps.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
+| 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md), [P257 to P267](connected-apps.md), [P342 to P350](bot-contact-cards.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
 - [ ] 11
 - [ ] 12
