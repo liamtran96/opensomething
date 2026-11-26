@@ -29,6 +29,17 @@ this file.
   writes only into that folder, with mode 0600, and never into a config
   file of the person.
   - Kind: better than the reference.
+  - **Problem in the reference:** Off a Team Cloud, each engine uses the
+    home folder of the person (`server/engine-homes/engine-homes.ts:1-3`,
+    `:109-111`). Adapters write the plain key of a local model server into a
+    config file of the person, mostly with no file mode
+    (`server/drivers/acp/opencode-go.ts:416`, `droid.ts:88`, `grok.ts:250`,
+    `kimi.ts:455`, `hermes.ts:86`). When Qwen cannot parse its settings
+    file, it writes a new file over it, and the settings of the person are
+    lost (`server/drivers/acp/qwen.ts:109-114`, `:146`). The release
+    problem: "A file written over after a failed read" (v0.1.103, v0.1.151)
+    and "The person's own engine config reaches the bots" (v0.1.104,
+    v0.1.175).
   - Why: six adapters write the key of a local model server into the config
     of the person, five with no file mode. Qwen writes `{}` over a settings
     file that does not parse.
@@ -48,6 +59,11 @@ this file.
   the buffer.
   - Kind: better than the reference, whose ACP host has no limit. Two other
     readers of the reference use 1 MiB for a line and 8 MiB in all.
+  - **Problem in the reference:** The ACP host adds each stdout chunk to one
+    buffer with no limit. An engine that sends a very long line, or no new
+    line, makes the server memory grow with no end
+    (`server/drivers/acp/host.ts:165-182`). The release problem: "Memory and
+    the number of processes" (v0.1.118, v0.1.180).
   - Source: `server/drivers/acp/host.ts:165-182`,
     `server/drivers/acp/custom-model-catalog.ts:14-15`.
 - **P106 (step 9). A choice: JSON-RPC by hand on a line codec, as the
@@ -68,12 +84,25 @@ this file.
   of each engine,** not only of one.
   - Kind: better than the reference, where 17 engines log full tool data
     with only pattern redaction.
+  - **Problem in the reference:** Only one engine sets the flag that cuts
+    tool payloads (`server/drivers/antigravity.ts:219`). The other 17
+    engines write full tool input and output to the protocol log on disk, so
+    a secret that the patterns do not match stays in the log
+    (`server/drivers/acp/core.ts:488`, `server/drivers/acp/tool-log.ts:70`).
+    The release problem: "A secret or an access right in the wrong place"
+    (v0.1.19, v0.1.154).
   - Source: `server/drivers/antigravity.ts:163`, `server/drivers/acp/tool-log.ts:30-71`,
     `core.ts:220`, `:488`.
 - **P109 (step 9). A cache of an adapter is keyed by the instance id,** not
   by the CLI path.
   - Kind: better than the reference, where two OpenCode instances with
     different keys share one model cache.
+  - **Problem in the reference:** The OpenCode model caches use the CLI path
+    as the key. Two instances with different keys share one result, so an
+    instance can show models or a "can run" answer that come from the key of
+    the other instance (`server/drivers/acp/opencode-go.ts:55`, `:62`,
+    `:299-308`). The release problem: "Sign-in to an engine, and engine CLIs
+    that change" (v0.1.153, v0.1.177).
   - Source: `server/drivers/acp/opencode-go.ts:55-62`, `:293-310`.
 
 ## New facts for proposals that exist

@@ -20,6 +20,13 @@ this file.
 - **P65 (step 3). A stop has a time limit, and the turn always ends with
   `turn.completed`.** When the stop is not confirmed, the outcome says so.
   - Kind: better than the reference.
+  - **Problem in the reference:** When pi cannot confirm its stop, it sends
+    an error and no `turn.completed`, so the turn does not end
+    (`server/drivers/pi.ts:494`, `:507-510`). Codex retries the kill for
+    about 60 s before it ends the turn (`server/drivers/codex.ts:682-685`,
+    `server/drivers/codex-process.ts:80-87`). The Stop route waits for the
+    driver with no time limit (`server/index.ts:2243`). The release problem:
+    "A turn or a wait that does not end" (v0.1.110, v0.1.151).
   - Why: pi sends no `turn.completed`, Claude releases the turn with a
     warning, Codex retries for about 60 s, and the Stop route waits with no
     limit. D20 says that `turn.completed` is always the last event.
@@ -30,6 +37,12 @@ this file.
 - **P66 (steps 3 and 9). A tree stop returns an enum:** `Gone`,
   `NotConfirmed { survivors }`, `NeverStarted`.
   - Kind: better than the reference.
+  - **Problem in the reference:** A tree stop returns `true` for a process
+    that has no id (`server/procs.ts:617`). On Windows it also returns
+    `true` when the root exited, so children that still run count as stopped
+    (`server/procs.ts:678`, `:708-711`). The release problem: "Process
+    control on Windows" (v0.1.140) and "Memory and the number of processes"
+    (v0.1.165).
   - Why: the compiler makes each caller handle each case. The reference
     returns `true` for a process with no id, and on Windows `true` when the
     root exited while its children still run.
@@ -39,6 +52,13 @@ this file.
   interrupt, the end of input, SIGTERM, then SIGKILL. A driver gives only
   its protocol message and the time of each step.
   - Kind: better than the reference.
+  - **Problem in the reference:** A stop is different on each engine. Claude
+    gets SIGTERM at once with no protocol interrupt, so it has no time to
+    end its turn cleanly (`server/drivers/claude.ts:805-806`, `:1749-1756`).
+    Codex gets about 1.5 s and ACP gets 5 s before the kill
+    (`server/drivers/codex.ts:646-666`,
+    `server/drivers/acp/core.ts:1043-1051`). The release problem: none; this
+    is a judgment call.
   - Why: less code, and the same stop on each engine. Codex waits 1.5 s and
     kills, Claude kills at once, ACP waits 5 s, and a helper uses 500 ms
     and 1,500 ms.
@@ -50,6 +70,13 @@ this file.
 - **P68 (step 9). A process group on Linux and macOS, a Job Object on
   Windows.**
   - Kind: follows the reference on Linux and macOS. Better on Windows.
+  - **Problem in the reference:** On Windows, when `taskkill /T` fails, the
+    stop kills only the root and reports success when the root exits. A
+    child process that did not stop keeps running, and no test covers this
+    failure (`server/procs.ts:696-711`,
+    `server/kill-tree-windows.test.ts:27-73`). The release problem: "Process
+    control on Windows" (v0.1.140) and "Memory and the number of processes"
+    (v0.1.165).
   - Why: `taskkill /T` fails when one process cannot stop. The stop does
     not check the children after the root exits. There is no check for a
     reused process id. No test covers the failure of `taskkill`.
@@ -76,6 +103,12 @@ this file.
     engine process (the proposal in section 7 of
     [`changelog.md`](../research/changelog.md)).
   - Kind: a follows the reference. b is better than the reference.
+  - **Problem in the reference:** In the desktop app the turn gate is off
+    (`server/process-room.ts:228`). The idle cap never closes an engine with
+    a running turn (`server/drivers/session-idle.ts:127-130`). So across
+    bots, no limit counts the memory or the processes of running engines.
+    The release problem: "Memory and the number of processes" (v0.1.110,
+    v0.1.165, v0.1.180).
   - Why: the desktop app of the reference uses only the threads of each bot
     and the idle cap. Its other gates are off there.
   - Source: `server/drivers/session-idle.ts:15`, `:113-141`,
@@ -94,6 +127,10 @@ this file.
   turn end, the driver answers each waiting request. An unknown method gets
   `-32601`.
   - Kind: follows the Codex and ACP drivers. Better than the Claude broker.
+  - **Problem in the reference:** In the Claude broker the engine side makes
+    the id of each ask. A second ask with an id that is already waiting gets
+    a deny that no person gave (`server/drivers/claude.ts:442`, `:458-466`).
+    The release problem: "Busy" and races between bots (v0.1.76).
   - Why: a repeated id from the engine cannot replace a waiting request. An
     engine that gets no answer waits.
   - Source: `server/drivers/codex.ts:671`, `:806`,
@@ -104,6 +141,13 @@ this file.
 - **P73 (step 10). One time limit for each kind of request**, a permission
   and a question, in one place.
   - Kind: better than the reference.
+  - **Problem in the reference:** In Claude and Codex a question has no time
+    limit, so a question that nobody answers holds the turn with no end
+    (`server/drivers/claude.ts:480`, `server/drivers/codex.ts:838`). Each
+    driver sets its own 15-minute limit for a permission
+    (`server/drivers/claude.ts:417`, `server/drivers/acp/core.ts:672-675`).
+    The release problem: "A turn or a wait that does not end" (v0.1.124,
+    v0.1.153) and "The approval model changed" (v0.1.126).
   - Why: a question with no limit is a wait that does not end. Claude and
     Codex give 15 minutes to a permission and no limit to a question. ACP
     gives 15 minutes to each.

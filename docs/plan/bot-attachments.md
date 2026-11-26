@@ -44,6 +44,11 @@ the reference project.
   the chat line added at once; typed refusals for 400, 403, 404, 409, 413,
   415, 429 and 507. Better than the reference: the key `(turn, tool call id)`
   makes a retried call return the first result, so one call posts one line.
+  - **Problem in the reference:** The attach route adds the chat line with
+    no check for a repeated call. So a retried `attach_file` call posts the
+    same file two times (`server/index.ts:13021-13036`;
+    `server/bot-attachment.ts:257-277`). The release problem: "The same work
+    done or delivered two times, or lost" (v0.1.83, v0.1.150).
   - Why: the reference adds the line with no duplicate check, so a retried
     call posts two lines ("the same work done two times").
   - Source: `server/bot-attachment.ts:111-284`; `server/index.ts:1603`,
@@ -64,6 +69,14 @@ the reference project.
   shell serves files through a custom protocol (no HTTP server). One read
   path, scoped to `(thread, message, attachment)`, for all kinds, streamed in
   ranges of at most 8 MB.
+  - **Problem in the reference:** An upload that no conversation and no
+    avatar uses goes to each viewer who knows its name, so a member's unsent
+    file is open to the other members. `GET /api/attachments` reads the
+    whole file into memory for each request
+    (`server/bot-visibility.ts:322-336`; `server/routes/threads.ts:485-488`;
+    `server/attachments.ts:742-747`). The release problem: "A secret or an
+    access right in the wrong place" (v0.1.125) and "Memory and the number
+    of processes" (v0.1.118).
   - Why: better than the reference. It serves an upload that no conversation
     and no avatar uses to anyone who knows its name, and
     `GET /api/attachments` reads the whole file into memory.
@@ -97,6 +110,12 @@ the reference project.
   composer.** Keep one `uploadId` for each file across a retry. Better than
   the reference: no fallback to a raw disk path, and Clear keeps the files of
   drafts.
+  - **Problem in the reference:** Clear in Settings removes each stored file
+    older than 10 minutes that is not in a short kept set. Files of messages
+    and drafts are not in that set, so the messages and drafts lose their
+    files (`server/attachments.ts:248-264`; `server/index.ts:11948`). The
+    release problem: "The same work done or delivered two times, or lost"
+    (v0.1.95, v0.1.178).
   - Why: Clear in the reference removes every stored file older than
     10 minutes that is not in a kept set, also files that messages and drafts
     still show.

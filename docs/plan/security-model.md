@@ -41,6 +41,14 @@ this file.
   stdio pipe of the child. Option b: a token for each turn on a local
   socket. A request with no proof is refused.
   - Kind: better than the reference.
+  - **Problem in the reference:** The permission socket does not check who
+    connects. A process of the same user, also a command in the bot box, can
+    send asks that show as cards. On Windows the socket is a named pipe in
+    the global namespace with no access list
+    (`server/drivers/claude.ts:425-489`, `:1267`;
+    `server/procs.ts:740-742`). The release problem: "A secret or an access
+    right in the wrong place" (v0.1.113, v0.1.130) and "Busy" and races
+    between bots (v0.1.76).
   - Why: the socket of the reference has mode 0600 but no caller check. On
     Windows it is a named pipe in the global namespace with no access list.
   - Source: `server/drivers/claude.ts:519-577`, `:1297`, `server/procs.ts:729-735`.
@@ -50,6 +58,12 @@ this file.
   states that Full has no floor. Keep the rule of the reference: a command
   that the floor cannot read is never "clear".
   - Kind: a is better than the reference. b follows it.
+  - **Problem in the reference:** At Full, Claude Code and Codex run in
+    their own no-ask modes. So the floor never sees a command, and a command
+    on its list, for example a recursive delete of the home folder, runs
+    with no check (`server/safety-floor-gate.ts:3-4`;
+    `server/full-access-default.e2e.test.ts:74-76`). The release problem:
+    "The approval model changed" (v0.1.78, v0.1.109).
   - Source: `server/safety-floor-gate.ts:3-39`,
     `server/full-access-default.e2e.test.ts:73-78`, `server/safety-floor.ts:3`,
     `:699`.
@@ -66,6 +80,12 @@ this file.
   nothing.** A request from a bot shell carries the capability of its turn.
   - Kind: better than the reference, which names this as an open risk. While
     the shared Full policy is on, any loopback caller can open a Full thread.
+  - **Problem in the reference:** A bot's shell is a loopback caller. So a
+    bot can post into the thread of any bot, also a Full-access thread.
+    While the shared Full policy is on, it can also open a new Full thread
+    (`server/request-auth.ts:38-41`; `server/routes/tasks.ts:204-207`). The
+    release problem: "A secret or an access right in the wrong place"
+    (v0.1.113, v0.1.141).
   - Source: `server/request-auth.ts:33-58`, `server/routes/tasks.ts:204-207`,
     `server/routes/bot-messages.ts:315-338`.
   - Changes: D10, "Rules that apply to code from step 2 on".
@@ -74,6 +94,12 @@ this file.
   save the key and says why.
   - Kind: better than the reference, where one store of three does not
     refuse the Linux `basic_text` back end.
+  - **Problem in the reference:** On a Linux desktop with no secret store,
+    the main credential store saves the provider keys with only Electron's
+    fixed-key obfuscation, and it does not tell the person. The two other
+    stores refuse that back end (`electron/main.mjs:390-394`, against
+    `:797`, `:882-883`). The release problem: "A secret or an access right
+    in the wrong place" (v0.1.27, v0.1.152).
   - Source: `electron/main.mjs:390`, `:797`, `:881-886`,
     `docs/cli-onboarding.md:82`.
   - Changes: the choice "Where the API key lives" of step 6.

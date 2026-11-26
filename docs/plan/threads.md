@@ -40,6 +40,15 @@ the reference project.
   `Running`, `WaitingOnPerson`, `Settling`, taken by one `try_claim` before
   the first `await`. A thread that waits for a slot has `Queued { reason }`,
   and the window gets it. The slot is never stored; the queue rows are.
+  - **Problem in the reference:** Busy has four sources that can disagree
+    (`server/store.ts:278-279`, `:1630-1635`; `server/index.ts:2179-2181`).
+    A room reads the bot-level `bot.busy`, so one busy thread blocks the bot
+    in each room (`server/index.ts:3858`). The window and `list_threads`
+    find "queued" by different rules, so the person and a bot can see a
+    different state for one thread
+    (`src/components/SidebarBotActivity.tsx:23`;
+    `server/routes/internal-threads.ts:51-56`). The release problem: "Busy"
+    and races between bots (v0.1.81, v0.1.180).
   - Why: better than the reference. It has four sources of busy: the task
     flag, the claim map, the room `busyBotId` and the bot-level slot
     (`server/store.ts:278-279`, `:1631-1636`; `server/index.ts:2179-2181`),
@@ -52,6 +61,14 @@ the reference project.
   reference: one thread for each 2 GiB of memory, from 3 to 16, and a
   setting from 1 to 16. No saved value means "follow the memory". Decide it
   with P70.
+  - **Problem in the reference:** The first save of any `threads` setting
+    stores the default of that moment, so more memory later never raises the
+    limit (`server/config.ts:897`). The main thread is never at the limit
+    but counts against the others, so a bot runs one thread more than its
+    limit (`server/index.ts:2190`;
+    `server/thread-capacity-api.test.ts:229-257`). The release problem:
+    section 6, "One conversation for each bot" (v0.1.128, v0.1.140,
+    v0.1.180).
   - Why: better in two points. The first save of any `threads` setting
     writes the default of that moment, so more memory later never raises
     the limit (`server/config.ts:897`). The main thread is never at the
@@ -70,6 +87,11 @@ the reference project.
 - **P187 (step 11). Thread events in the protocol.** `thread.created`,
   `thread.updated`, `thread.deleted` and a slot change, each written with
   its row in one transaction.
+  - **Problem in the reference:** No frame says that a thread was deleted
+    (`packages/phone-protocol/src/wire.ts:964`). The window guesses it from
+    two frames that can arrive in either order, so it can show stale
+    messages (`src/state/store.tsx:1136-1148`). The release problem: none;
+    this is a judgment call.
   - Why: better than the reference. It sends whole or partial `bot` frames
     only (`packages/phone-protocol/src/wire.ts:964`), and the window guesses
     a deleted open thread from two frames (`src/state/store.tsx:1136-1148`).
@@ -77,12 +99,25 @@ the reference project.
 - **P188 (decision). The selected thread stays in the window.** The server
   keeps no selected thread for each bot. Each command names its thread
   (see P31).
+  - **Problem in the reference:** Each switch saves `bot.threadId` in the
+    bot file (`server/routes/tasks.ts:253`; `server/store.ts:2189-2196`).
+    Two windows on one bot change the selected thread of the other window,
+    and the window needs guard code to keep its own
+    (`src/state/snapshot-navigation.ts:52-89`). The release problem: section
+    6, "One conversation for each bot" (v0.1.67, v0.1.180).
   - Why: better than the reference. It saves `bot.threadId` on each switch
     (`server/routes/tasks.ts:241-264`), two windows fight over it, and the
     window has guard code for it (`src/state/snapshot-navigation.ts:52-89`).
 - **P189 (step 8). A `threads` table, not threads inside the bot file.** One
   row for each thread, in the same database as the messages. A delete is
   one transaction.
+  - **Problem in the reference:** A crash before the next full save of
+    `bots.json` loses a thread change that a narrowed save did not name
+    (`server/bots-text.ts:4-6`). A delete saves the file inside the SQL
+    transaction, so a failed commit after the save leaves the file and the
+    database different (`server/message-db.ts:653-666`;
+    `server/store.ts:2235-2242`). The release problem: "State lost at a
+    restart or a crash" (v0.1.107, v0.1.165).
   - Why: better than the reference. It keeps the threads inside
     `bots.json` and writes the file again on each change, with a known
     crash gap (`server/bots-text.ts:4-6`). Its delete runs a file save inside
@@ -93,6 +128,13 @@ the reference project.
     an activity row (`server/index.ts:7038-7048`).
 - **P191 (step 11). The server sets the archive and snooze times, and sends
   an event at the end of a snooze.**
+  - **Problem in the reference:** The server stores the archive and snooze
+    times that the window sends, so a window with a wrong clock sets a wrong
+    time (`server/routes/tasks.ts:339-351`). Nothing is sent when a snooze
+    ends, so each window must keep its own timer to show the thread again
+    (`server/index.ts:2846-2853`;
+    `src/components/SidebarThreadRow.tsx:169-184`). The release problem:
+    none; this is a judgment call.
   - Why: better than the reference. It keeps the time that the window sends
     (`server/routes/tasks.ts:338-351`). An ended snooze stays on disk, and
     nothing is sent at its end (`server/index.ts:2846-2853`): each window
