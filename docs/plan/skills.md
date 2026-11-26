@@ -128,5 +128,100 @@ the reference project.
   - Source: `server/drivers/agents-catalog.ts:726-766`, `:868-870`;
     `server/drivers/agents-call.ts:156-173`, `:889`;
     `server/index.ts:12716-12720`.
+- **P434 (plan, later part of P428, `bot-core`). The scanner looks for
+  secrets, and the hash of an imported folder covers every file.** The
+  scanner adds the secret detector of the redaction module to its three
+  patterns. A person import is redacted, or it is refused. The hash of an
+  imported folder covers every file in it, also a file that was added
+  later. A warning never blocks a skill, and the person decides.
+  - Why: follows the reference for the warnings. Better than the reference:
+    its scanner has no secret pattern, the import does not use the detector
+    that exists, and the code names the added-file case as an open risk
+    (changelog section 5, a secret in the wrong place). The copies from this
+    computer already hash every file.
+  - Source: `shared/skill-md.ts:125-142`; `server/skill-folder.ts:136-153`,
+    `:217-220`; `shared/redact.ts:96-98`;
+    `server/imported-skills.ts:128-191`.
+- **P435 (plan, step 15 or P428, `bot-core`). The automatic review is a side
+  job, off by default.** Follow the reference: count the tool steps, with a
+  threshold of 10 (3 to 100). One review for each bot at a time, at most 3
+  changes, no tools for the review model, and a hash check before an update.
+  The transcript is redacted before it goes to the review model. Our port
+  adds a line to "Adapted components" in `NOTICE`, with the credit to Hermes
+  Agent `agent/background_review.py` (MIT, Copyright (c) 2025 Nous
+  Research).
+  - Why: follows the reference for the review. Better than the reference:
+    the transcript is not redacted in `skill-review.ts`, and it can go to the
+    helper model. The reference credits this port only in the file header.
+    Its `NOTICE` credits Hermes Agent for a different file
+    (`server/browser/desktop/rfb-filter.ts`).
+  - Source: `server/skill-review.ts:1-5`, `:16-25`, `:82-142`, `:445-447`,
+    `:501-503`; `server/config.ts:603-615`; `server/side-jobs.ts:323-326`;
+    `NOTICE:103-106`.
+- **P436 (decision, later, `bot-core`, new facts for P275). Only the Chief, or
+  only the person, changes the skills of many bots.** The skill tools that
+  change many bots go on the Chief list. In a room, a change for all bots
+  always waits on a card, as the reference does.
+  - Why: follows the reference for the room rule. Better than the
+    reference: the release note says "by asking your Chief", but the Chief
+    list does not have the skill tools. A test has a bot that is not the
+    Chief delete a shared skill with no card. The library, all bots and the
+    department share are later, and our team is one person (D10).
+  - Source: `server/drivers/agents-catalog.ts:816-818`;
+    `server/skills-for-all-bots.e2e.test.ts:52-56`;
+    `server/host/skills-for-all-bots-host.ts:1-6`, `:193-194`.
+- **P437 (plan, step 10 and P428, `bot-desktop`, new facts for P139 to
+  P144). A skill card shows its files before "Enable" works.** "Enable"
+  stays disabled until the person opens the preview. The review dialog of
+  the bot page shows all files of an imported folder, not only `SKILL.md`.
+  - Why: better than the reference. The preview starts closed, and "Enable"
+    sends the hash as "reviewed" also when the person never opened it. The
+    review dialog shows only the `SKILL.md` text.
+  - Source: `src/components/PendingApproval.tsx:168`, `:273-283`;
+    `src/components/bot-settings/SkillsSection.tsx:286-292`.
+- **P438 (plan, P428, `bot-core`). `/name` and `/learn` follow the
+  reference.** In the middle of a message, only words that a person typed
+  run a skill. Code is ignored. `/learn` opens a turn with a fixed text and
+  the person's own request, never with model output.
+  - Why: follows the reference. It agrees with the rule of `AGENTS.md`:
+    text that opens a turn is built from stored data.
+  - Source: `shared/skill-command.ts:38-82`, `:98-107`;
+    `server/skill-learn.ts:46-62`.
+- **P439 (choice, P428, `bot-core`). The `SKILL.md` reader.** A hand-written
+  reader with the rules of the reference: only one-line `key: value` lines,
+  the name pattern, and the limits of 64 and 1,024 characters. No YAML
+  crate. This chooses the "Hand-written" option of
+  `docs/comparison.md:130` over `gray_matter`.
+  - Why: follows the reference, which is not a YAML parser. No new
+    dependency.
+  - Source: `shared/skill-md.ts:7-15`, `:84-123`, `:97`.
+- **P440 (plan, later, `bot-core`). The GitHub import, with the fetch rules
+  of the reference.** One commit, a hash check for each blob, the token
+  only to `api.github.com`, no redirect to another host, and one budget for
+  requests, downloads, bytes and time.
+  - Why: follows the reference. The research file lists these rules under
+    "Keep as the reference does".
+  - Source: `server/skill-fetch.ts:12-15`, `:96-119`, `:262-267`, `:402`.
+- **P441 (plan, later, `bot-core`). The built-in skills.** A switch for each
+  bot, trigger words matched on word boundaries, and a start that skips a
+  broken skill. A port of `posts.html` carries its MIT (MiniMock) and ISC
+  (Lucide) notices to `NOTICE`.
+  - Why: better than the reference. It selects a built-in skill by a
+    substring of the message, and one bot cannot switch it off. A broken
+    skill can stop the start, but the research did not verify whether the
+    caller catches the error (research section 9).
+  - Source: `server/skill-library.ts:78-87`, `:116-128`;
+    `skills/social-posts/posts.html:2-32`.
+- **P442 (choice, later). The row "Copy of a skill to another bot".** The
+  reference planned `copySkill` (the copy arrives off, with its provenance)
+  and never built it. Option a: remove the row. Option b: keep it as the
+  one-person form of "all bots", a copy that arrives off.
+  - Why: follows the reference, which shipped the library, all bots and the
+    department share in place of the copy.
+  - Source: `docs/superpowers/plans/2026-08-31-06-memory-review-loop.md:144-155`.
 
-The proposals P434 to P442 come in the next pull request.
+## Notes
+
+- `docs/research/changelog.md` stops at v0.1.180. The note of v0.1.181
+  (2026-11-25) has the item "Skills on all your bots". `MEMORY.md` asks for
+  its row in section 8. This is not a proposal.
