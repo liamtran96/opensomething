@@ -25,6 +25,11 @@ the reference project.
   (their own request, on their behalf at your level, or information only).
   The provenance note that a model reads is made from these two fields. The
   window reads the fields and never parses the text.
+  - **Problem in the reference:** The window falls back to a regular
+    expression on the note text. So a person's line that starts with a
+    forged note shows as a line from a teammate bot
+    (`src/lib/peer-message.ts:15-16`, `:26-31`). The release problem: none;
+    this is a judgment call.
   - Why: better than the reference. Our `Message` has only `id`, `role` and
     `text` (`crates/bot-protocol/src/message.rs`). The reference grew six
     flags for this (`server/host/question-routing.ts:147`;

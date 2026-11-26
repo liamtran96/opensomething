@@ -103,6 +103,13 @@ this file.
   refusal for a closed card. The check of the reference does not read
   `expired`, and a closed card gets "this question has already been
   answered".
+  - **Problem in the reference:** On the answer route of the chat, the
+    late-answer check does not read `expired`, so an answer to an expired
+    question card still goes to the bot. A closed card gets "this question
+    has already been answered", which gives the wrong reason
+    (`server/routes/bot-messages.ts:787-793`;
+    `server/person-replies.ts:124-127`). The release problem: "The approval
+    model changed" (v0.1.126).
   - Source: `server/index.ts:4795-4811`, `:4874-4876`,
     `server/routes/bot-messages.ts:786-797`, `server/person-replies.ts:116-135`.
 - **P120 (step 14).** At Full access, in handed-on work, the reference

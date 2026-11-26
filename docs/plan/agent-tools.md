@@ -95,6 +95,13 @@ the reference project.
 - **P201 (step 12, with P33). A typed result of a tool.** An enum: done,
   refused, or "finish the turn". One function maps it to MCP. "Finish the
   turn" is not an MCP error, because an engine ends a turn on a failed call.
+  - **Problem in the reference:** A tool result is text with an optional
+    `isError` flag. Some refusals leave out the flag on purpose, so that the
+    engine does not end the turn. The type does not show which refusals do
+    this, so a change can add or drop the flag, and no compiler stops it
+    (`server/drivers/agents-result.ts:6-11`;
+    `server/drivers/agents-call.ts:347`). The release problem: none; this is
+    a judgment call.
   - Why: better than the reference. It uses `{ text, isError? }`, and some
     refusals leave out `isError` on purpose
     (`server/drivers/agents-result.ts:6-10`;

@@ -37,6 +37,12 @@ folder.
   result in two fields.** The person's answer (allow, deny) and the result
   (applied, failed) are two separate enums. Then the code cannot write a
   wrong row.
+  - **Problem in the reference:** One field holds the click or the result,
+    and each writer picks one. One writer records `user-approved` after the
+    person pressed Deny, so the log says that the person allowed a change
+    that they refused (`host/mcp-requests.ts:112-113`;
+    `host/outside-writes.ts:81`; `index.ts:9125-9126`, `:11180-11198`). The
+    release problem: none; this is a judgment call.
   - Why: better than the reference. One writer there records the click,
     two record the result, and one writes `user-approved` after the person
     pressed Deny. Plan table row: "The approval model changed".
@@ -74,6 +80,12 @@ folder.
     `src/components/ActivityPanel.tsx:21`, `:42`.
 - **P392 (later, under D10). One read function with a viewer.** Each read
   of the log goes through one store query that takes the viewer.
+  - **Problem in the reference:** The activity route of a bot reads its
+    decision rows by bot only, and it does not use the privacy filter. On a
+    team Cloud an admin can read the summary and the thread id of a decision
+    in the private chat of another person (`activity.ts:334`;
+    `routes/status.ts:246-248`). The release problem: "A secret or an access
+    right in the wrong place" (v0.1.125).
   - Why: better than the reference. There one of four routes skips the
     privacy filter: the activity receipt of a bot reads the rows of all its
     threads, also the private ones. Plan table row: "A secret or an access
