@@ -33,6 +33,13 @@ the reference project.
   card, every widget press and Undo, and it returns typed refusals. An answer
   comes only from the window, through the desktop shell, never from an
   engine process or a bot's tool.
+  - **Problem in the reference:** A widget press does not go through the
+    answer rule of cards, and the meeting Leave press does not read who
+    pressed it. On a headless server the bot's own shell reaches the press
+    route, so a bot can press a widget or end a meeting without the person
+    (`server/routes/bot-messages.ts:270-272`, `:343-344`;
+    `server/host/meetings-host.ts:154-161`). The release problem: "A secret
+    or an access right in the wrong place" (v0.1.113, v0.1.130).
   - Why: better than the reference. A widget press there skips the answer
     rule of cards, a plain choice card has its own path, and the meeting
     Leave press has no check. A bot's shell reaches the press route.

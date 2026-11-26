@@ -52,6 +52,13 @@ where a line says "ours". All other paths are in the reference project.
   `memory_changes` table in the store of step 8. The order of a change: the
   row as "pending", the atomic file write, then the row as "done". At start
   a "pending" row is checked against the hash of the file.
+  - **Problem in the reference:** The journal row of a memory change waits
+    in a queue in memory after the file write, and a failed append is only
+    logged. So a crash can lose the row, and then the change cannot be
+    undone. Only the last 8 MiB and 500 rows are read, so an older change
+    cannot be undone (`server/memory-journal.ts:164-178`, `:220`, `:237`).
+    The release problem: "State lost at a restart or a crash" (v0.1.24,
+    v0.1.165).
   - Why: better than the reference. It queues the journal row in memory
     after the file write, so a crash loses it
     (`server/memory-journal.ts:162-178`). The journal file has no limit, and

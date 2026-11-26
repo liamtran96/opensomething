@@ -43,6 +43,11 @@ the reference project.
   runtime starts a new engine session for a thread, it records one reason:
   switch, rewind, take-over, outside update or fresh start. The text that
   opens the session comes from that reason.
+  - **Problem in the reference:** A backup engine that takes a thread at a
+    usage limit gets the thread with `rewound: true`. So the model reads
+    "The user rewound this conversation" when no rewind happened
+    (`server/index.ts:8451-8453`; `server/turn-context.ts:31-32`, `:71`).
+    The release problem: none; this is a judgment call.
   - Why: better than the reference. A backup engine that takes a thread at a
     usage limit gets it with `rewound: true`, and the model reads "The user
     rewound this conversation" when no rewind happened. It also follows our
@@ -82,6 +87,12 @@ the reference project.
 - **P252 (plan, step of P247). Tool history is on by default.** A rebuilt
   session gets one short line for each tool that already ran: the tool, its
   target and "ok" or "failed", never the result.
+  - **Problem in the reference:** The tool history of a rebuilt session is
+    off by default, and no UI turns it on. So an engine that takes over a
+    thread does not know which tools already ran, and it can run a command
+    again (`server/replay-settings.ts:6-7`, `:17`). The release problem:
+    "The same work done or delivered two times, or lost" (v0.1.108,
+    v0.1.131).
   - Why: better than the reference. It is off there, and no UI turns it on,
     so an engine that takes over can run a command again. The lines are
     already safe: secrets are removed, and a URL keeps its scheme and host.

@@ -404,23 +404,32 @@ and the proposals that answer it.
 
 | Problem | Proposals |
 |---|---|
-| A turn or a wait that does not end | P6, P14, P30, P36, P65, P73, P133, P136, P138 |
-| The same work done two times, or lost | P1, P2, P34, P72, P80, P83, P137 |
-| Process control on Windows | P41, P68, P86 |
-| Sign-in to an engine, engine CLIs that change | P10, P11. No other |
-| A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100, P103, P108, P132, P143, P144 |
-| A feature added, then removed | P3, P33, P126 |
-| "Busy" and races between bots | P3, P27, P34, P104, P109 |
-| The size of the tool list | P48, P130 |
-| State lost at a restart | P34, P37, P44, P69, P79, P82, P84, P86, P87, P90 |
-| A file written over after a failed read | P22, P76, P77, P103 |
-| The approval model changed | P42 to P47, P97, P111, P112, P114, P117, P120, P135, P136, P140 |
-| Memory and the number of processes | P70 |
-| Usage and cost numbers | P124 |
+| A turn or a wait that does not end | P6, P14, P30, P36, P65, P73, P133, P136, P138, P233, P465 |
+| The same work done two times, or lost | P1, P2, P34, P72, P79, P80, P83, P137, P252, P261, P262, P282, P303, P310, P462 |
+| Process control on Windows | P41, P66, P68, P82, P86 |
+| Sign-in to an engine, engine CLIs that change | P10, P11, P109, P422, P462, P470 |
+| A secret in the wrong place | P18 to P21, P24, P25, P40, P96, P98 to P100, P103, P108, P117, P132, P143, P144, P232, P236, P257, P258, P259, P267, P273, P274, P287, P289, P290, P294, P297, P306, P329, P392, P395, P407, P425, P434, P435, P436, P445 |
+| A feature added, then removed | P3, P33, P126, P185, P188 (section 6, "One conversation for each bot") |
+| "Busy" and races between bots | P3, P27, P34, P72, P96, P104, P109, P184, P281, P282, P286, P412, P420 |
+| The size of the tool list | P48, P130, P431, P444, P446, P449 |
+| State lost at a restart | P34, P37, P44, P69, P79, P82, P83, P84, P86, P87, P90, P116, P189, P206, P262, P278, P279, P286, P291, P408, P430, P456, P458, P459 |
+| A file written over after a failed read | P22, P76, P77, P103, P114, P174, P232, P415, P419 |
+| The approval model changed | P42 to P47, P73, P97, P111, P112, P113, P114, P117, P119, P120, P135, P136, P140, P236, P260, P272, P289, P407, P409, P410, P425, P436, P447 |
+| Memory and the number of processes | P66, P68, P70, P105, P306 |
+| Usage and cost numbers | P124, P378, P379, P380, P381, P383 |
 | Tests that fail by chance | P17. Also P16, but only with option a |
-| The person's own engine config reaches the bots | P61, P103 |
-| The updater loops, sticks or breaks the window | P94 |
-| One slow or stuck part blocks the others | P88, P92 |
+| The person's own engine config reaches the bots | P61, P103, P429, P432 |
+| The updater loops, sticks or breaks the window | P75, P94 |
+| One slow or stuck part blocks the others | P88, P92, P240, P465 |
+
+A proposal in the table avoids a problem that the reference had in its
+releases. Its "Problem in the reference" line names the problem and the
+releases. These proposals of batches 4 to 8 answer no release problem. They
+are judgment calls, and the author can keep the reference for them: P67,
+P85, P89, P91, P187, P191, P201, P218, P248, P265, P266, P277, P280, P283,
+P284, P295, P296, P299, P315, P382, P387, P411, P413, P416, P421, P437,
+P441, P450, P452, P453, P455. P90 and P231 have no "Problem in the
+reference" line, because the research shows no failure in the reference.
 
 ## What to expect
 

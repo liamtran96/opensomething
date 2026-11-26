@@ -27,6 +27,12 @@ this file. All paths below are in the reference project.
   store of step 8, with one transaction for each change.** A unique key
   `(routine_id, due_at)` replaces the ledger file and its leases. A foreign
   key to the bot replaces the clean-up at start.
+  - **Problem in the reference:** A damaged `bots.json` loads as no bot, and
+    the start then makes a default bot. The clean-up that runs after it
+    finds one bot and deletes the automations of all the other bots
+    (`server/store.ts:299-303`, `:2248-2253`; `server/index.ts:2808`,
+    `:9349`; `server/bot-automations.ts:33-37`). The release problem: "A
+    file written over after a failed read" (v0.1.103, v0.1.107).
   - Why: better than the reference. Six places lose or double work: the
     routine file is saved before the ledger; a post to a chat and a post to
     a room happen before their receipt is saved; a wait is deleted before

@@ -38,6 +38,12 @@ the reference project.
   enum of kinds, and a `match` with no wildcard for each table (title, lean,
   tray look, exemption). The off switch is a type rule that a maker cannot
   skip. `spend` has a typed exemption.
+  - **Problem in the reference:** The off switch of a bot is read only in
+    one builder, from a field of the bot record. The outside-write approval
+    gives only `{id, name}`, so it notifies the person also for a bot with
+    notifications off (`server/notify.ts:59`;
+    `server/host/outside-writes.ts:52`). The release problem: none; this is
+    a judgment call.
   - Why: better than the reference. It spreads the policy over about 10
     places. "Notifications off for a bot" is checked in one builder only, and
     the outside-write approval passes `{id, name}`, so it skips the check.

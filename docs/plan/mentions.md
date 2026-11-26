@@ -47,6 +47,12 @@ the reference project.
     `server/contracts.ts:179-180`.
 - **P329 (decision). A pick that the sender cannot reach is refused.** It
   gets a typed refusal, at one place.
+  - **Problem in the reference:** The access gate does not read the
+    `mentions` of a send, and the parse checks only their shape. So a member
+    can pick a bot that the member cannot reach, and the gate does not
+    refuse it (`server/host/bot-access-gate.ts:78-86`;
+    `shared/room-mentions.ts:42-47`). The release problem: "A secret or an
+    access right in the wrong place" (v0.1.125, v0.1.141).
   - Why: better than the reference. Its access gate does not read
     `mentions`, and the parse checks only the shape ("a secret or an access
     right in the wrong place").
