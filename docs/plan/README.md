@@ -78,6 +78,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`app-settings.md`](app-settings.md) | [`app-settings.md`](../research/features/app-settings.md) | P289 to P300 | 6, 7, 8, 10, 12, D8, D10 |
 | [`bot-attachments.md`](bot-attachments.md) | [`bot-attachments.md`](../research/features/bot-attachments.md) | P301 to P313, and new facts for P41, P194, P201, P203 | 7, 8, 9, 12, 13, 14, D10, D17, gap |
 | [`notifications.md`](notifications.md) | [`notifications.md`](../research/features/notifications.md) | P314 to P325 | 10, 11, 12, 13, 15, D10, D17, D20, new step |
+| [`mentions.md`](mentions.md) | [`mentions.md`](../research/features/mentions.md) | P326 to P340, and new facts for P34, P218, P229 | 2, 14, D17, D18, gap, later |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -193,7 +194,7 @@ The fake driver of step 3 and each real driver must obey them.
 - Who makes an identifier, and its form (UUID or another form). This crate
   does no I/O, so the caller makes it.
 
-**Proposals:** [P1](event-bus-fold.md), [P3](chat-turns.md), [P4](file-modes-atomic-writes-redaction.md), [P5](chat-streaming.md), [P7](chat-driver-tool-calls.md), [P129](turn-limits.md).
+**Proposals:** [P1](event-bus-fold.md), [P3](chat-turns.md), [P4](file-modes-atomic-writes-redaction.md), [P5](chat-streaming.md), [P7](chat-driver-tool-calls.md), [P129](turn-limits.md), [P326](mentions.md).
 
 ### Step 3. The `Driver` trait and a fake driver
 
@@ -358,7 +359,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 | 11 | Tasks: a bot has more than one thread ([P182 to P193](threads.md), [P314](notifications.md), [P317](notifications.md)) | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
 | 12 | Our own tools for engines, given as an MCP server: `list_bots` first ([P194 to P203](agent-tools.md), [P292](app-settings.md), [P295](app-settings.md), [P299](app-settings.md), [P303](bot-attachments.md), [P312](bot-attachments.md), [P314](notifications.md), [P323](notifications.md)) | `bot-engine` | An engine lists the bots through the tool |
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md), [P309](bot-attachments.md), [P318](notifications.md)) | `bot-core` | Each scenario test passes the invariant checks |
-| 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md), [P272](team-structure.md), [P273](team-structure.md), [P275](team-structure.md), [P277](team-structure.md), [P279 to P284](team-structure.md), [P307](bot-attachments.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
+| 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md), [P272](team-structure.md), [P273](team-structure.md), [P275](team-structure.md), [P277](team-structure.md), [P279 to P284](team-structure.md), [P307](bot-attachments.md), [P327](mentions.md), [P328](mentions.md), [P330](mentions.md), [P332](mentions.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md), [P314](notifications.md), [P322](notifications.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
 | 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md), [P257 to P267](connected-apps.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
@@ -374,7 +375,7 @@ desktop application (decision D10).
 
 ## Gaps that have no step
 
-Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later. Connected apps: the Email app has no step: [P268](connected-apps.md). The rooms of a team have no step: [P286](team-structure.md). Bot attachments: [P308](bot-attachments.md) (`vm_exec`) has no step because we have no local VM. Notifications (part 50) has no step yet: [P314](notifications.md) adds one after step 14, with [P316](notifications.md) and [P324](notifications.md).
+Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later. Connected apps: the Email app has no step: [P268](connected-apps.md). The rooms of a team have no step: [P286](team-structure.md). Bot attachments: [P308](bot-attachments.md) (`vm_exec`) has no step because we have no local VM. Notifications (part 50) has no step yet: [P314](notifications.md) adds one after step 14, with [P316](notifications.md) and [P324](notifications.md). Mentions in rooms have no step yet: [P333 to P336](mentions.md) go to the step of rooms, [P338](mentions.md) to the step of the @ picker in `bot-desktop`, and [P340](mentions.md) (the team map) is later.
 
 ## Notes for steps 8 to 14
 
