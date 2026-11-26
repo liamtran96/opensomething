@@ -75,6 +75,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`context.md`](context.md) | [`context.md`](../research/features/context.md) | P246 to P255 | 3, 5, 8, 13, D22, new step, later |
 | [`connected-apps.md`](connected-apps.md) | [`connected-apps.md`](../research/features/connected-apps.md) | P256 to P268, and new facts for P44, P232, P240 | 10, 16, D12, gap |
 | [`team-structure.md`](team-structure.md) | [`team-structure.md`](../research/features/team-structure.md) | P272 to P288, and new facts for P113, P120, P142, P164, P165, P182, P219, P222 | 14, D10, gap, not planned |
+| [`app-settings.md`](app-settings.md) | [`app-settings.md`](../research/features/app-settings.md) | P289 to P300 | 6, 7, 8, 10, 12, D8, D10 |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -292,7 +293,7 @@ The fake driver of step 3 and each real driver must obey them.
 - The default data folder comes from the shell (`bot-desktop` or `bot-cli`),
   and the environment variable that overrides it.
 
-**Proposals:** [P18](file-modes-atomic-writes-redaction.md), [P19](write-only-secrets.md), [P20](write-only-secrets.md), [P21](write-only-secrets.md), [P22](newer-config-unavailable.md), [P23](newer-config-unavailable.md), [P24](file-modes-atomic-writes-redaction.md), [P74](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P86](composition-root.md), [P91](composition-root.md), [P100](security-model.md), [P144](approval-cards.md).
+**Proposals:** [P18](file-modes-atomic-writes-redaction.md), [P19](write-only-secrets.md), [P20](write-only-secrets.md), [P21](write-only-secrets.md), [P22](newer-config-unavailable.md), [P23](newer-config-unavailable.md), [P24](file-modes-atomic-writes-redaction.md), [P74](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P86](composition-root.md), [P91](composition-root.md), [P100](security-model.md), [P144](approval-cards.md), [P297](app-settings.md).
 
 ### Step 7. The event bus and the streamed reply in the window
 
@@ -319,7 +320,7 @@ The fake driver of step 3 and each real driver must obey them.
   (P28).
 - The name and the payload of the Tauri event (P29).
 
-**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md), [P64](driver-contract.md) (or step 8), [P87](composition-root.md), [P89](composition-root.md), [P90](composition-root.md), [P91](composition-root.md), [P93](composition-root.md), [P122](chat-ui.md), [P123](chat-ui.md), [P125](chat-ui.md), [P126](chat-ui.md), [P127](chat-ui.md).
+**Proposals:** [P25](file-modes-atomic-writes-redaction.md), P26, [P27](event-bus-fold.md), [P28](event-bus-fold.md), [P29](event-bus-fold.md), [P30](event-bus-fold.md), [P31](chat-turns.md), [P32](write-only-secrets.md), [P64](driver-contract.md) (or step 8), [P87](composition-root.md), [P89](composition-root.md), [P90](composition-root.md), [P91](composition-root.md), [P93](composition-root.md), [P122](chat-ui.md), [P123](chat-ui.md), [P125](chat-ui.md), [P126](chat-ui.md), [P127](chat-ui.md), [P294](app-settings.md), [P296](app-settings.md).
 
 - **P26. The composition root. This blocks PR 7.3.**
   - Option a: change the rule of `AGENTS.md`: `bot-cli` and `bot-desktop`
@@ -341,9 +342,9 @@ The fake driver of step 3 and each real driver must obey them.
 - [ ] 9
 - [ ] 10
 
-- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md).
+- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md), [P291](app-settings.md).
 - **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md).
-- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md).
+- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md), [P291](app-settings.md).
 
 Write `docs/threat-model.md` before step 9: this is the first step where the
 program starts another program. What it must cover: [P95](security-model.md).
@@ -353,7 +354,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 | Step | What to build | Crate | Done when |
 |---|---|---|---|
 | 11 | Tasks: a bot has more than one thread ([P182 to P193](threads.md)) | `bot-core`, `bot-desktop` | Two tasks of one bot have separate conversations |
-| 12 | Our own tools for engines, given as an MCP server: `list_bots` first ([P194 to P203](agent-tools.md)) | `bot-engine` | An engine lists the bots through the tool |
+| 12 | Our own tools for engines, given as an MCP server: `list_bots` first ([P194 to P203](agent-tools.md), [P292](app-settings.md), [P295](app-settings.md), [P299](app-settings.md)) | `bot-engine` | An engine lists the bots through the tool |
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md), [P272](team-structure.md), [P273](team-structure.md), [P275](team-structure.md), [P277](team-structure.md), [P279 to P284](team-structure.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
