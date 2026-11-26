@@ -82,6 +82,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`bot-contact-cards.md`](bot-contact-cards.md) | [`bot-contact-cards.md`](../research/features/bot-contact-cards.md) | P341 to P350 | 10, 16, D12 |
 | [`chat-and-teams-site.md`](chat-and-teams-site.md) | [`chat-and-teams-site.md`](../research/features/chat-and-teams-site.md) | P351 to P364 | 8, 12, 13, 14, new steps, gap |
 | [`hosted-app-connections.md`](hosted-app-connections.md) | [`hosted-app-connections.md`](../research/features/hosted-app-connections.md) | P365 to P377 | 6, 10, 16, D12, gap |
+| [`usage-and-budgets.md`](usage-and-budgets.md) | [`usage-and-budgets.md`](../research/features/usage-and-budgets.md) | P378 to P385, and new facts for P124, P251 | 2, 5, 8, new step, later |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -197,7 +198,7 @@ The fake driver of step 3 and each real driver must obey them.
 - Who makes an identifier, and its form (UUID or another form). This crate
   does no I/O, so the caller makes it.
 
-**Proposals:** [P1](event-bus-fold.md), [P3](chat-turns.md), [P4](file-modes-atomic-writes-redaction.md), [P5](chat-streaming.md), [P7](chat-driver-tool-calls.md), [P129](turn-limits.md), [P326](mentions.md).
+**Proposals:** [P1](event-bus-fold.md), [P3](chat-turns.md), [P4](file-modes-atomic-writes-redaction.md), [P5](chat-streaming.md), [P7](chat-driver-tool-calls.md), [P129](turn-limits.md), [P326](mentions.md), [P378](usage-and-budgets.md).
 
 ### Step 3. The `Driver` trait and a fake driver
 
@@ -273,7 +274,7 @@ The fake driver of step 3 and each real driver must obey them.
   waits for the turn to end (`server/drivers/openai-chat.ts:961-966`). Each
   driver must support it (D22).
 
-**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver), [P124](chat-ui.md), [P251](context.md).
+**Proposals:** [P13](chat-streaming.md), [P14](chat-streaming.md), [P15](chat-streaming.md), [P16](chat-streaming.md), [P17](chat-streaming.md), [P60](driver-contract.md) (the contract test runs on the chat driver), [P124](chat-ui.md), [P251](context.md), [P378](usage-and-budgets.md), [P379](usage-and-budgets.md).
 
 ### Step 6. Settings and the data folder
 
@@ -348,7 +349,7 @@ The fake driver of step 3 and each real driver must obey them.
 - [ ] 9
 - [ ] 10
 
-- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md), [P291](app-settings.md), [P301](bot-attachments.md), [P304](bot-attachments.md), [P309](bot-attachments.md), [P354](chat-and-teams-site.md).
+- **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md), [P291](app-settings.md), [P301](bot-attachments.md), [P304](bot-attachments.md), [P309](bot-attachments.md), [P354](chat-and-teams-site.md), [P380](usage-and-budgets.md).
 - **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md), [P311](bot-attachments.md).
 - **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md), [P291](app-settings.md), [P314](notifications.md), [P341](bot-contact-cards.md), [P365](hosted-app-connections.md), [P366](hosted-app-connections.md).
 
@@ -378,7 +379,7 @@ desktop application (decision D10).
 
 ## Gaps that have no step
 
-Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later. Connected apps: the Email app has no step: [P268](connected-apps.md). The rooms of a team have no step: [P286](team-structure.md). Bot attachments: [P308](bot-attachments.md) (`vm_exec`) has no step because we have no local VM. Notifications (part 50) has no step yet: [P314](notifications.md) adds one after step 14, with [P316](notifications.md) and [P324](notifications.md). Mentions in rooms have no step yet: [P333 to P336](mentions.md) go to the step of rooms, [P338](mentions.md) to the step of the @ picker in `bot-desktop`, and [P340](mentions.md) (the team map) is later. Three new steps come from the chat and teams page: reactions after step 11 ([P355](chat-and-teams-site.md)), the team map after step 14 ([P360](chat-and-teams-site.md)) and the person's inbox after step 15 ([P353](chat-and-teams-site.md)). Team mode is a gap if [P351](chat-and-teams-site.md) keeps one person, and [P361](chat-and-teams-site.md) waits for the rooms step with [P224](bot-coordination.md) and [P229](bot-coordination.md). The hosted app cards wait for OAuth sign-in: [P369](hosted-app-connections.md) comes after [P244](custom-mcp-servers.md).
+Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later. Connected apps: the Email app has no step: [P268](connected-apps.md). The rooms of a team have no step: [P286](team-structure.md). Bot attachments: [P308](bot-attachments.md) (`vm_exec`) has no step because we have no local VM. Notifications (part 50) has no step yet: [P314](notifications.md) adds one after step 14, with [P316](notifications.md) and [P324](notifications.md). Mentions in rooms have no step yet: [P333 to P336](mentions.md) go to the step of rooms, [P338](mentions.md) to the step of the @ picker in `bot-desktop`, and [P340](mentions.md) (the team map) is later. Three new steps come from the chat and teams page: reactions after step 11 ([P355](chat-and-teams-site.md)), the team map after step 14 ([P360](chat-and-teams-site.md)) and the person's inbox after step 15 ([P353](chat-and-teams-site.md)). Team mode is a gap if [P351](chat-and-teams-site.md) keeps one person, and [P361](chat-and-teams-site.md) waits for the rooms step with [P224](bot-coordination.md) and [P229](bot-coordination.md). The hosted app cards wait for OAuth sign-in: [P369](hosted-app-connections.md) comes after [P244](custom-mcp-servers.md). Usage and budgets (part 21) has no step for caps yet: [P381](usage-and-budgets.md) adds one after step 15, and [P383](usage-and-budgets.md) is later.
 
 ## Notes for steps 8 to 14
 
