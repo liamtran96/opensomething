@@ -4432,23 +4432,23 @@ sign-in flow, no status read and no `doctor`.
 |---|---|---|---|---|
 | The engine list, shadows | `server/harness/registry.ts`, `server/contracts.ts:103-119` | `bot-engine`, `registry.rs`, `config.rs` | 4 | Planned (PR 4.1 to 4.3) |
 | The status read: shared read, 3 s reuse, 60 s limit | `server/harness/registry.ts:96-114`, `:285-305` | `bot-engine`, `registry.rs` | 4 | Not planned. P88 asks for limits |
-| The probe hold, the back-off, the calm count | `server/harness/probe-hold.ts`, `registry.ts:594-650` | `bot-engine`, `registry.rs` | 4 | Not planned (T7) |
-| The status file of the last run | `server/harness/engine-status-file.ts`, `server/index.ts:802` | `bot-core`, `data_dir.rs` (the path), `bot-engine`, `registry.rs` | 6 | Not planned (T7) |
-| The readiness of an engine, three sign-in states | `server/contracts.ts:395-437`, `src/components/EngineLibrary.tsx:12-20` | `bot-engine`, `driver.rs`, `bot-desktop` | 3, 4 | P62 asks for one enum. T1 adds the sign-in state |
-| The live check (one test message, 90 s) | `server/engine-check.ts` | `bot-engine`, `check.rs` | after 5 | Not planned (T2) |
+| The probe hold, the back-off, the calm count | `server/harness/probe-hold.ts`, `registry.ts:594-650` | `bot-engine`, `registry.rs` | 4 | Not planned (P505) |
+| The status file of the last run | `server/harness/engine-status-file.ts`, `server/index.ts:802` | `bot-core`, `data_dir.rs` (the path), `bot-engine`, `registry.rs` | 6 | Not planned (P505) |
+| The readiness of an engine, three sign-in states | `server/contracts.ts:395-437`, `src/components/EngineLibrary.tsx:12-20` | `bot-engine`, `driver.rs`, `bot-desktop` | 3, 4 | P62 asks for one enum. P499 adds the sign-in state |
+| The live check (one test message, 90 s) | `server/engine-check.ts` | `bot-engine`, `check.rs` | after 5 | Not planned (P500) |
 | The routes of the list and the accounts | `server/routes/instances.ts` | `bot-desktop`, Tauri commands, `bot-core`, `accounts.rs` | 7, later | Not planned. D10: no HTTP |
-| Named accounts and engine homes | `server/claude-accounts.ts`, `server/engine-homes/`, `server/drivers/codex-account-home.ts` | `bot-core`, `settings.rs` (the entries), `bot-engine`, each adapter | 9, later | Not planned (T3, T4, T6). P103 asks for a home that the app owns |
-| The device code controller and its parsing | `server/drivers/device-auth.ts`, `shared/device-sign-in.ts` | `bot-engine`, `sign_in.rs` (no I/O for the parsing) | 9 | Not planned (T5, T13) |
-| The sign-in session, its owner and expiry | `server/provider-auth-sessions.ts` | `bot-core`, `sign_in.rs` | 9 | Not planned (T5) |
+| Named accounts and engine homes | `server/claude-accounts.ts`, `server/engine-homes/`, `server/drivers/codex-account-home.ts` | `bot-core`, `settings.rs` (the entries), `bot-engine`, each adapter | 9, later | Not planned (P501, P502, P504). P103 asks for a home that the app owns |
+| The device code controller and its parsing | `server/drivers/device-auth.ts`, `shared/device-sign-in.ts` | `bot-engine`, `sign_in.rs` (no I/O for the parsing) | 9 | Not planned (P503, P511) |
+| The sign-in session, its owner and expiry | `server/provider-auth-sessions.ts` | `bot-core`, `sign_in.rs` | 9 | Not planned (P503) |
 | Sign-in resume | `server/host/sign-in-resume.ts` | `bot-core`, the store | new step of P462 | P462 |
 | The ChatGPT plan (an OAuth client of the server) | `server/drivers/chatgpt-plan-auth.ts`, `codex-plan-token.ts` | none | none | Not planned |
 | The Antigravity account | `server/drivers/antigravity-*.ts` | none | none | Not planned |
-| API keys and their check | `server/provider-key-check.ts`, `server/routes/config.ts:496-627`, `server/config.ts:1107-1133` | `bot-engine`, `chat/key_check.rs`, `bot-core`, `settings.rs` | 5 to 7 | The key is planned (PR 5.6, 7.6). The check is not (T8) |
+| API keys and their check | `server/provider-key-check.ts`, `server/routes/config.ts:496-627`, `server/config.ts:1107-1133` | `bot-engine`, `chat/key_check.rs`, `bot-core`, `settings.rs` | 5 to 7 | The key is planned (PR 5.6, 7.6). The check is not (P506) |
 | The gateway as a custom endpoint | `server/agent-endpoint-models.ts`, `routes/instances.ts:208-226` | `bot-engine`, `chat/` | 5 | Our chat driver takes any address. Model discovery is not planned |
-| The default model | `server/default-model-selection.ts`, `shared/ai-ranking.ts`, `server/tested-ai.ts` | `bot-core`, `defaults.rs` | later | Not planned (T12) |
-| `doctor` | `server/doctor/`, `server/headless/commands.ts`, `server/headless/host-doctor.ts` | `bot-cli`, `doctor.rs` | later | Not planned (T16) |
+| The default model | `server/default-model-selection.ts`, `shared/ai-ranking.ts`, `server/tested-ai.ts` | `bot-core`, `defaults.rs` | later | Not planned (P510) |
+| `doctor` | `server/doctor/`, `server/headless/commands.ts`, `server/headless/host-doctor.ts` | `bot-cli`, `doctor.rs` | later | Not planned (P514) |
 | `engine set` of the headless CLI | `server/headless/engine.ts` | `bot-cli` | later | Not planned |
-| The UI mode (Simple and Advanced) | `src/lib/simple-only.ts`, `src/lib/interface-mode.ts` | `bot-desktop` | none | We have one layout (D16). T15 |
+| The UI mode (Simple and Advanced) | `src/lib/simple-only.ts`, `src/lib/interface-mode.ts` | `bot-desktop` | none | We have one layout (D16). P513 |
 | The AI page, the engine library, the sign-in components | `src/components/EnginesSettings.tsx`, `EngineAccounts.tsx`, `EngineLibrary.tsx`, `EngineSetup.tsx`, `DeviceSignIn.tsx`, `ClaudeSignIn.tsx` | `bot-desktop`, `ui/src/features/settings/` | 7, later | Step 7 has one key field. The rest is not planned |
 
 Where we differ by design, and the decision:
@@ -4489,14 +4489,14 @@ Each point has a reason. A point that answers a problem of section 5 of
    (`SignedIn`, `SignedOut`, `Unknown`) makes "unknown" a value that the
    compiler asks each driver to give. A contract test runs on each driver.
    Changelog problem: "Sign-in to an engine, and engine CLIs that change"
-   (v0.1.177, v0.1.178). T1.
+   (v0.1.177, v0.1.178). P499.
 2. **"Signed out" is a typed refusal of the driver, not a match of words.**
    The live check finds "signed out" with a regular expression on the error
    text (`server/engine-check.ts:14`). A CLI that changes its words gives
    "other". The sign-in errors of Antigravity are also found by words
    (`server/drivers/antigravity.ts:113-130`). Our `DriverError` (PR 3.2)
    can have a `SignedOut` variant that each adapter makes from its own
-   protocol. The same problem as point 1. T2.
+   protocol. The same problem as point 1. P500.
 3. **No sign-in token next to an engine home.** The refresh token of a
    ChatGPT plan is in `providers/chatgpt-plan/<sha256(id)>/credentials.json`.
    The `CODEX_HOME` of each turn of that plan is the folder `codex` in the
@@ -4519,7 +4519,7 @@ Each point has a reason. A point that answers a problem of section 5 of
 
    So the reference has no confirmed failure here. A separate folder for
    the tokens is a cheap guard if a later change puts back the parent
-   folder. This is a judgment call. T4.
+   folder. This is a judgment call. P502.
 4. **Each sign-in flow ends on the server, and the window cancels a flow
    that it leaves.**
    - The sign-in sessions expire after 15 minutes, but no timer removes
@@ -4536,7 +4536,7 @@ Each point has a reason. A point that answers a problem of section 5 of
      (`src/components/EngineSetup.tsx:314-348`).
 
    Changelog problem: "A turn or a wait that does not end" (v0.1.124: "A
-   sign-in card for an app no longer waits forever"). T5.
+   sign-in card for an app no longer waits forever"). P503.
 5. **The files of the person that a server engine home gets are an allow
    list.** The Codex shared home links each file of the person's Codex
    home into each server Codex home, except a deny list
@@ -4550,7 +4550,7 @@ Each point has a reason. A point that answers a problem of section 5 of
 
    The source is `server/drivers/codex-shared-home.ts:145-158`. Changelog
    problem: "The person's own engine config reaches the bots" (v0.1.170,
-   v0.1.175: "Codex bots no longer load your own `AGENTS.md`."). T6.
+   v0.1.175: "Codex bots no longer load your own `AGENTS.md`."). P504.
 6. **The capability flags of a driver replace the checks by driver name.**
    The readers found checks by name in the server and in the window:
    - the server: `server/harness/registry.ts:137`,
@@ -4562,7 +4562,7 @@ Each point has a reason. A point that answers a problem of section 5 of
      `src/lib/engine-rail.ts:26-32`.
 
    Our `AGENTS.md` forbids such checks. This answers no release problem
-   directly. It is the rule of `AGENTS.md`. T9.
+   directly. It is the rule of `AGENTS.md`. P507.
 7. **A failed read of the sign-in resume file keeps the old file.** A read
    or parse error leaves the lists empty, and the next save writes over the
    file (`server/host/sign-in-resume.ts:89-117`). The saved messages of the
@@ -4592,11 +4592,11 @@ Each point has a reason. A point that answers a problem of section 5 of
    (`server/drivers/acp/mistral-vibe.ts:52-66`). It also reads one keychain
    entry that all Vibe instances of the user share. Changelog problem: "One
    slow or stuck part blocks all the others". In Rust, a blocking call in
-   an async task has the same effect. T1 adds a rule for it.
+   an async task has the same effect. P499 adds a rule for it.
 10. **The status file checks its version.** The status file has `"v":1`,
     but the read does not check it (`server/harness/engine-status-file.ts:98-114`).
     A newer file is read as if it were version 1. This answers no release
-    problem. It is a judgment call. T7.
+    problem. It is a judgment call. P505.
 
 The problems of section 5 that the reference project has here:
 
