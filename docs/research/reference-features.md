@@ -21,8 +21,8 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 74 |
-| later | We want it, after step 16 | none | none | 108 | 0 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 99 | 99 |
+| later | We want it, after step 16 | none | none | 108 | 21 |
 | no | Not in our plan. We read it only to understand it | none | none | 138 | 0 |
 
 - **Ours** is the crate that gets the port: `bot-protocol` (types, no I/O),
@@ -86,16 +86,16 @@ All 12 files were read completely (5,477 lines).
 | The MCP registry: the person adds an MCP server (stdio or HTTP), tests it and sees its tools | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | Grants of one MCP tool to one bot | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | The Connections Center UI: "Apps" and "MCP servers" | `2026-08-31-03-mcp-registry.md` | not stated | 20 | 3 | `bot-engine` | partial: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
-| Connector grants for each bot, by exact tool name | `2026-08-31-04-connector-scopes.md` | built | 20 | 3 | `bot-engine` | open |
-| Connector grants by verb class (read, draft, send, modify, delete) | `2026-08-31-04-connector-scopes.md` | superseded, not built | 20 | 3 | `bot-engine` | open |
+| Connector grants for each bot, by exact tool name | `2026-08-31-04-connector-scopes.md` | built | 20 | 3 | `bot-engine` | done: [`connected-apps.md`](features/connected-apps.md) |
+| Connector grants by verb class (read, draft, send, modify, delete) | `2026-08-31-04-connector-scopes.md` | superseded, not built | 20 | 3 | `bot-engine` | done: [`connected-apps.md`](features/connected-apps.md) |
 | Memory proposals: a bot proposes a memory change, and a person approves, edits or rejects it | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | Typed memory entries: facts, preferences, decisions, procedures | `2026-08-31-06-memory-review-loop.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | The memory panel: read, edit and delete memory files, with a capacity gauge | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | The memory journal: each memory change of a turn, with revert | `2026-08-31-06-memory-surface.md` | not stated | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | The task board for delegated work: owner, state, deadline, artifacts | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
-| The supervisor role: one more level of delegation | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
-| A limit on delegations that run at the same time | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
-| A reviewer stage: a second bot checks the work | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | open |
+| The supervisor role: one more level of delegation | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
+| A limit on delegations that run at the same time | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
+| A reviewer stage: a second bot checks the work | `2026-08-31-07-delegation-task-board.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
 | `ask_bot` and `delegate_bot`: a bot asks or gives work to a bot | `2026-08-31-07-delegation-task-board.md` | built | 13, 15 | 3 | `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | The depth limit of delegation, and the limit of queued hand-offs for a thread | `2026-08-31-07-delegation-task-board.md`, and `2026-09-12-delegation-mailbox.md` | built | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | A hand-off waits up to 24 hours for a busy bot, then expires | `2026-09-12-delegation-mailbox.md` | not stated | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
@@ -106,12 +106,12 @@ All 12 files were read completely (5,477 lines).
 | The decision log: each allow and each deny writes an audit row | `2026-08-31-00-control-plane-roadmap.md` | built | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
 | Token usage split into new input, cache write and cache read | `2026-08-31-01-usage-accounting-and-budgets.md` | not stated | 21 | later | `bot-core` | open |
 | Spend caps for each bot and for the workspace, checked before a turn starts | `2026-08-31-01-usage-accounting-and-budgets.md` | not stated | 21 | later | `bot-core` | open |
-| The bot profile: one document for all parts of a bot, with a version log and rollback | `2026-08-31-02-bot-profile.md` | not stated | 45 | later | `bot-desktop` | open |
+| The bot profile: one document for all parts of a bot, with a version log and rollback | `2026-08-31-02-bot-profile.md` | not stated | 45 | later | `bot-desktop` | done: [`bot-profile.md`](features/bot-profile.md) |
 | Ten mascot body shapes for a bot, made by a generator | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | open |
 | The "Living" avatar: an uploaded picture is the body, with the live face on it | `2026-08-31-04-mascot-shape-catalog.md`, and its specification | removed | 46 | later | `bot-desktop` | open |
 | The 25 face expressions, the gaze and the mouths of the mascot | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | open |
 | The host adapter: what a computer without a desktop session cannot do | `2026-08-31-05-headless-harness.md` | not stated | 29, 33 | later | `bot-desktop` | open |
-| Copy of a skill to another bot | `2026-08-31-06-memory-review-loop.md` | not stated | 19 | later | `bot-core` | open |
+| Copy of a skill to another bot | `2026-08-31-06-memory-review-loop.md` | not stated | 19 | later | `bot-core` | done: [`skills.md`](features/skills.md) |
 | Search of past sessions | `2026-08-31-06-memory-review-loop.md` | built | 47 | later | `bot-core` | open |
 | The team map: who talks to whom | `2026-08-31-07-delegation-task-board.md` | built | 24 | later | `bot-desktop` | open |
 | The control-plane roadmap: the order of plans P1 to P7 and the global rules | `2026-08-31-00-control-plane-roadmap.md` | planned | 43 | no | not planned | open |
@@ -137,15 +137,15 @@ All 12 files were read completely (7,947 lines).
 | Waits: "tell me when": code with no model checks a file, a process, a page or a bot | `2026-10-27-waits.md` | not stated | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | The tools `wait_until`, `list_waits` and `cancel_wait` | `2026-10-27-waits.md` | not stated | 13, 18 | 3 | `bot-engine` | done: [`automations.md`](features/automations.md) |
 | The page check with an egress rule: public addresses only, limited redirects and size | `2026-10-27-waits.md` | not stated | 11, 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| Tool selection for each bot: allow and deny lists for native tools and MCP tools | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
-| The MCP gate: it filters the tool list and blocks a call to an excluded tool | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 10, 13 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
-| The "Access" section of the bot settings | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 45 | later | `bot-desktop` | open |
+| Tool selection for each bot: allow and deny lists for native tools and MCP tools | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`tool-selection.md`](features/tool-selection.md) |
+| The MCP gate: it filters the tool list and blocks a call to an excluded tool | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 10, 13 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`tool-selection.md`](features/tool-selection.md) |
+| The "Access" section of the bot settings | `2026-09-30-per-bot-tool-scoping.md` | built, in a draft pull request | 45 | later | `bot-desktop` | done: [`tool-selection.md`](features/tool-selection.md) |
 | Local environments: more than one data folder on a computer, one active at a time | `2026-10-07-local-environments.md` | not stated | 4, 29 | later | `bot-core` | open |
 | The switch of environment: stop, release the lease, start, check, and roll back on failure | `2026-10-07-local-environments.md` | not stated | 29 | later | `bot-desktop` | open |
 | Chat widgets: a bot shows an interactive card, and a press becomes the next message | `2026-10-13-chat-widgets.md` | not stated | 48 | later | `bot-desktop` | open |
 | The DeepSeek engine over ACP | `2026-10-22-deepseek-harness-engine.md` | not stated | 7, 9 | later | `bot-engine` | open |
 | The floating box that shows the live words and the reply | `2026-10-27-talk-shortcut.md` | not stated | 29, 35 | no | not planned | open |
-| Notifications and the unread badge | `2026-10-27-waits.md` | not stated | 50 | 3 | `bot-desktop` | open |
+| Notifications and the unread badge | `2026-10-27-waits.md` | not stated | 50 | 3 | `bot-desktop` | done: [`notifications.md`](features/notifications.md) |
 | The gesture core for the phone applications: touch becomes remote mouse and keyboard input | `2026-09-18-gesture-core.md` | not stated | 34 | no | not planned | open |
 | Direct mode and trackpad mode, long press as right click, scroll with momentum, local zoom | `2026-09-18-gesture-core.md` | not stated | 34 | no | not planned | open |
 | One test fixture that the iOS and the Android code must both pass | `2026-09-18-gesture-core.md` | not stated | 34, 40 | no | not planned | open |
@@ -173,15 +173,15 @@ says a different state.
 | Turn limits: 64 model steps and 200 tool calls | `openai-tools.md` | 9 | 2 | `bot-engine` | done: [`turn-limits.md`](features/turn-limits.md) |
 | The approval level of one thread | `provider-recovery.md` | 10 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`approval-levels.md`](features/approval-levels.md) |
 | Question cards: a bot asks the person with buttons or a reply field; on a Team Cloud, a copy goes to the Inbox | `question-cards.md` | 48 | 2 | `bot-desktop` | done: [`question-cards.md`](features/question-cards.md) |
-| Notification tools that only the helper bot has | `mausbot.md` | 13, 50 | 3 | `bot-engine` | open |
+| Notification tools that only the helper bot has | `mausbot.md` | 13, 50 | 3 | `bot-engine` | done: [`notifications.md`](features/notifications.md) |
 | The helper bot as the Chief when there is none | `mausbot.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | MCP sign-in from another computer: paste the callback address back | `mcp-sign-in.md` | 20 | 3 | `bot-engine` | done: [`custom-mcp-servers.md`](features/custom-mcp-servers.md) |
 | Memory: automatic recall, a topic index, until-dates, background capture, a nightly tidy-up with undo | `memory-layer.md` | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
 | Reply habits in each prompt, and "Remember:" and "Forget" in the chat | `memory-layer.md` | 16, 17 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
-| Mentions: a picker in the composer, colours for each bot, `@everyone` in a room | `mentions.md` | 23 | 3 | `bot-desktop` | open |
+| Mentions: a picker in the composer, colours for each bot, `@everyone` in a room | `mentions.md` | 23 | 3 | `bot-desktop` | done: [`mentions.md`](features/mentions.md) |
 | A tool directory when a bot has more than 128 MCP tools | `openai-tools.md` | 13, 20 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
-| A bot says where another bot lives | `own-home.md` | 15, 36 | 3 | `bot-core`, `bot-engine` | open |
-| A connection to a social posting service | `postiz.md` | 20 | 3 | `bot-engine` | open |
+| A bot says where another bot lives | `own-home.md` | 15, 36 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
+| A connection to a social posting service | `postiz.md` | 20 | 3 | `bot-engine` | done: [`hosted-app-connections.md`](features/hosted-app-connections.md) |
 | Proactive routines: checks of mail and calendar with no model, and a daily brief | `proactive-routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | Question routing: the Chief answers, or the person answers | `question-cards.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | A follow-up from a teammate in the middle of a turn | `question-cards.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
@@ -192,36 +192,36 @@ says a different state.
 | Stop ends the request and all the work that it gave out | `room-coordination.md` | 14, 15 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
 | Jobs in a room in parallel, and the room queue | `room-coordination.md` | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | Limits of the runtime: depth 4, 24 requests for each root, a 24-hour queue | `room-coordination.md` | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
-| Pages and applications in a room are view-only | `room-pages.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | open |
+| Pages and applications in a room are view-only | `room-pages.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
 | Routines: schedules by month and by cron, with an editor | `routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | The Automations page: a list, a calendar, "Run now", run logs | `routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | Where a routine posts its results; run on start-up; overlap rules; failure streaks | `routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | Webhooks, with delivery identifiers kept for 7 days | `routines.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| The authority of a Chief over more departments | `team-access.md` | 15, 55 | 3 | `bot-core`, `bot-engine` | open |
-| Team set-up by the Chief, with one review card | `team-setup.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | open |
-| A bot proposes the deletion of a bot | `team-setup.md` | 15, 45 | 3 | `bot-core`, `bot-engine` | open |
+| The authority of a Chief over more departments | `team-access.md` | 15, 55 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
+| Team set-up by the Chief, with one review card | `team-setup.md` | 15, 48 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
+| A bot proposes the deletion of a bot | `team-setup.md` | 15, 45 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
 | Threads: a model for each thread, folders, rename, reorder, snooze | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | A limit on parallel threads, and the queued state | `threads.md` | 12 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | A new thread in a working folder | `threads.md` | 12, 30 | 3 | `bot-core`, `bot-desktop` | done: [`threads.md`](features/threads.md) |
 | Large tool results: a prefix, and a tool to read the remainder | `tool-results.md` | 13 | 3 | `bot-engine` | done: [`agent-tools.md`](features/agent-tools.md) |
 | Waits | `waits.md` | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| A connection to a hosted application with OAuth and no key | `whop.md` | 20 | 3 | `bot-engine` | open |
+| A connection to a hosted application with OAuth and no key | `whop.md` | 20 | 3 | `bot-engine` | done: [`hosted-app-connections.md`](features/hosted-app-connections.md) |
 | Local environments in the settings | `local-environments.md` | 29 | later | `bot-desktop` | open |
 | The default helper bot: each installation has one, and it cannot be deleted | `mausbot.md` | 45 | later | `bot-desktop` | open |
 | The helper model: one model for background calls, with a switch for each bot | `memory-layer.md` | 9, 16 | later | `bot-engine` | partial: [`memory.md`](features/memory.md) has the helper model of memory |
 | The welcome flow: two screens, then the chat of the Chief | `onboarding.md` | 25 | later | `bot-desktop` | open |
 | The guided tour of the application | `onboarding.md` | 25 | later | `bot-desktop` | open |
 | The default model after the first start | `onboarding.md` | 9, 25 | later | `bot-engine` | open |
-| Import of skills and MCP servers from other AI tools on this computer | `onboarding.md` | 19, 44 | later | `bot-core` | open |
+| Import of skills and MCP servers from other AI tools on this computer | `onboarding.md` | 19, 44 | later | `bot-core` | partial: [`skills.md`](features/skills.md) |
 | The welcome of a new Cloud | `onboarding.md` | 25, 36 | later | `bot-desktop` | open |
 | A nudge when a model says it will act and does not | `openai-tools.md` | 9 | later | `bot-engine` | open |
 | Screenshots as picture parts of a request | `openai-tools.md` | 9, 32 | later | `bot-engine` | open |
 | Reasoning levels (variants) for each conversation | `opencode-variants.md` | 7, 9 | later | `bot-engine` | open |
 | Search in a worker, so that it does not block the server | `persistence-performance.md` | 47 | later | `bot-core` | open |
 | Limits of a shell timeout for one engine | `pi-shell-timeouts.md` | 8 | later | `bot-engine` | open |
-| Preset bots in the "New bot" dialog, from files and from the organization | `presets.md` | 45, 52 | later | `bot-desktop` | open |
+| Preset bots in the "New bot" dialog, from files and from the organization | `presets.md` | 45, 52 | later | `bot-desktop` | done: [`bot-profile.md`](features/bot-profile.md) |
 | Proposal cards: a bot proposes a profile setting; a credential request card | `proposal-cards.md` | 48 | later | `bot-desktop` | open |
-| Recovery of engines: picture input, account settings, a permission override, an internal error | `provider-recovery.md` | 7, 8 | later | `bot-engine` | open |
+| Recovery of engines: picture input, account settings, a permission override, an internal error | `provider-recovery.md` | 7, 8 | later | `bot-engine` | done: [`recovery-and-pausing.md`](features/recovery-and-pausing.md) |
 | Model routes of one engine | `qwen-models.md` | 7 | later | `bot-engine` | open |
 | Reactions on a message: thumbs are a yes or no reply, and reactions answer a card | `reactions.md` | 23, 48 | later | `bot-desktop` | open |
 | Rich tables: sort, search, copy and export; previews of CSV files | `rich-tables.md` | 23, 30 | later | `bot-desktop` | open |
@@ -232,12 +232,12 @@ says a different state.
 | The sidebar: confirmations, "mark all as read", notification sounds | `sidebar.md` | 24, 50 | later | `bot-desktop` | open |
 | Departments: groups of bots in the sidebar, by drag | `sidebar.md`, and `teams.md` | 24, 55 | later | `bot-desktop` | open |
 | The Inbox row, which replaced the "Active threads" menu | `sidebar-attention.md` | 24, 48 | later | `bot-desktop` | open |
-| The approval card of a learned skill | `skill-approval-lifecycle.md` | 19, 48 | later | `bot-core` | open |
+| The approval card of a learned skill | `skill-approval-lifecycle.md` | 19, 48 | later | `bot-core` | done: [`skills.md`](features/skills.md) |
 | A monthly spend cap and sell prices (the document says these need the enterprise layer) | `spend-cap.md` | 21 | later | `bot-core` | open |
 | The loading screen and the tray on Windows | `startup-tray.md` | 29 | later | `bot-desktop` | open |
 | Departments with shared instructions | `teams.md` | 55 | later | `bot-core` | open |
 | The team map canvas | `teams.md` | 24 | later | `bot-desktop` | open |
-| Tool selection for each bot | `tool-selection.md` | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
+| Tool selection for each bot | `tool-selection.md` | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`tool-selection.md`](features/tool-selection.md) |
 | The usage ledger: one row for each completed turn, with the cost | `usage-ledger.md` | 21 | later | `bot-core` | open |
 | Spending insights, traces and the token detail in the chat header | `usage-ledger.md` | 21 | later | `bot-core` | open |
 | Chat widgets, and what a bot chooses with no instruction | `widgets.md`, `widget-prompts.md` | 48 | later | `bot-desktop` | open |
@@ -308,9 +308,9 @@ a feature is marked. Each row has all the features of one page.
 | `localization.md`, `localization-pt-br.md` | Locale packs with English as the fallback; the language setting; a check script; a draft tool that uses a model; a style guide and a glossary for one language; localization of server messages; vocabulary tests | 28 | later | `bot-desktop` | open |
 | `notification-and-proactivity-qa.md` | The types of notification; notifications off for a bot; quiet threads that a bot opened; a click goes to the exact bot and task; read-on-open across applications; no notification when the window has focus; notifications on iOS | 50 | later | `bot-desktop` | open |
 | `opencode-go.md` | One ACP engine in detail: its key, keys for its other providers, model discovery, a retry at 128 tools, usage limits | 7 | later | `bot-engine` | open |
-| `pausing-bots.md` | Pause a bot, a department or all bots; what a pause does; who can pause; the API and the CLI | 45, 55 | later | `bot-desktop` | open |
-| `presets.md` | Preset bots as a starting role; what a preset can contain; skills on or off by source; withdrawn releases; import and export of preset files | 45 | later | `bot-desktop` | open |
-| `tool-selection.md` | Tool selection in the Access settings; the selector syntax; sub-names of the agent tools; a table of engine support | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | open |
+| `pausing-bots.md` | Pause a bot, a department or all bots; what a pause does; who can pause; the API and the CLI | 45, 55 | later | `bot-desktop` | done: [`recovery-and-pausing.md`](features/recovery-and-pausing.md) |
+| `presets.md` | Preset bots as a starting role; what a preset can contain; skills on or off by source; withdrawn releases; import and export of preset files | 45 | later | `bot-desktop` | done: [`bot-profile.md`](features/bot-profile.md) |
+| `tool-selection.md` | Tool selection in the Access settings; the selector syntax; sub-names of the agent tools; a table of engine support | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`tool-selection.md`](features/tool-selection.md) |
 | `usage-caps.md` | Usage caps; `stops`; the `usage_limits` bot tool; a warning at 80% and a notice when reached; rows for skipped runs; the settings; a licensed monthly spend limit | 21 | later | `bot-core` | open |
 | `analytics.md` | Usage analytics with a switch; redaction; a list of permitted values; a daily snapshot; the event catalog; start-up stage events | 39 | no | not planned | open |
 | `announcements.md` | Announcement cards from a remote feed; the card schema, actions and audience; the Announcements page; release notes; a kill switch | 39 | no | not planned | open |
@@ -338,23 +338,23 @@ describes a check of it. Each row has all the features of one record.
 |---|---|---|---|---|---|
 | `chat-turns.md` | Chat turns and independent tasks; uploaded pictures for file tools; "Works on": where a turn acts; recovery of queued follow-ups after a restart; hand-offs on the runtime; approval results of a teammate shown to the Chief; Stop for a CLI; the message of the person stops a long tool call; a shared chat on a Team Cloud; parallel threads for each bot | 1, 12, 14 | **1** | `bot-core` | partial: [`turn-flow-comparison.md`](turn-flow-comparison.md) |
 | `chat-ui.md` | A tool that drives the window in a headless browser; the flag for tool rows; the Skill Burger card, which saves a run as a skill (it replaced the "This run" card); the inspector with a run log, events and raw events; usage details; code blocks on a phone; the thinking timer; the live step status and the "Now" card; streaming replies; a queued message can be edited | 23, 40 | **1** | `bot-desktop`, `bot-core` | done: [`chat-ui.md`](features/chat-ui.md) |
-| `app-settings.md` | The `app_settings` bot tool: a bot finds, reads and changes settings, with an Undo card; secrets go through a secure card only; window preferences through the desktop | 13, 61 | 3 | `bot-engine` | open |
+| `app-settings.md` | The `app_settings` bot tool: a bot finds, reads and changes settings, with an Undo card; secrets go through a secure card only; window preferences through the desktop | 13, 61 | 3 | `bot-engine` | done: [`app-settings.md`](features/app-settings.md) |
 | `automation-reports.md` | An automation works in a hidden conversation and reports into the chat of the bot; a "Results" chat | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| `bot-contact-cards.md` | Cards that give a bot its own email, phone number and calls | 20, 35 | 3 | `bot-engine` | open |
+| `bot-contact-cards.md` | Cards that give a bot its own email, phone number and calls | 20, 35 | 3 | `bot-engine` | done: [`bot-contact-cards.md`](features/bot-contact-cards.md) |
 | `channels.md` | Channels (rooms): create, send, read; the tools of the Chief for rooms | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `check-backs.md` | The `check_back` tool: a bot asks to return at a time | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| `connected-apps-oauth.md` | Recovery of the sign-in to connected apps | 20 | 3 | `bot-engine` | open |
+| `connected-apps-oauth.md` | Recovery of the sign-in to connected apps | 20 | 3 | `bot-engine` | done: [`connected-apps.md`](features/connected-apps.md) |
 | `context-compaction.md` | Compaction by the engine or by the server; summaries made while idle; the context breakdown; context of a room; room sessions; the helper model for summaries; tool history in a rebuilt session | 17 | 3 | `bot-core` | done: [`context.md`](features/context.md) |
-| `evidence/bot-attach-file/README.md` | The `attach_file` tool; the `vm_exec` tool; audio and video attachments that play in the chat | 13, 30 | 3 | `bot-engine` | open |
-| `full-access.md` | With full access, the Chief changes profiles, routines, skills and teams directly | 10, 15 | 3 | `bot-core` | open |
-| `group-local-vm.md` | Which computer a room, a goal or a channel uses | 15, 54 | 3 | `bot-core`, `bot-engine` | open |
+| `evidence/bot-attach-file/README.md` | The `attach_file` tool; the `vm_exec` tool; audio and video attachments that play in the chat | 13, 30 | 3 | `bot-engine` | done: [`bot-attachments.md`](features/bot-attachments.md) |
+| `full-access.md` | With full access, the Chief changes profiles, routines, skills and teams directly | 10, 15 | 3 | `bot-core` | done: [`team-structure.md`](features/team-structure.md) |
+| `group-local-vm.md` | Which computer a room, a goal or a channel uses | 15, 54 | 3 | `bot-core`, `bot-engine` | done: [`team-structure.md`](features/team-structure.md) |
 | `handoff-status.md` | The state row of a hand-off: claimed, working, waiting, done, failed | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `interval-restrictions.md` | A routine "each X minutes" with limits by weekday, hours and an end date | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| `automatic-recovery.md` | Backup models for each bot (up to 5); a backup engine for all bots; take-over when a usage limit is reached; recovery from a refused sign-in | 21 | later | `bot-core` | open |
+| `automatic-recovery.md` | Backup models for each bot (up to 5); a backup engine for all bots; take-over when a usage limit is reached; recovery from a refused sign-in | 21 | later | `bot-core` | done: [`recovery-and-pausing.md`](features/recovery-and-pausing.md) |
 | `avatar-providers.md` | Providers for avatar pictures | 46 | later | `bot-desktop` | open |
 | `bidi.md` | Right-to-left text in messages | 23 | later | `bot-desktop` | open |
-| `bot-continuity.md` | The set-up interview of a bot, only on `/setup`; the scope of a model change; files across threads; the model picker for a signed-out or absent engine | 45, 12 | later | `bot-desktop` | open |
-| `bot-settings.md` | The bot settings dialog and its sections (identity, standing instructions, history with Undo, memory, skills, routines, access, model, permissions, voice, usage); duplicate a bot; "New bot" and its defaults; the simple bot panel with six tabs | 45 | later | `bot-desktop` | open |
+| `bot-continuity.md` | The set-up interview of a bot, only on `/setup`; the scope of a model change; files across threads; the model picker for a signed-out or absent engine | 45, 12 | later | `bot-desktop` | partial: [`bot-profile.md`](features/bot-profile.md) |
+| `bot-settings.md` | The bot settings dialog and its sections (identity, standing instructions, history with Undo, memory, skills, routines, access, model, permissions, voice, usage); duplicate a bot; "New bot" and its defaults; the simple bot panel with six tabs | 45 | later | `bot-desktop` | partial: [`bot-profile.md`](features/bot-profile.md) |
 | `chatgpt-plan.md`, `claude-account.md`, `codex-account.md` | Sign-in and sign-out of engine accounts in the settings | 8, 25 | later | `bot-engine` | open |
 | `chat-polish.md` | Tool details that open in the chat; the attachment gallery and preview; search in the settings; shortcut hints | 23, 24 | later | `bot-desktop` | open |
 | `claude-endpoint.md`, `claude-tool-lifecycle.md` | Custom endpoints for one engine; capabilities that end with the turn; how MCP servers load; warm engines; steering into a running turn; rebuilt conversations | 8 | later | `bot-engine` | open |
@@ -422,7 +422,7 @@ says.
 | `plans/local-environments.md` | Named local environments | built | 29 | later | `bot-desktop` | open |
 | `plans/opencode-go-integration.md` | One ACP engine | proposed | 7 | later | `bot-engine` | open |
 | `requirements/` and `design/` for issue 1688 | A new model in a model list, with its context window | design | 9 | later | `bot-engine` | open |
-| `superpowers/specs/2026-09-05-bot-folder-and-self-setup-design.md` | The sections of the bot settings; `SOUL.md`: the standing instructions of a bot, with apply and discard of file changes; set-up by conversation with `/setup`; `propose_profile` cards; history and undo; import of skills from GitHub; the overview; the prompt preview | in a pull request | 45 | later | `bot-desktop` | open |
+| `superpowers/specs/2026-09-05-bot-folder-and-self-setup-design.md` | The sections of the bot settings; `SOUL.md`: the standing instructions of a bot, with apply and discard of file changes; set-up by conversation with `/setup`; `propose_profile` cards; history and undo; import of skills from GitHub; the overview; the prompt preview | in a pull request | 45 | later | `bot-desktop` | done: [`bot-profile.md`](features/bot-profile.md) |
 | `superpowers/specs/2026-10-14-chat-apps-design.md` | Chat apps: a bot shows an HTML page in the chat (`show_html`, `update_html`) in a sandbox; MCP applications drawn in the chat; a switch for each MCP server | built on desktop | 48 | later | `bot-desktop` | open |
 | `superpowers/specs/2026-11-12-app-settings-tool-design.md` | The `app_settings` tool with three tiers of settings; settings cards in the chat; window preferences; the engines setting; an inventory of 104 settings | built | 61 | later | `bot-core` | open |
 | `plans/browser-engine.md` | One browser engine; a headless mode; "watch and take over"; browser profiles; signed-in sites with sign-out; My Chrome; process hygiene; one call at a time for a browser; page health; a record of browser steps with an evidence store | built | 31 | no | not planned | open |
@@ -441,7 +441,7 @@ the page gives one.
 
 | Document | Features | Part | Group | Ours | Research |
 |---|---|---|---|---|---|
-| `team-incidents.md` | Incidents: the server detects a problem, opens a "Problems to look at" thread, and the Chief reports; `retry_thread`; reassign; escalate to the person; a report queue; limits for a crash loop | 66 | later | `bot-core` | open |
+| `team-incidents.md` | Incidents: the server detects a problem, opens a "Problems to look at" thread, and the Chief reports; `retry_thread`; reassign; escalate to the person; a report queue; limits for a crash loop | 66 | later | `bot-core` | done: [`recovery-and-pausing.md`](features/recovery-and-pausing.md) |
 | `cloud-pro.md` | The Cloud plans; the "Your Cloud" card; the welcome of a Cloud and its set-up checklist; engine sign-in tiles; the Cloud on a phone and in a browser; where bots work on a Cloud; automatic lending of this computer to your own Clouds, with a grant, a menu-bar item and enforcement on the computer; "Your Chrome"; who can use a lent computer; guest restrictions; the Cloud image, its launcher and its boot contract; secrets over a pipe; a memory gate; threads for each bot; limits of the smallest plan; turn order and stop words; explanations of a wait; idle engine time; an emergency engine stop; messages when memory runs out, with a restart; included services and included connected apps; a trial credit; signed pairing and a signed health read; sleeping Clouds; the free trial and cancellation; a notice queue; the usage meter; add a Cloud; the one-time move to a Cloud | 36 | no | not planned | open |
 | `self-hosting.md` | The ways in to a server; the pairing block; "connect to a server"; install with Docker, as a service or with Podman; guided `start`, `setup` and `serve`; a domain with a web server child process; Tailscale; a private network filter; a tunnel; engine sign-in from a browser; a custom domain; container platforms; sizing tables for processes and memory; turns wait for room; a maximum of running turns; diagnostics of process room and of each bot; an idle engine shrinks; a memory watch for each bot; a cap on browsers; install of engines from the settings; provider keys; many workspaces and the fleet agent; pairing sessions for a browser; session scopes and lockout; the ticket for the event stream; the environment descriptor; an SSH tunnel; a browser never gets loopback trust; email sign-in with your own mail server; People; who can answer a card; bot visibility; the audience floor of a room; attachment storage; proxy requirements; the remote desktop viewer; phone pairing from a browser; the usage ledger and caps; take-over at a usage limit; a signed-out engine; the default engine; the decision log; the safety floor; the admin activity log; spend limits and sell prices (enterprise); external runtimes; a notice for repeated tool calls; the loop guard; stall timeouts of a turn; spacing of routine failures; a cap on incidents; limits of unattended turns and of hand-offs; pause all bots; the update check; `doctor` | 36, 51, 53, 65 | no | not planned | open |
 | `deploy-vps.md` | The one-command installer with preflight checks; the install layout; version pinning; the sandbox set-up for bots; the first admin link; repair and uninstall; no telemetry; three ways in (tunnel, Docker, Tailscale); the bot browser; engines on the server; pairing and device management; the service; update channels; the "Update server" button and its runner; update scripts; a 90-day compatibility rule; backup and restore recipes; loopback and proxy rules | 36, 41 | no | not planned | open |
@@ -474,17 +474,17 @@ files.
 | `server/host/README.md`, `server/routes/README.md` | The rules for the host modules and the route modules: how `server/index.ts` is split | 5 | **1** | `bot-cli`, `bot-desktop` | done: [`composition-root.md`](features/composition-root.md) |
 | Docs site: `features/approvals-and-inspector.mdx` | Approval cards; a change that a bot makes to itself applies with Undo; owner approval on a Cloud; the inspector; a retry while streaming | 10, 48, 64 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`approval-cards.md`](features/approval-cards.md) |
 | Docs site: `security/` | Optional analytics; full access by default; credentials injected for one provider only; the record of an approval result, and old cards that close; a narrow "always allow"; the `request_credential` secure card; named secrets of a bot in the Vault; value masking; a website sign-in policy and one-time codes; the "Sign in needed" card; permission for remote browser control; saved logins; scrubbing | 10, 11, 31, 39 | 2 | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`approval-cards.md`](features/approval-cards.md) |
-| Docs site: `connected-apps/` | Connect an app; the managed service and your own key; the X card and research tools; posting; apps that need your own OAuth; labelled accounts, with a cap of five; tool grants for each bot; disconnect revokes at the provider | 20, 49 | 3 | `bot-engine` | open |
+| Docs site: `connected-apps/` | Connect an app; the managed service and your own key; the X card and research tools; posting; apps that need your own OAuth; labelled accounts, with a cap of five; tool grants for each bot; disconnect revokes at the provider | 20, 49 | 3 | `bot-engine` | done: [`connected-apps.md`](features/connected-apps.md) |
 | Docs site: `features/automation.mdx` | Routines; the calendar; run receipts; results in the chat of the bot; a run asks in the chat; run logs; hidden run threads; a bot manages its own routines; the model of a routine; webhook triggers, and a webhook address for a bot | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
-| Docs site: `features/chat-and-teams.mdx` | Queue and steer; reactions; the token usage row; group timeouts; departments; who a bot reports to; a Chief for each person; the team map; the team inbox; "answering is replying"; an assistant answers simple facts; people in the sidebar; a message rate limit; direct delegation; a second opinion on a different model; edits that a second bot checks; the Chief makes specialists; rewind and branches; shared working folders | 23, 55, 15, 48, 64 | 3 | `bot-core`, `bot-desktop` | open |
-| `cloudflare/composio-broker/README.md` | The broker for connected apps: an app-event queue, a grant for the Cloud, limits, wake of a sleeping Cloud, erase of an installation | 20, 36 | 3 | `bot-engine` | open |
+| Docs site: `features/chat-and-teams.mdx` | Queue and steer; reactions; the token usage row; group timeouts; departments; who a bot reports to; a Chief for each person; the team map; the team inbox; "answering is replying"; an assistant answers simple facts; people in the sidebar; a message rate limit; direct delegation; a second opinion on a different model; edits that a second bot checks; the Chief makes specialists; rewind and branches; shared working folders | 23, 55, 15, 48, 64 | 3 | `bot-core`, `bot-desktop` | done: [`chat-and-teams-site.md`](features/chat-and-teams-site.md) |
+| `cloudflare/composio-broker/README.md` | The broker for connected apps: an app-event queue, a grant for the Cloud, limits, wake of a sleeping Cloud, erase of an installation | 20, 36 | 3 | `bot-engine` | done: [`connected-apps.md`](features/connected-apps.md) |
 | `DESIGN.md` | A layout of three places; the "New thread" button; pinned messages; the command palette; bot settings in the bot panel; Undo for changes; Simple mode and Advanced mode; the threads tree under a bot row; skins; pinned bot tiles; side panels; the floating chat header; mascot motion; localization and right-to-left text; reduced motion; keyboard and touch; a UI check suite | 26, 24 | later | `bot-desktop` | open |
 | Docs site: `features/bots-and-tasks.mdx` | A new bot from saved defaults; review of a template draft; threads; three direct threads at a time; the model of a thread; folders; the approval level of a thread; reports of contention for a shared resource; groups; hold a bot; appoint or replace a Chief; delegation | 45, 12, 15 | later | `bot-desktop` | open |
-| Docs site: `features/skills.mdx` | Skills for each bot; a skill index in each turn; the skills library; a bot writes its own skills; the `/learn` command; automatic learning; learned skills shared with the department; a scanner of skill text | 19 | later | `bot-core` | open |
+| Docs site: `features/skills.mdx` | Skills for each bot; a skill index in each turn; the skills library; a bot writes its own skills; the `/learn` command; automatic learning; learned skills shared with the department; a scanner of skill text | 19 | later | `bot-core` | done: [`skills.md`](features/skills.md) |
 | Docs site: `features/themes.mdx` | Themes that a bot makes; chat backgrounds; a history of looks; sanitizing of theme CSS; "your themes"; a safe reset | 26 | later | `bot-desktop` | open |
 | Docs site: `getting-started/` | The "About me" profile; engine discovery and an explicit path; isolation of an engine from the settings of the person; reuse of an ACP session; the welcome and "Connect an AI"; the default helper bot; "New bot" and "Set me up"; a random name; an HTTP route that creates a bot; downloads; build from source; a move from another product, with an export prompt, an import preview and a report; organization sign-in; the quick tour; the desktop with a Cloud as its home | 25, 45, 44, 52, 36 | later | `bot-desktop` | open |
 | Docs site: `providers/` | The built-in engines; an engine with more than one account; a custom ACP instance; the provider table; more than one chat API engine; reasoning levels; free models; custom endpoints; local model servers and their context window; troubleshooting | 7, 8, 9 | later | `bot-engine` | open |
-| `skills/` | Seven built-in skills: write a verification skill; data dashboards and pages (`show_html`, `publish_page`); answers about the product from live settings; phone connection diagnosis; an Android phone over USB; publish a site; social post previews | 19, 37 | later | `bot-core` | open |
+| `skills/` | Seven built-in skills: write a verification skill; data dashboards and pages (`show_html`, `publish_page`); answers about the product from live settings; phone connection diagnosis; an Android phone over USB; publish a site; social post previews | 19, 37 | later | `bot-core` | done: [`skills.md`](features/skills.md) |
 | Docs site: `computers/` | The kinds of computer of a bot (this computer, a local VM, a cloud computer, your own server); the choice for each bot, and "Auto"; a screen preview and an interactive viewer; copy files to and from a computer; a background command with a status tool; pooling of VMs; a workspace and a browser profile that stay | 54, 32 | no | not planned | open |
 | Docs site: `features/attachments-and-search.mdx` | Picture attachments; voice notes; search in the sidebar; message actions | 30, 47, 23 | no | not planned | open |
 | Docs site: `features/publish-to-netlify.mdx` | A bot publishes a site to the hosting account of the person, or as a shared page link; the token arrives through a secure card; a site record file; delete a site | 37 | no | not planned | open |
@@ -510,7 +510,7 @@ read. They are not here yet.
 |---|---|---|---|---|---|---|
 | Rule: never offer a control, tool or attachment that a driver cannot mount; a new integration gets a new capability flag, and the UI reads the flag | `superpowers/plans/2026-08-31-00-control-plane-roadmap.md` | built | 2 | **1** | `bot-engine` | partial: [`features/driver-contract.md`](features/driver-contract.md) |
 | A conversation's own notes: the facts of one matter go to `memory/threads/<id>.md`; `scope: "everywhere"` saves to `MEMORY.md` | `memory.md`, `verification/memory-layer.md` | built | 16 | 3 | `bot-core` | done: [`memory.md`](features/memory.md) |
-| A bot can be kept to some accounts of a connected app ("Accounts this bot may use") | `composio.md` | built | 20 | 3 | `bot-engine` | open |
+| A bot can be kept to some accounts of a connected app ("Accounts this bot may use") | `composio.md` | built | 20 | 3 | `bot-engine` | done: [`connected-apps.md`](features/connected-apps.md) |
 | The rules and limits of a wait: only a turn that the person started in their own one-to-one chat makes or cancels a wait; 10 waits for each bot, 50 in all, 24 hours by default, 168 at most; the `then` follow-up runs in the same chat | `superpowers/plans/2026-10-27-waits.md` | not stated | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | Provenance notes: each line that a bot reads, except the person's own line in their own chat, starts with `[From <who> · <what> · <authority>]` | `team-cloud.md` | not stated | 15, 11 | 3 | `bot-core` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | Work from outside stays confined: a webhook or an app event marks the conversation for good, and its effects are fenced | `team-cloud.md`, `cloud-pro.md` | not stated | 18, 11 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
