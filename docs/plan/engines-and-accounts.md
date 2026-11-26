@@ -124,3 +124,79 @@ the reference project.
     `../research/changelog.md` say that the hold is in the container probe.
     At `140172d88` the registry holds these reads itself
     (`registry.ts:594-650`), and the 60 s limit is at `registry.ts:96-114`.
+- **P506 (plan, step 7, PR 7.6). Test a saved API key with one read-only
+  request.** Follows the reference: one GET to `{base}/models`, 10 s, no
+  redirect, https or loopback only. 401 or 403 is "rejected", a network
+  error or a timeout is "unreachable", and another status is "unexpected"
+  (`server/provider-key-check.ts:89-135`). The UI says that a pass proves
+  only the model list (`src/locales/en.json:4205-4206`). The result never
+  has the key (`server/routes/status.ts:146-181`).
+- **P507 (plan, step 4 with P62, and the UI steps). Capability flags replace
+  each check by driver name:** the sign-in method, more than one account, a
+  home setting, and the rank for the default model. A judgment call: it is
+  the rule of `AGENTS.md`, not a release problem. The reference checks names
+  in the server (`server/harness/registry.ts:137`; `server/cli-probe.ts:12-18`;
+  `server/routes/instances.ts:447`, `:499-501`, `:510`;
+  `shared/ai-ranking.ts:21-30`) and in the window
+  (`src/components/EngineLibrary.tsx:15-17`;
+  `src/components/DeviceSignIn.tsx:21-28`;
+  `src/components/EngineSetup.tsx:40-42`, `:276-286`;
+  `src/lib/engine-rail.ts:26-32`).
+- **P508 (new facts for P61, step 9). The keys of an engine process come
+  from an allow list.**
+  - **Problem in the reference:** on a server, an added OpenAI-compatible
+    server with its own address and no key of its own reads the workspace
+    key from the environment and sends it to its own address
+    (`server/drivers/openai-compat.ts:205-216`;
+    `server/credential-env.ts:62-68`). The docs say it
+    (`apps/docs/content/docs/providers/model-providers.mdx:122-123`), but
+    the key goes to a host that its vendor does not run. Keys exported in
+    the shell of the server reach each engine, an open risk that a test
+    names (`server/model-providers-docs.test.ts:185-199`). The release
+    problem: "A secret or an access right in the wrong place" (v0.1.19,
+    v0.1.92, v0.1.101).
+- **P509 (new facts for P462). A failed read of the sign-in resume file
+  keeps the old file.**
+  - **Problem in the reference:** a read error leaves the lists empty, and
+    the next save writes over the file (`server/host/sign-in-resume.ts:89-117`),
+    so the messages that wait for a sign-in are lost. The release problem:
+    "A file written over after a failed read" (v0.1.103, v0.1.107,
+    v0.1.151). P462 puts the waits in the store, which answers this too.
+- **P510 (plan, later step). The default model of a new bot is computed, not
+  saved.** Follows the reference: a saved default wins if it can be used,
+  else new bots go to setup and never to another provider
+  (`server/default-model-selection.ts:62-84`). Else: enabled, available and
+  ready first, then the rank, then an engine that answered a test message
+  (`default-model-selection.ts:22-29`, `:86-92`;
+  `server/tested-ai.ts:146-151`). The rank is a capability or a config
+  field (P507).
+- **P511 (plan, step 9, no I/O). Follow the reference for the parse of a
+  device code.** Whole lines only, the last valid pair of page and code
+  wins, and the page is https with an exact host and no user, port or
+  fragment (`shared/device-sign-in.ts:14-114`). The words of the CLI never
+  reach the person: each failure has a fixed sentence
+  (`server/drivers/codex-device-auth.ts:12-23`;
+  `server/drivers/device-auth.ts:144-147`). A table test with recorded
+  outputs of each CLI version.
+- **P512 (new facts for P41 and P68, step 9). Process control on Windows.**
+  - **Problem in the reference:** a sign-in process stops as a process group
+    on POSIX, but only the child stops on Windows
+    (`server/drivers/device-auth.ts:373-386`). The records of engine
+    processes are off on Windows (`server/engine-records.ts:148`). The
+    release problem: "Process control on Windows" (v0.1.140).
+- **P513 (note for D16, `bot-desktop`). No switch of the UI mode.** One
+  layout, and no mode switch until a need is proven.
+  - **Problem in the reference:** the UI mode changed four times (v0.1.94,
+    v0.1.151, v0.1.152, v0.1.182). The code keeps both paths
+    (`src/lib/simple-only.ts`; `src/lib/new-look.ts:35-59`), and the
+    settings show only the Simple list, so the full engine grid shows only
+    in tests (`src/components/settings/pages/PlacePages.tsx:133`;
+    `src/components/EnginesSettings.tsx:598`). The release problem: "A
+    feature added, then removed or reversed", section 6 row "The UI mode".
+- **P514 (plan, later step). Follow the reference for `doctor`, and check
+  the engines too.** The data doctor has fixed checks, makes a backup before
+  each fix, and counts a fix only when a check after it is clean
+  (`server/doctor/run.ts:93-137`; `server/doctor/backup.ts:39-113`).
+  Better, a judgment call: the doctor of the reference never checks an
+  engine sign-in (`server/headless/commands.ts:29`). Ours reads the status
+  of each engine through the shared read of P505.
