@@ -35,6 +35,11 @@ the reference project.
   Allow, Ask or Deny with a typed refusal (App, Write, Account, NotGranted,
   Unrecognized). The relay calls it when the call arrives and again just
   before dispatch.
+  - **Problem in the reference:** The relay route checks a call by hand when
+    it arrives and again before dispatch, so a fix to one list can miss the
+    other (`server/index.ts:14166-14231`, `:14268-14275`). The release
+    problem: "A secret or an access right in the wrong place" (v0.1.128,
+    v0.1.178).
   - Why: better than the reference, which repeats the checks by hand in
     three files and the route.
   - Source: `server/connector-verdict.ts:140-197`;
@@ -44,6 +49,14 @@ the reference project.
   `composio`, `connectorTools` and `connectorScopes`: Off, or On {level: Read
   or Write, tools: All or Names, accounts: All or Ids}. An absent record
   means the legacy "all".
+  - **Problem in the reference:** Three grant fields must agree. An app that
+    `connectorScopes` turns on but `connectorTools` leaves out gets no tool,
+    so `grantScopedApps` repairs the bot at each load and each patch
+    (`packages/phone-protocol/src/connector-scopes.ts:125-134`;
+    `server/store.ts:318`, `:1485`). An account limit for an app that is off
+    is dropped with no message
+    (`packages/phone-protocol/src/connector-scopes.ts:73-74`). The release
+    problem: "A secret or an access right in the wrong place" (v0.1.178).
   - Why: better than the reference. No `grantScopedApps` migration, and the
     compiler refuses an account limit for an app that is off.
   - Source: `packages/phone-protocol/src/connector-scopes.ts:73-74`,
@@ -54,6 +67,13 @@ the reference project.
   "loosened". (b) A widening is saved before it acts. (c) The app switch
   keeps the account limits. (d) A first connection does not switch on an
   app for a bot whose app limit leaves it out.
+  - **Problem in the reference:** A switch of one app writes the app list
+    again with no account limits, so the bot loses each account limit
+    (`src/lib/bot-app-access.ts:34-42`). A wider tool list or a switch to on
+    is not counted as "loosened" (`server/routes/bot-patch.ts:627-654`). A
+    first connection turns on the app for a bot whose app list left it out
+    (`src/components/AppGrantPrompt.tsx:125-132`). The release problem: "A
+    secret or an access right in the wrong place" (v0.1.178, v0.1.181).
   - Why: better than the reference. Its switch rebuilds `connectorScopes` as
     `{apps}` and drops every account limit of the bot.
   - Source: `server/routes/bot-patch.ts:621-657`;
@@ -64,6 +84,13 @@ the reference project.
 - **P260 (plan, step 10 or 16, new facts for P112 and P140). The send rule
   holds on every path.** "Ask every time" also holds for a send that reaches
   the engine permission path.
+  - **Problem in the reference:** At Full access the permission check
+    approves an Email app send before the outbound guard. Only
+    `server/outbound-hold.ts` reads the send rule, so "Ask every time" does
+    not stop that send (`server/auto-approve.ts:112-114`;
+    `server/drivers/claude.ts:1023`; `server/outbound-hold.ts:54`, `:111`).
+    The release problem: "The approval model changed" (v0.1.111, v0.1.144,
+    v0.1.176).
   - Why: better than the reference. At Full access `autoVerdict` approves an
     Email app send before the outbound guard, and only `outbound-hold.ts`
     reads `bot.outbound`.
@@ -73,6 +100,13 @@ the reference project.
   typed refusals and a cap of 10 accounts for each app. A retry with no label
   removes the earlier pending accounts. Reconnect deletes the old account
   only after the new one is `ACTIVE`.
+  - **Problem in the reference:** A retry with no label adds one more
+    account and keeps the earlier pending ones
+    (`shared/connector-account-link.ts:30-36`). Reconnect deletes the old
+    account before it asks for a new sign-in, so a failed start loses the
+    account (`src/components/PluginsPanel.tsx:352-355`). The release
+    problem: "The same work done or delivered two times, or lost" (v0.1.74,
+    v0.1.150).
   - Why: follows the reference for the plan. Better for the cleanup and the
     order of Reconnect.
   - Source: `shared/connector-account-link.ts:20-37`;
@@ -84,6 +118,12 @@ the reference project.
   completes only on that alias. The resume text is built from stored data.
   Only an admin connects an app. The pending sign-in link is kept with the
   card on the server, never in the transcript.
+  - **Problem in the reference:** The pending sign-in link is only in the
+    state of the card component. After a reload the person must start a new
+    sign-in, which can leave one more pending account
+    (`src/components/ConnectorCard.tsx:35`, `:112`). The release problem:
+    "State lost at a restart or a crash" (v0.1.107) and "The same work done
+    or delivered two times, or lost" (v0.1.74).
   - Why: follows the reference, and better for the link, which the reference
     keeps in component state only.
   - Source: `server/host/connector-cards.ts:27-88`;
@@ -112,6 +152,13 @@ the reference project.
     `server/index.ts:14157-14216`.
 - **P265 (plan, step 16). The account hint names only allowed accounts.** It
   names the accounts that the bot may use, by id.
+  - **Problem in the reference:** After an account refusal, the hint lists
+    each account of the app in the installation and says "an alias or an id"
+    (`server/index.ts:14303`; `server/connector-account-hint.ts:53-64`). A
+    bot with an account limit is refused an alias and each other account, so
+    it retries a call that the check refuses again
+    (`packages/phone-protocol/src/connector-scopes.ts:107`). The release
+    problem: none; this is a judgment call.
   - Why: better than the reference. It lists every account of the
     installation and says "alias or id", but a limited bot is refused an
     alias.
@@ -121,10 +168,19 @@ the reference project.
 - **P266 (plan, step 16, small). Keep large numbers in tool arguments.** Use
   `serde_json` with `arbitrary_precision` (MIT or Apache-2.0) in place of a
   refusal.
+  - **Problem in the reference:** The bridge refuses a tool call with a
+    number that JavaScript cannot keep exactly, for example an id above
+    2^53. The model must send the call again with the number as a string
+    (`server/connector-proxy.ts:404-423`). The release problem: none; this
+    is a judgment call.
   - Why: better than the reference, which refuses the call.
   - Source: `server/connector-proxy.ts:397-425`.
 - **P267 (plan, step 16, `bot-desktop`, small). No third-party logo
   look-up.** The Apps page does not ask a favicon service for a logo.
+  - **Problem in the reference:** The sidebar gets app logos from a Google
+    favicon address, so the names of the apps that a person uses go to a
+    third party (`src/components/SidebarConnectApps.tsx:53`). The release
+    problem: "A secret or an access right in the wrong place" (v0.1.113).
   - Why: better than the reference.
   - Source: `src/components/SidebarConnectApps.tsx:53`.
 - **P268 (gap). The Email app.** IMAP and SMTP with a password, slug
@@ -146,6 +202,10 @@ the reference project.
   when the apps setup throws ("connected apps are unavailable — …"). Better:
   the turn runs without the bridge and says so one time
   (`server/index.ts:9661-9674`).
+  - **Problem in the reference:** When the apps setup throws, the room turn
+    does not start. A fault in the connected apps stops the whole turn
+    (`server/index.ts:9654-9667`). The release problem: "One slow or stuck
+    part blocks all the others" (v0.1.153, v0.1.178).
 - **P44 (`chat-driver-tool-calls.md`, step 10).** Held "Send on your
   behalf?" requests are in a map in memory, so a waiting card cannot settle
   after a restart. Store them as rows (`server/outbound-requests.ts:22`;
