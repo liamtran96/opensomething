@@ -40,6 +40,13 @@ the reference project.
   Tokens and server secrets are encrypted or in the system keychain, not in
   clear text in the settings file and its backups. A secret field takes only
   a reference to a stored secret; a literal value from a bot is refused.
+  - **Problem in the reference:** A damaged `mcp-oauth.json` reads as empty.
+    The next sign-in then writes over it, and the tokens of all the other
+    servers are lost (`server/mcp-oauth-store.ts:63-66`, `:107-113`). Keys
+    stay in clear text in 10 dated copies of the settings file
+    (`server/config-backup.ts:13-16`). The release problem: "A file written
+    over after a failed read" (v0.1.103, v0.1.151) and "A secret or an
+    access right in the wrong place" (v0.1.86).
   - Why: better than the reference. A corrupt `mcp-oauth.json` reads as empty,
     and the next sign-in deletes the other records ("a file written over after
     a failed read"). Tokens and keys are in clear text in 10 backups, and a
@@ -50,6 +57,14 @@ the reference project.
   the driver.** Each driver states if it takes a deadline for each MCP call.
   The remote proxy has a deadline for `tools/call`. A timeout sends
   `notifications/cancelled` before the process stops.
+  - **Problem in the reference:** The MCP call timeout works only in the
+    chat driver, but the UI says that it applies to each tool. The proxy of
+    a URL server sets no deadline for `tools/call` outside directory mode,
+    so the proxy itself never ends a stuck call. When the chat driver times
+    out a call, it stops the server and sends no `notifications/cancelled`
+    (`server/drivers/openai-chat.ts:614`; `server/mcp-remote-proxy.ts:339`;
+    `server/drivers/chat-mcp-tools.ts:280`, `:288`). The release problem: "A
+    turn or a wait that does not end" (v0.1.15, v0.1.98).
   - Why: better than the reference. Only the chat driver reads the setting,
     but the UI says it applies to each tool. The proxy has no `tools/call`
     deadline outside directory mode. A timeout sends no cancel ("a wait that
@@ -78,6 +93,12 @@ the reference project.
   and it needs the stored list of step 16, so it comes with step 16. Below
   Full access, a server that a bot adds is always saved off, and a card turns
   it on.
+  - **Problem in the reference:** Below Full access, a bot can add a server
+    at a public https address. The server turns on and joins the bot's list
+    with no card, so the bot gives itself new tools with no yes from the
+    person (`server/routes/internal-mcp.ts:237`, `:243-248`). The release
+    problem: "A secret or an access right in the wrong place" (v0.1.128) and
+    "The approval model changed" (v0.1.115).
   - Why: better than the reference, and follows its own design spec. Below
     Full access, a bot can add a public https server, and it turns on and
     joins the bot's list with no card ("an access right in the wrong place").
