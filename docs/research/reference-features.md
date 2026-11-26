@@ -21,8 +21,8 @@ wide first, and its base parts came late.
 |---|---|---|---|---|---|
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
-| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 100 | 99 |
-| later | We want it, after step 16 | none | none | 110 | 53 |
+| 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 100 | 100 |
+| later | We want it, after step 16 | none | none | 110 | 59 |
 | no | Not in our plan. We read it only to understand it | none | none | 140 | 0 |
 
 - **Ours** is the crate that gets the port: `bot-protocol` (types, no I/O),
@@ -79,6 +79,10 @@ wide first, and its base parts came late.
    "later" were done and still said "open". Six new documents of the
    reference got rows. One of them, GitHub sign-in, is an open row of
    group 3.
+9. Batch 9 of [`progress.md`](progress.md), on 2026-11-26 at `140172d88`
+   (v0.1.182), did GitHub sign-in, the last open row of group 3, and six
+   rows of the group "later": the Team Board, and five rows of engines and
+   their accounts.
 
 ## Plans in `docs/superpowers/plans/`, files 1 to 12
 
@@ -219,7 +223,7 @@ says a different state.
 | The helper model: one model for background calls, with a switch for each bot | `memory-layer.md` | 9, 16 | later | `bot-engine` | partial: [`memory.md`](features/memory.md) has the helper model of memory |
 | The welcome flow: two screens, then the chat of the Chief | `onboarding.md` | 25 | later | `bot-desktop` | open |
 | The guided tour of the application | `onboarding.md` | 25 | later | `bot-desktop` | open |
-| The default model after the first start | `onboarding.md` | 9, 25 | later | `bot-engine` | open |
+| The default model after the first start | `onboarding.md` | 9, 25 | later | `bot-engine` | done: [`engines-and-accounts.md`](features/engines-and-accounts.md) |
 | Import of skills and MCP servers from other AI tools on this computer | `onboarding.md` | 19, 44 | later | `bot-core` | partial: [`skills.md`](features/skills.md) |
 | The welcome of a new Cloud | `onboarding.md` | 25, 36 | later | `bot-desktop` | open |
 | A nudge when a model says it will act and does not | `openai-tools.md` | 9 | later | `bot-engine` | done: [`chat-driver-tool-calls.md`](features/chat-driver-tool-calls.md) |
@@ -234,7 +238,7 @@ says a different state.
 | Reactions on a message: thumbs are a yes or no reply, and reactions answer a card | `reactions.md` | 23, 48 | later | `bot-desktop` | done: [`chat-and-teams-site.md`](features/chat-and-teams-site.md) |
 | Rich tables: sort, search, copy and export; previews of CSV files | `rich-tables.md` | 23, 30 | later | `bot-desktop` | open |
 | The safety floor: a list of shell commands that the server never approves by itself; off by default, not on Windows | `safety-floor.md` | 10, 11 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`safety-floor.md`](features/safety-floor.md) |
-| Sign-in to an engine with a device code in the browser | `server-settings.md` | 8, 25 | later | `bot-engine` | open |
+| Sign-in to an engine with a device code in the browser | `server-settings.md` | 8, 25 | later | `bot-engine` | done: [`engines-and-accounts.md`](features/engines-and-accounts.md) |
 | Who can answer a card | `shared-workspace-trust.md` | 48, 51 | later | `bot-desktop` | done: [`chat-widgets-and-proposals.md`](features/chat-widgets-and-proposals.md) |
 | The decision log, kept for 180 days | `shared-workspace-trust.md` | 10 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`safety-floor.md`](features/safety-floor.md) |
 | The sidebar: confirmations, "mark all as read", notification sounds | `sidebar.md` | 24, 50 | later | `bot-desktop` | partial: [`notifications.md`](features/notifications.md) |
@@ -363,7 +367,7 @@ describes a check of it. Each row has all the features of one record.
 | `bidi.md` | Right-to-left text in messages | 23 | later | `bot-desktop` | open |
 | `bot-continuity.md` | The set-up interview of a bot, only on `/setup`; the scope of a model change; files across threads; the model picker for a signed-out or absent engine | 45, 12 | later | `bot-desktop` | partial: [`bot-profile.md`](features/bot-profile.md) |
 | `bot-settings.md` | The bot settings dialog and its sections (identity, standing instructions, history with Undo, memory, skills, routines, access, model, permissions, voice, usage); duplicate a bot; "New bot" and its defaults; the simple bot panel with six tabs | 45 | later | `bot-desktop` | partial: [`bot-profile.md`](features/bot-profile.md) |
-| `chatgpt-plan.md`, `claude-account.md`, `codex-account.md` | Sign-in and sign-out of engine accounts in the settings | 8, 25 | later | `bot-engine` | open |
+| `chatgpt-plan.md`, `claude-account.md`, `codex-account.md` | Sign-in and sign-out of engine accounts in the settings | 8, 25 | later | `bot-engine` | done: [`engines-and-accounts.md`](features/engines-and-accounts.md) |
 | `chat-polish.md` | Tool details that open in the chat; the attachment gallery and preview; search in the settings; shortcut hints | 23, 24 | later | `bot-desktop` | partial: [`bot-attachments.md`](features/bot-attachments.md) |
 | `claude-endpoint.md`, `claude-tool-lifecycle.md` | Custom endpoints for one engine; capabilities that end with the turn; how MCP servers load; warm engines; steering into a running turn; rebuilt conversations | 8 | later | `bot-engine` | open |
 | `cline.md`, `copilot-engine.md`, `custom-acp-models.md`, `kimi-models.md`, `grok-steering.md` | ACP engines in detail: login, model and thinking choices, steering | 7 | later | `bot-engine` | open |
@@ -373,7 +377,7 @@ describes a check of it. Each row has all the features of one record.
 | `desktop-server-connection.md` | The desktop connects to a server and switches between servers; computer sharing (a flag, off by default) | 29, 36, 53 | later | `bot-desktop` | open |
 | `desktop-server-recovery.md` | The supervisor restarts a crashed bundled server | 29 | later | `bot-desktop` | open |
 | `digests.md` | Work summaries (digests and receipts) on each reply; engine hooks; a hint after a shell timeout | 62 | later | `bot-core` | open |
-| `engines.md`, `engines-ui.md` | The list of engines and `doctor`; named accounts; many engines and API providers; the engine library in the settings and in onboarding | 7, 9, 25 | later | `bot-engine` | open |
+| `engines.md`, `engines-ui.md` | The list of engines and `doctor`; named accounts; many engines and API providers; the engine library in the settings and in onboarding | 7, 9, 25 | later | `bot-engine` | done: [`engines-and-accounts.md`](features/engines-and-accounts.md) |
 | `first-hour.md` | The first hour of a new Cloud: a greeting, cards for mail and calendar, a first look | 25, 36 | later | `bot-desktop` | open |
 | `gmail-drafts.md` | The "sending on your behalf" policy; draft tools for mail | 10, 20 | later | `bot-protocol`, `bot-engine`, `bot-desktop` | done: [`connected-apps.md`](features/connected-apps.md) |
 | `inbox.md` | The Inbox: approvals, questions and messages to the person from all threads | 48 | later | `bot-desktop` | done: [`chat-and-teams-site.md`](features/chat-and-teams-site.md) |
@@ -541,9 +545,9 @@ No document went out. The main session read each one completely at
 
 | Feature | Document | State | Part | Group | Ours | Research |
 |---|---|---|---|---|---|---|
-| The Team Board: one board item for each room thread (title, state, needs, labels, `forBotId`); the server gives each ready item to a free bot of the room as unattended work; the tools `board_add`, `board_list` and `board_update`; a lease that is the turn, three tries, `later` up to 20 times; off by default, on a Team Cloud only | `team-board.md`, `verification/team-board.md` | built | 15, 18 | later | `bot-core`, `bot-engine` | open |
-| GitHub sign-in: the server signs in once with the device code of GitHub CLI, or takes a pasted fine-grained token; the token never reaches a bot; each member of a Team Cloud signs in with their own account | docs site: `connected-apps/github-sign-in.mdx` | built | 20 | 3 | `bot-engine` | open |
-| A gateway (OmniRoute, LiteLLM): as a chat API server, a bot gets the tools of the project and no terminal; as a Claude custom endpoint, it keeps the native tools; keep models with no native tool calls away from bots that use tools | docs site: `providers/gateway.mdx` | built | 9 | later | `bot-engine` | open |
+| The Team Board: one board item for each room thread (title, state, needs, labels, `forBotId`); the server gives each ready item to a free bot of the room as unattended work; the tools `board_add`, `board_list` and `board_update`; a lease that is the turn, three tries, `later` up to 20 times; off by default, on a Team Cloud only | `team-board.md`, `verification/team-board.md` | built | 15, 18 | later | `bot-core`, `bot-engine` | done: [`team-board.md`](features/team-board.md) |
+| GitHub sign-in: the server signs in once with the device code of GitHub CLI, or takes a pasted fine-grained token; the token never reaches a bot; each member of a Team Cloud signs in with their own account | docs site: `connected-apps/github-sign-in.mdx` | built | 20 | 3 | `bot-engine` | done: [`github-sign-in.md`](features/github-sign-in.md) |
+| A gateway (OmniRoute, LiteLLM): as a chat API server, a bot gets the tools of the project and no terminal; as a Claude custom endpoint, it keeps the native tools; keep models with no native tool calls away from bots that use tools | docs site: `providers/gateway.mdx` | built | 9 | later | `bot-engine` | done: [`engines-and-accounts.md`](features/engines-and-accounts.md) |
 | Lend this computer to your own server: one switch, "Let its bots use this computer"; only a conversation that the person started can use it; folders and a terminal only when chosen | docs site: `computers/lend-to-your-server.mdx` | built | 54 | no | not planned | open |
 | Idle reclaim on a Cloud: past 70% of the volume, remove the rebuildable installs of conversations idle 3 days or more, down to 60%; the bot gets one line about it; `OMB_IDLE_RECLAIM`, off by default | `idle-reclaim.md` | built | 36 | no | not planned | open |
 

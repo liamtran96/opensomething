@@ -88,8 +88,8 @@ research the release history again unless the author asks.
   many key changes that the rows of section 8 did not have. It corrected
   `changelog.md`. The findings and the full list of missing changes are in
   [`docs/research/changelog-check.md`](docs/research/changelog-check.md).
-  On 2026-11-26 the file covered v0.1.0 to v0.1.181, and v0.1.181
-  (2026-11-25) was the latest release of the reference project. v0.1.179
+  On 2026-11-26 the file covered v0.1.0 to v0.1.182, and v0.1.182
+  (2026-11-26) was the latest release of the reference project. v0.1.179
   has no tag and no release.
 - **How:**
   - Use sections 5, 6 and 7 for the problems that each feature must check,
@@ -97,7 +97,7 @@ research the release history again unless the author asks.
     repeated fixes of one theme, look also in section 6 of
     `changelog-check.md`.
   - Keep it up to date: when the reference project publishes a release after
-    v0.1.181, add its row to section 8. Change sections 3 to 7 only when the
+    v0.1.182, add its row to section 8. Change sections 3 to 7 only when the
     new release changes them.
 
 ### A changelog row has all the key changes of its release (2026-11-23)
@@ -339,6 +339,18 @@ analysis tasks only, not for other worktrees.
   - **How:** before the removal, save what only the worktree has: ask its
     agent to write its proposals to a file outside the repository (step
     5.6 of "How to run a batch"), and push the branch.
+
+### Analysis agents run on Opus 5.5 (2026-11-26)
+
+The agent of an analysis worktree and all its readers use the model Opus
+5.5 (`claude-opus-5-5`).
+
+- **Why:** in batch 9 the agents started on another model, and the author
+  said "and model should be opus 5.5". In batch 6 the author also changed
+  the agents to Opus 5.5.
+- **How:** after `orca worktree create`, send `/model claude-opus-5-5` to
+  the agent before its approval, and check its status line. Tell the agent
+  to run each reader of its workflow on the same model.
 
 ### Look at the real window before you report a UI change (2026-11-20)
 

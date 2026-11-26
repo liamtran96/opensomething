@@ -534,3 +534,55 @@ background job sent the approval to each agent when it waited at its plan.
   T1, T2, ... The plan pull requests give them P-numbers from P406.
 - The batch also adds v0.1.181 to `changelog.md`, and points the 25 rows
   of group 3 that still said "open" to their batch 7 files.
+
+## Batch 9, started 2026-11-26
+
+The author said "start the next analyzing features" and chose two
+features: the last open row of group 3, and one new document of the group
+"later". The author first chose "One by one", then said "start 1 one
+feature" and "it mean 3 worktree run in parralle". So the batch has a third
+feature, which the main session chose, and all three run at the same time.
+The reference is at commit `140172d88` (2026-11-26), the tag of v0.1.182.
+`changelog.md` has the row of v0.1.182 now. The agents number their
+proposals T1, T2, ..., and the main session gives the P-numbers from P471.
+
+| # | Rows of `reference-features.md` | Group | Crate | Step | Name | State |
+|---|---|---|---|---|---|---|
+| 1 | Docs site `connected-apps/github-sign-in.mdx` | 3 | `bot-engine` | 16 | [`github-sign-in`](features/github-sign-in.md) | done, 2026-11-26, at commit `140172d88`: research #113 |
+| 2 | `team-board.md`; `verification/team-board.md` | later | `bot-core`, `bot-engine` | none yet | [`team-board`](features/team-board.md) | done, 2026-11-26, at commit `140172d88`: research #114 |
+| 3 | `engines.md`, `engines-ui.md`; `chatgpt-plan.md`, `claude-account.md`, `codex-account.md`; the device code of `server-settings.md`; the default model of `onboarding.md`; docs site `providers/` | later | `bot-engine` | 4, 9 | [`engines-and-accounts`](features/engines-and-accounts.md) | done, 2026-11-26, at commit `140172d88`: research #115 |
+
+- The prompts give each agent its borders with the files that are done.
+  `github-sign-in` reads only `broker-github.ts` of the bot box, which is
+  an open row. `team-board` does not analyze the delegation task board
+  plan again: `team-structure.md` has it. `engines-and-accounts` leaves
+  the detail of each ACP engine and the onboarding flow to later features,
+  and has a limit of 8 groups of files.
+- Two background jobs send the approval to each agent when it waits at its
+  plan. Each job exits when a file exists and its agent is idle.
+- At 22:02 the author said "please pending 2 of them". `github-sign-in`
+  continues: 6 of its 9 readers were done. `team-board` stopped its
+  workflow with TaskStop (one report of six was complete), and
+  `engines-and-accounts` is paused with "p" in its workflow panel (no
+  report was complete). To resume, send "resume" to `team-board` and "p" to
+  the panel of `engines-and-accounts`. The account was at 92% of its 5-hour
+  limit, which resets at 00:30.
+- At about 22:40 the author changed the account and said "no need to
+  wait". The main session quit the three agents ("Exit and stop tasks"),
+  started each one again with `claude --resume <session id> --model
+  claude-opus-5-5`, and told each one to start only the readers with no
+  complete report, on Opus 5.5. All nine readers of `github-sign-in` were
+  done, so it went on to its verifiers.
+- All three agents finished between 22:55 and 23:48. The main session
+  checked five or six key claims of each file at `140172d88`, and all
+  agree with the code. The agents wrote T-numbers in sections 7 and 8;
+  the main session changed them to P-numbers before the pull requests:
+  `github-sign-in` has P471 to P483, `team-board` P484 to P498, and
+  `engines-and-accounts` P499 to P514.
+- The worktrees are removed and the branches are kept. The proposals of
+  each agent are in `/private/tmp/batch9-<name>-proposals.md`.
+- The batch also adds v0.1.182 to `changelog.md`, corrects
+  `acp-adapter.md` (an unboxed bot gets a secret for a credential helper,
+  not the GitHub token), and adds a note to `team-structure.md` and
+  `bot-coordination.md`: their "no board" is about the plan of 2026-08-31,
+  not the Team Board.

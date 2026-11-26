@@ -1157,7 +1157,8 @@ The three designs (`docs/research/changelog.md` section 6):
 | 3. The job runtime | `aada9bb67`, `5e87b8738`, `6f38b547e` (2026-10-12), v0.1.108. The five tools went in `41c89c416` (#2737) | One record for each piece of work in `runtime.db` |
 
 The task board of 2026-08-31 was planned and never built: `git log --all`
-has no history for `server/work-items.ts`.
+has no history for `server/work-items.ts`. The Team Board of 2026-11-24 is a
+different feature: [`team-board.md`](team-board.md).
 
 What is left at `eee23ebbe`:
 
