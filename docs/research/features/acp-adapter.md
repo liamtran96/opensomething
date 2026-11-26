@@ -337,9 +337,11 @@ All paths are in the reference project at `ad27f0716`. No file under
    turns on the engine homes and the bot box (`procs.ts:415-420`). POSIX
    gets `detached: true`, so the engine has its own process group. Windows
    gets `windowsHide: true` (`procs.ts:433-434`).
-8. Since `fbdd6d96f`, an unboxed process for a bot also gets a GitHub
-   credential in its environment, and the app releases it at exit
-   (`procs.ts:422-424, 443, 453`).
+8. Since `fbdd6d96f`, an unboxed process for a bot also gets, in its
+   environment, a secret for a loopback credential helper (not the GitHub
+   token), and the app releases it at exit (`procs.ts:423-425, 444, 454`
+   at `140172d88`). The helper asks the server for the token:
+   [`github-sign-in.md`](github-sign-in.md), section 3.6.
 
 ### 3.3 Windows: launch and stop
 

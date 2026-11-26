@@ -762,7 +762,9 @@ Git history (read-only): `git show` of `78c79a440`, `5819d22d6`,
 6. **The new limits.** Depth 4 for every bot
    (`server/runtime/types.ts:375`, `server/runtime-coordinator.ts:180`),
    24 requests for each root (`server/runtime/types.ts:376`). No board in
-   `src/components/TeamMapPage.tsx`.
+   `src/components/TeamMapPage.tsx`. This is about the plan of
+   2026-08-31. The Team Board is a separate feature, off by default:
+   [`team-board.md`](team-board.md).
 
 ### 3.13 Departments: create, move, rename, delete
 
@@ -1034,7 +1036,9 @@ outside any department. The department and its shared instructions are
 deleted. This cannot be undone." A Chief's delete offers "Archive instead"
 (`Sidebar.departments.test.ts:419-500`).
 
-**Not in the UI:** a board, a list of delegated work, a reviewer. "Who
+**Not in the UI:** a board (of the plan of 2026-08-31; the Team Board of
+[`team-board.md`](team-board.md) is separate), a list of delegated work, a
+reviewer. "Who
 reports to whom" and "Set owner for all bots" are in
 `chat-and-teams.mdx:75-80` but not in `src/`.
 
