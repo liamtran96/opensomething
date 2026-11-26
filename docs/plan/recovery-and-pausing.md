@@ -32,10 +32,11 @@ the reference project.
     - `UsageLimit { resets_at: Option<…>, scope: Engine | Model | Credits }`.
   - A hold at the start (a "known" refusal) is a separate refusal of the
     runtime, not of the driver.
-  - **Problem in the reference:** The take-over finds the reason of a refusal
-    with `instanceof` checks in a long `catch`. A new kind of refusal can fall
-    through, and no compiler stops it (`server/index.ts:8371-8431`;
-    `server/contracts.ts:40-79`).
+  - **Problem in the reference:** The take-over finds the reason of a
+    refusal with `instanceof` checks in a long `catch`. A new kind of
+    refusal can fall through, and no compiler stops it
+    (`server/index.ts:8371-8431`; `server/contracts.ts:40-79`). The release
+    problem: none; this is a judgment call.
   - Why: follows the reference. It has one base class,
     `TurnNotStartedError`, with two subclasses for a refused sign-in and a
     usage limit, and a `known` flag. Better than the reference: one enum
@@ -72,7 +73,8 @@ the reference project.
   - **Problem in the reference:** The server accepts a duplicate backup with
     no error, and it accepts the main model in the backup list. Only the UI
     stops this (`server/routes/bot-patch.ts:254-275`;
-    `src/components/bot-panel/BackupAis.tsx:26`).
+    `src/components/bot-panel/BackupAis.tsx:26`). The release problem: none;
+    this is a judgment call.
   - Why: follows the reference. Better than the reference: the server drops
     a duplicate with no error and accepts the main model in the list. Only
     the UI stops it. The limit of 5 is in three places.
@@ -91,11 +93,12 @@ the reference project.
   - The runtime writes a hold and its event in one transaction.
   - A move has one row for each thread, with no cap. P249 writes the move
     and the model change in one transaction.
-  - **Problem in the reference:** A failed save of a hold is only logged, so a
-    restart can forget the hold (`server/limit-resets.ts:365-389`;
+  - **Problem in the reference:** A failed save of a hold is only logged, so
+    a restart can forget the hold (`server/limit-resets.ts:365-389`;
     `server/host/limit-takeover.ts:125-133`). The list of moves keeps 500
     rows, and a thread past 500 never goes back to its own engine
-    (`server/limit-failover.ts:117`).
+    (`server/limit-failover.ts:117`). The release problem: "State lost at a
+    restart or a crash" (v0.1.107, v0.1.165).
   - Why: follows the rules of the reference:
     - a model hold of at most 6 hours.
     - a guessed hold of 1 hour.
@@ -130,10 +133,11 @@ the reference project.
   - Step 15 adds this: the runtime cancels a due run of a held bot quietly.
   - **Problem in the reference:** A damaged pause file reads as "nothing
     paused", so each paused bot starts again
-    (`server/host/bot-holds.ts:53-54`). A pause changes the memory before the
-    save (`server/host/bot-holds.ts:81-100`). Seven places check the pause,
-    each in its own way (`server/index.ts:1657`, `:3846`, `:5002`, `:7443`,
-    `:11371`; `server/routines.ts:1142-1144`).
+    (`server/host/bot-holds.ts:53-54`). A pause changes the memory before
+    the save (`server/host/bot-holds.ts:81-100`). Seven places check the
+    pause, each in its own way (`server/index.ts:1657`, `:3846`, `:5002`,
+    `:7443`, `:11371`; `server/routines.ts:1142-1144`). The release problem:
+    "State lost at a restart or a crash" (v0.1.165, v0.1.180).
   - Why: follows the behaviour of the reference: the 409 `bot_held`, the
     hand-off text "Do not retry", the room skip and `newlyHeld`. Better than
     the reference: it checks the pause in at least seven places.
@@ -148,10 +152,12 @@ the reference project.
   - These go into the store: the count of each thread in the hour, the time
     of the last report, and the turns of each Chief in the hour.
   - The retry endpoint refuses a third retry with a typed refusal.
-  - **Problem in the reference:** A restart sets the incident counts to 0, and
-    the retry endpoint does not read them. So a crash loop gets new reports
-    and new retries after each restart (`server/host/chief-notices.ts:80-87`;
-    `server/index.ts:13701-13732`).
+  - **Problem in the reference:** A restart sets the incident counts to 0,
+    and the retry endpoint does not read them. So a crash loop gets new
+    reports and new retries after each restart
+    (`server/host/chief-notices.ts:80-87`; `server/index.ts:13701-13732`).
+    The release problem: "State lost at a restart or a crash" (v0.1.74,
+    v0.1.165).
   - Why: follows the limits of the reference: 2 retries, a mute from the
     6th incident in an hour, 6 Chief turns in an hour, and one automatic
     retry. Better than the reference:
@@ -186,9 +192,12 @@ the reference project.
   - A wait for a sign-in is a row in the store.
   - When a send fails, or the thread is busy, the wait stays inside the
     24-hour window.
-  - **Problem in the reference:** The sign-in resume removes a wait after one
-    try, also when the send fails. That turn is then never sent
-    (`server/host/sign-in-resume.ts:119-134`, `:183-194`).
+  - **Problem in the reference:** The sign-in resume removes a wait after
+    one try, also when the send fails. That turn is then never sent
+    (`server/host/sign-in-resume.ts:119-134`, `:183-194`). The release
+    problem: "The same work done or delivered two times, or lost" (v0.1.108,
+    v0.1.178) and "Sign-in to an engine, and engine CLIs that change"
+    (v0.1.153, v0.1.178).
   - Why: follows the reference: a 24-hour window, rechecks from 15 s to 5
     minutes, a stop after 5 reads, and only `unsent` turns. Better than the
     reference: it removes a wait after one try, also when the send fails,
@@ -221,9 +230,11 @@ the reference project.
 - **P465 (plan, new step, `bot-core`). A time limit on the stop of a
   pause.** The stop of the running turns of a paused bot has a limit. The
   runtime reports a turn that does not stop in time, and the pause stays.
-  - **Problem in the reference:** The stop of a pause waits for each interrupt
-    with no time limit, so one stuck engine holds the pause
-    (`server/index.ts:11919`; `src/lib/bot-pause.ts:29-35`).
+  - **Problem in the reference:** The stop of a pause waits for each
+    interrupt with no time limit, so one stuck engine holds the pause
+    (`server/index.ts:11919`; `src/lib/bot-pause.ts:29-35`). The release
+    problem: "One slow or stuck part blocks all the others" (v0.1.114) and
+    "A turn or a wait that does not end" (v0.1.151).
   - Why: better than the reference. It awaits each interrupt with no limit,
     and the client waits up to 60 s. "One slow or stuck part blocks the
     others" is a problem of the reference.
@@ -288,10 +299,12 @@ the reference project.
   refusal frames are driver capabilities.** A driver says if its engine
   reports plan usage, if a meter is only shown, and how it marks a refused
   sign-in or a usage limit. The runtime reads only these flags.
-  - **Problem in the reference:** The limit reports are read through lists of
-    engine names and through frame shapes of given CLI versions. A CLI update
-    can break the detection (`server/limit-resets.ts:22`, `:25-26`;
-    `server/drivers/claude-auth-recovery.ts:23-24`).
+  - **Problem in the reference:** The limit reports are read through lists
+    of engine names and through frame shapes of given CLI versions. A CLI
+    update can break the detection (`server/limit-resets.ts:22`, `:25-26`;
+    `server/drivers/claude-auth-recovery.ts:23-24`). The release problem:
+    "Sign-in to an engine, and engine CLIs that change" (v0.1.101,
+    v0.1.153).
   - Why: better than the reference. `AGENTS.md` gates engine behaviour by
     capability flags, never by the name of a driver. The reference has lists
     by engine name, and frame shapes that are tied to CLI versions.
