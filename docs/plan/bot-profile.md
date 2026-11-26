@@ -141,5 +141,102 @@ the reference project.
   - Source: `server/bot-folder.ts:1-2`, `:26-61`;
     `server/index.ts:14551-14608`; `server/store.ts:328`, `:1318`;
     `src/components/SoulField.tsx:38`.
+- **P416 (plan, the new step group 1, `bot-protocol`). The profile limits
+  and the one-line rule.** Name 100, title 200, description 4,000 and voice
+  200 characters. Soul 24,000 UTF-8 bytes. A name or a title has no control
+  character, no U+2028 and no U+2029. One typed patch with an enum of
+  fields, not a strict and a lenient parser. The compiler refuses an
+  unknown field.
+  - Why: follows the reference for the limits and the one-line rule. Better
+    than the reference: one parser, not two.
+  - Source: `shared/bot-profile.ts:5-23`; `server/bot-profile.ts:42-149`.
+- **P417 (plan, the new step group 2, `bot-core`). The profile revision is
+  an optimistic lock.** It is a SHA-256 of the seven profile fields and the
+  id of the last applied proposal. Each change sends the revision that it
+  saw. A different revision gives a typed refusal.
+  - Why: follows the reference.
+  - Source: `server/profile-revision.ts:5-26`.
+- **P418 (plan, after the new step, and after steps 15 and 16, `bot-engine`,
+  `bot-core`). The order of `propose_profile` and `/setup`.**
+  `propose_profile` needs our MCP server (step 12) and the profile (the new
+  step of P406). `/setup` uses `trigger` and `request_credential`, so it
+  needs steps 15 and 16. `/setup` starts only on the command, never on an
+  empty profile (commit `50362a940`). It asks at most four questions, and
+  its prompt block is for that turn only.
+  - Why: follows the reference.
+  - Source: `server/drivers/agents-catalog.ts:657-678`;
+    `server/setup-mode.ts:3-21`, `:84-109`;
+    `server/bot-continuity.e2e.test.ts:54-56`.
+- **P419 (plan, a rule of step 6, used in the new step and later,
+  `bot-core`, amends P22 and P76). A typed load for `presets.json` and
+  `profile-learned.json`.** A failed load gives a typed error, not empty
+  lists.
+  - Why: better than the reference. Both files load empty after a parse
+    error, and the next save writes over the file (`changelog.md` section
+    5, "A file written over after a failed read").
+  - Source: `server/presets.ts:166-168`, `:250-269`;
+    `server/profile-learned.ts:46-48`, `:88-90`.
+- **P420 (plan, the new step group 4, `bot-core`). The New-bot template and
+  random names.** The template is `{profile, memory, skills, routines}`,
+  with its limits. A blank name gives a random free name from a fixed list.
+  A save of one part of the template does not remove the other parts.
+  - Why: follows the reference for the template and the names. Better than
+    the reference: the reference replaces the whole template on each save.
+  - Source: `shared/new-bot-defaults.ts:33-38`;
+    `server/new-bot-defaults.ts:105-156`; `server/names.ts:1-20`;
+    `server/config.ts:923-929`.
+- **P421 (plan, the new step group 2, `bot-core`). The log names the real
+  caller.** Our command knows if the desktop, a bot or a file made the
+  change, and the log row stores it.
+  - Why: better than the reference. Its PATCH route logs `user` / `api` for
+    each caller.
+  - Source: `server/routes/bot-patch.ts:782-785`.
+- **P422 (plan, a note for the dialog of the new step, `bot-desktop`). A
+  capability flag, not a driver name.**
+  - Why: better than the reference. The simple panel tests
+    `driverKind === "antigravityAgent"`. Our `AGENTS.md` rule forbids it.
+  - Source: `src/components/bot-panel/SettingsPage.tsx:62-63`.
+- **P423 (plan, later, with part 44, `bot-core`). Presets wait for import
+  and export.** A preset is an allowlist that never carries access, model,
+  folder or routines. Each use parses the stored row again.
+  - Why: follows the reference.
+  - Source: `shared/package-format.ts:390-405`; `server/presets.ts:95-127`.
+- **P424 (choice, the new step group 4, `bot-desktop`, with D16). The dialog
+  layout: a Simple panel and Advanced sections.** Each change saves at once
+  and has Undo. There is no Save button. The author decides if we keep two
+  modes.
+  - Why: follows the reference layout. The reference made Simple the only
+    mode, then brought Advanced back the next day (`changelog.md` section
+    6).
+  - Source: `src/components/BotSettingsDialog.tsx:54-55`, `:174-190`;
+    `src/components/bot-settings/sections.ts:25-52`;
+    `src/state/bot-patch-queue.ts:160`; `DESIGN.md:385`, `:394`.
+- **P425 (decision, for `docs/decisions.md`, amends P404). "A bot cannot
+  widen its own file access".** A change of a bot's working folder by a bot
+  waits for a person. This is the decision for P407.
+  - Why: better than the reference. The risk to the person's Claude
+    settings is not traced (P407).
+  - Source: `server/bot-cwd.ts:9-25`; `server/direct-apply.ts:17-20`.
+- **P426 (decision, for `docs/decisions.md`). "The soul is in the store, and
+  `SOUL.md` is a mirror".** Add the two fixes of P415.
+  - Why: follows the reference, with the two fixes of P415.
+  - Source: `server/bot-folder.ts:1-2`.
 
-The proposals P416 to P426 come in the next pull request.
+## The problems of the reference
+
+For the table "The problems of the reference, and the proposals" in
+[`README.md`](README.md):
+
+- **A secret or an access right in the wrong place:** P407, P410, P411.
+- **State lost at a restart or a crash:** P408, P415.
+- **A file written over after a failed read:** P419.
+- **A feature added, then removed:** P409, P424.
+- **The person's own engine config reaches the bots:** P407.
+
+## Notes
+
+- **No new item for the default approval level of a new bot.** It is P120
+  (`approval-levels.md`), option 1. This research adds two sources for
+  P120: `DESIGN.md:64-66` ("no default below Full access") and
+  `docs/verification/presets.md:31-32` (bots from a preset start at Full).
+  The number P427 stays unused.
