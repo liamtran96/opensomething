@@ -467,7 +467,7 @@ A gh that still writes its file after the cancel makes the next status
 No scope and no permission of the token is checked. Only `GET /user` must
 answer 200 with a login. The order of steps 4 and 5 is a risk: if the Vault
 write throws, the gh sign-in is already gone and the new token is not stored
-(section 8, T5).
+(section 8, P475).
 
 **Sign out** (`sign-in.ts:430-448`):
 
@@ -1306,7 +1306,7 @@ exist for us unless we build an equal part.
 | `server/vault-store.ts` (GitHub field) | Store the pasted token | `bot-core`, the secret store of step 6 (`settings.rs`, `Secret`, P19, P20, P232) | Planned in PR 6.4 and 6.5 (`docs/plan/README.md:298-299`) |
 | `server/github/token.ts` | Accessor | A trait in `bot-engine` (`GithubToken`), with the implementation connected in `bot-cli`, the only composition root | Nothing |
 | `server/github/git-credential.ts`, `git-env.ts` | Credential for an unboxed bot | `bot-engine`, `github/git_credential.rs`: what a bot process gets. A capability flag of the driver says if it gets it, never a driver name | Nothing |
-| `server/bot-box/broker-github.ts`, `git-push-guard.ts` | Broker and push guard | No part today. Proposal T2 in section 8 | Nothing |
+| `server/bot-box/broker-github.ts`, `git-push-guard.ts` | Broker and push guard | No part today. Proposal P472 in section 8 | Nothing |
 | `server/routes/github-sign-in.ts` | HTTP routes | `bot-desktop`: Tauri commands, not HTTP routes (D10) | Nothing |
 | `server/host/github-sign-in-cards.ts` | Chat card | `bot-core` card row of step 10 (P135, P262), text from stored data | Nothing |
 | `src/components/github/*`, `src/lib/github-sign-in.ts` | Row, card, store | `crates/bot-desktop/ui` (TypeScript) | Nothing |
@@ -1332,7 +1332,7 @@ Each point names the problem of the reference, what goes wrong for the
 person or the bot, and a reason. The numbers are the same as in the list of
 proposals that goes to the main session.
 
-**T1 (follows the reference). GitHub sign-in gets a step.**
+**P471 (follows the reference). GitHub sign-in gets a step.**
 
 - GitHub sign-in is in no step today. The feature row puts it in part 20,
   crate `bot-engine` (`docs/research/reference-features.md:545`). It can go
@@ -1346,7 +1346,7 @@ proposals that goes to the main session.
   URL, and no `gh auth logout`. The composition is at `server/index.ts:12034`.
 - The Team Cloud parts are out of scope by D10.
 
-**T2. The git of a bot reaches GitHub through a local broker and one push
+**P472. The git of a bot reaches GitHub through a local broker and one push
 guard, and the token is kept where a bot cannot read it.**
 
 - Problem in the reference: on This computer, no push rule applies to the
@@ -1374,15 +1374,15 @@ guard, and the token is kept where a bot cannot read it.**
   `--insecure-storage`, our token is plain text in
   `<data>/github/owner/config/hosts.yml`, and a bot can read that file. To
   keep the token from a bot, the token must be in storage that a bot cannot
-  read, such as the keychain of P19. That changes the gh design of T1 (gh
+  read, such as the keychain of P19. That changes the gh design of P471 (gh
   then cannot keep the token in its own folder). The author chooses between
   the two.
 - Changes: a new decision in `docs/decisions.md` ("the git of a bot reaches
   GitHub only through our broker"), and the row "A secret or an access right
   in the wrong place" of the table of problems.
 
-**T3. The push guard refuses a force-push and an update of a branch that
-the bot did not make.** Needs T2: with no broker, there is no guard.
+**P473. The push guard refuses a force-push and an update of a branch that
+the bot did not make.** Needs P472: with no broker, there is no guard.
 
 - Problem in the reference: the guard does not detect a force-push to a
   branch that is not the default (`git-push-guard.ts:5-7`: "whether one
@@ -1401,8 +1401,8 @@ the bot did not make.** Needs T2: with no broker, there is no guard.
   token it already holds. That needs a network call for each update. The
   author decides if the list alone is enough.
 
-**T4. The push scope comes from records that the server made, not from files
-that the bot can write.** Needs T2.
+**P474. The push scope comes from records that the server made, not from files
+that the bot can write.** Needs P472.
 
 - Problem in the reference: `mayPush` reads `.git/config` as text in the
   folders of the bot, and each 200 ref list marks a repository as fetched
@@ -1415,7 +1415,7 @@ that the bot can write.** Needs T2.
   data" has the same idea. The scope must come from a store record: the
   repository that the person named or approved.
 
-**T5. A new token is written before the old sign-in is removed, and a store
+**P475. A new token is written before the old sign-in is removed, and a store
 that cannot be read is never written over.**
 
 - Problem in the reference: `saveToken` deletes the own folder and then
@@ -1429,7 +1429,7 @@ that cannot be read is never written over.**
 - Reason: this extends P232 and P367 to the GitHub token. A `save` takes a
   value that only a good `load` can make (changelog section 7).
 
-**T6. The server stops the login child at its own deadline, and stops the
+**P476. The server stops the login child at its own deadline, and stops the
 full process tree.**
 
 - Problem in the reference: no timer of the server stops gh
@@ -1445,7 +1445,7 @@ full process tree.**
   child that is tied to our process (`kill_on_drop`, a Job Object on
   Windows) cannot outlive a restart.
 
-**T7. The person's own GitHub CLI is shown, and its token goes to bots only
+**P477. The person's own GitHub CLI is shown, and its token goes to bots only
 when the person says so.**
 
 - Problem in the reference: when the server has no sign-in of its own,
@@ -1459,7 +1459,7 @@ when the person says so.**
   CLI sign-in", off at first, keeps the read-only display and asks the
   person once.
 
-**T8. gh starts through the one process runner.**
+**P478. gh starts through the one process runner.**
 
 - Problem in the reference: `gh-cli.ts` calls `execFile` and `spawn`
   directly, not `procs.ts` (`gh-cli.ts:139`, `:167`). It does not use
@@ -1470,7 +1470,7 @@ when the person says so.**
 - Reason: one runner gives each child the same `.cmd` handling, the same
   tree stop and the same environment allow-list (P61, P65, P68).
 
-**T9. The card settles on the server when the sign-in ends.**
+**P479. The card settles on the server when the sign-in ends.**
 
 - Problem in the reference: only the `GET status` route settles the card,
   and only a client that shows the card calls it
@@ -1484,7 +1484,7 @@ when the person says so.**
   module settles each open card of that audience in one transaction. This
   also removes the race of `dismiss` with the settle (verifier C4).
 
-**T10. The token of a bot request has its own type, and redaction knows it
+**P480. The token of a bot request has its own type, and redaction knows it
 for as long as it is in use.**
 
 - Problem in the reference: the held secrets that redaction masks by value
@@ -1497,8 +1497,8 @@ for as long as it is in use.**
 - Reason: our `Secret` type (P20) has no `Debug` output of the value, so
   the value cannot reach a log line through formatting.
 
-**T11. Each client request and each relay has a time limit.** The relay
-part needs T2.
+**P481. Each client request and each relay has a time limit.** The relay
+part needs P472.
 
 - Problem in the reference: no client request of this feature has a limit
   (`src/state/api.ts:46-50`). A request that never answers keeps `busy`, and
@@ -1507,10 +1507,10 @@ part needs T2.
   (`broker-github.ts:183-198`, `:238-243`), so a stuck connection holds the
   git of a bot.
 - Release problem: "A turn or a wait that does not end" (v0.1.15, v0.1.132).
-- Reason: a Tauri command of ours has a limit, and the broker of T2 has an
+- Reason: a Tauri command of ours has a limit, and the broker of P472 has an
   idle limit for each relay.
 
-**T12 (judgment call). Show what a pasted token can do.**
+**P482 (judgment call). Show what a pasted token can do.**
 
 - The reference checks only that `GET /user` answers 200 (`sign-in.ts:418`).
   It does not check the scopes, the repositories or the expiry. A token with
@@ -1518,7 +1518,7 @@ part needs T2.
 - No release problem of section 5 matches this. It is a judgment call. The
   author can keep the reference.
 
-**T13 (gap, judgment call). Decide if we build the chat card.**
+**P483 (gap, judgment call). Decide if we build the chat card.**
 
 - The reference has the card, its texts and its tests, but no code raises
   it (`sign-in-card.ts:12-14`, `github-sign-in-cards.test.ts:204-218`). The
@@ -1537,7 +1537,7 @@ part needs T2.
 - Keep fixtures for each version of gh that we support, with the floor
   version, the pinned version and an old version (section 6.2).
 - Run gh with a private `HOME`, `GH_CONFIG_DIR`, a dead D-Bus address and
-  `--insecure-storage`, and never run `gh auth logout`. The conflict in T2
+  `--insecure-storage`, and never run `gh auth logout`. The conflict in P472
   can change `--insecure-storage` (`gh-cli.ts:5-11`,
   `:79-113`).
 - Show the constant device URL, never the URL that gh printed
@@ -1548,14 +1548,14 @@ part needs T2.
 
 | Problem | In this feature | Where |
 |---|---|---|
-| A secret or an access right in the wrong place | Yes. The token reaches the git of an unboxed bot. The push guard misses force-push and branch owner. The push scope comes from files that the bot can write. 500 held values | 3.6, 3.8, T2, T3, T4, T10 |
+| A secret or an access right in the wrong place | Yes. The token reaches the git of an unboxed bot. The push guard misses force-push and branch owner. The push scope comes from files that the bot can write. 500 held values | 3.6, 3.8, P472, P473, P474, P480 |
 | Sign-in to an engine, and engine CLIs that change | Handled well: 401-only rule, three gh versions with fixtures, a floor version. One gap: no fixture from Windows, and no fixture between 2.40.1 and 2.102.0 for the claim that `--json` came in "gh 2.7x" (`gh-output.ts:77`) | 3.2, 6.2 |
-| A turn or a wait that does not end | Yes. No server timer for the login child. A gh that hangs before its code has no limit. The card settles only from a client. No client request limit. No relay limit | 3.3, 3.9, 5.3, T6, T9, T11 |
-| A file written over after a failed read | Yes. The Vault after a failed read. `clones.json` of the lent clone (`lent-clone.ts:69-70`). An own `hosts.yml` that cannot be read counts as signed out, and a new login writes over it (`sign-in.ts:126-133`) | 4.2, 3.10, T5 |
-| State lost at a restart or a crash | Partly. The attempt and the cooldown are in memory. An orphan gh can still sign in. The card and the parked work survive | 4.4, T6 |
+| A turn or a wait that does not end | Yes. No server timer for the login child. A gh that hangs before its code has no limit. The card settles only from a client. No client request limit. No relay limit | 3.3, 3.9, 5.3, P476, P479, P481 |
+| A file written over after a failed read | Yes. The Vault after a failed read. `clones.json` of the lent clone (`lent-clone.ts:69-70`). An own `hosts.yml` that cannot be read counts as signed out, and a new login writes over it (`sign-in.ts:126-133`) | 4.2, 3.10, P475 |
+| State lost at a restart or a crash | Partly. The attempt and the cooldown are in memory. An orphan gh can still sign in. The card and the parked work survive | 4.4, P476 |
 | One slow or stuck part blocks the others | Mostly handled. State is per audience, and calls are asynchronous. Parallel status reads share one gh run. Some file calls are synchronous (`readFileSync`, `rmSync`, the Vault write with fsync, `sign-in.ts:128`, `:146`, `:423`). One `busy` flag blocks all actions in the client | 3.2, 5.3 |
-| Process control on Windows | Yes. No `.cmd` handling and no tree stop for gh. The Credential Manager rule is handled | 4.3, T8 |
-| The person's own engine config reaches the bots | Yes. The person's own gh token goes to unboxed bots. In the box, the read-write HOME with its git config is the bot's. The box masks only the engine folders of `server/engine-homes/layout.ts:58-67`, which have no entry for `.config/gh` or `.git-credentials` | 3.6, 3.7, T7 |
+| Process control on Windows | Yes. No `.cmd` handling and no tree stop for gh. The Credential Manager rule is handled | 4.3, P478 |
+| The person's own engine config reaches the bots | Yes. The person's own gh token goes to unboxed bots. In the box, the read-write HOME with its git config is the bot's. The box masks only the engine folders of `server/engine-homes/layout.ts:58-67`, which have no entry for `.config/gh` or `.git-credentials` | 3.6, 3.7, P477 |
 
 ## 9. Not verified
 
