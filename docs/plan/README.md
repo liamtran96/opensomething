@@ -73,6 +73,7 @@ decision, a pull request or a choice, and its text leaves the feature file.
 | [`bot-coordination.md`](bot-coordination.md) | [`bot-coordination.md`](../research/features/bot-coordination.md) | P218 to P229, and new facts for P64, P120, P182 | 2, 12, 14, gap |
 | [`custom-mcp-servers.md`](custom-mcp-servers.md) | [`custom-mcp-servers.md`](../research/features/custom-mcp-servers.md) | P230 to P245 | 4, 9, 12, 16, D12, gap |
 | [`context.md`](context.md) | [`context.md`](../research/features/context.md) | P246 to P255 | 3, 5, 8, 13, D22, new step, later |
+| [`connected-apps.md`](connected-apps.md) | [`connected-apps.md`](../research/features/connected-apps.md) | P256 to P268, and new facts for P44, P232, P240 | 10, 16, D12, gap |
 | this file | the plan itself and [`changelog.md`](../research/changelog.md) | P26, P41, P48 | 7, 9, 12 |
 
 - Decide P1 to P7 first, and P218 with them. They change the types of `bot-protocol`, and step
@@ -341,7 +342,7 @@ The fake driver of step 3 and each real driver must obey them.
 
 - **Proposals of step 8:** [P75](store-and-data-format.md), [P76](store-and-data-format.md), [P77](store-and-data-format.md), [P78](store-and-data-format.md), [P79](store-and-data-format.md), [P80](store-and-data-format.md), [P81](store-and-data-format.md), [P82](store-and-data-format.md), [P108](acp-core.md), [P124](chat-ui.md), [P246](context.md).
 - **Proposals of step 9:** [P66](engine-process-lifecycle.md), [P67](engine-process-lifecycle.md), [P68](engine-process-lifecycle.md), [P69](engine-process-lifecycle.md), [P70](engine-process-lifecycle.md), [P71](engine-process-lifecycle.md), [P72](engine-process-lifecycle.md), [P102](acp-core.md), [P103](acp-core.md), [P104](acp-core.md), [P105](acp-core.md), [P106](acp-core.md), [P108](acp-core.md), [P109](acp-core.md), [P130](turn-limits.md), [P134](turn-limits.md), [P136](question-cards.md).
-- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md).
+- **Proposals of step 10:** [P72](engine-process-lifecycle.md), [P73](engine-process-lifecycle.md), [P96](security-model.md), [P97](security-model.md), [P107](acp-core.md), [P110](approval-levels.md), [P111](approval-levels.md), [P112](approval-levels.md), [P113](approval-levels.md), [P114](approval-levels.md), [P115](approval-levels.md), [P116](approval-levels.md), [P117](approval-levels.md), [P118](approval-levels.md), [P119](approval-levels.md), [P120](approval-levels.md), [P121](approval-levels.md), [P135](question-cards.md), [P136](question-cards.md), [P137](question-cards.md), [P139](approval-cards.md), [P141](approval-cards.md), [P260](connected-apps.md).
 
 Write `docs/threat-model.md` before step 9: this is the first step where the
 program starts another program. What it must cover: [P95](security-model.md).
@@ -355,7 +356,7 @@ program starts another program. What it must cover: [P95](security-model.md).
 | 13 | The assignment runtime and its invariant tests ([P164 to P172](assignment-runtime.md)) | `bot-core` | Each scenario test passes the invariant checks |
 | 14 | Several bots: `coordinate_bots` writes an assignment ([P218 to P229](bot-coordination.md)) | `bot-core`, `bot-engine` | One bot gives work to a second bot and gets the result |
 | 15 | Memory, then routines ([P204 to P217](memory.md), [P173 to P181](automations.md)) | `bot-core` | A bot recalls a fact in a new task. A routine starts a turn at its time |
-| 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
+| 16 | Outside tools: custom MCP servers, then Composio (decision D12) ([P230 to P243](custom-mcp-servers.md), [P257 to P267](connected-apps.md)) | `bot-engine` | A bot calls a tool of a custom MCP server |
 
 - [ ] 11
 - [ ] 12
@@ -369,7 +370,7 @@ desktop application (decision D10).
 
 ## Gaps that have no step
 
-Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later.
+Each one is in the file of its feature: [P33](chat-driver-tool-calls.md), [P34](queue-and-steer.md), [P35](chat-turns.md), [P36](chat-turns.md), [P128](chat-ui.md), [P244](custom-mcp-servers.md), [P245](custom-mcp-servers.md). Context (part 17) has no step yet: [P247](context.md) adds one after step 13, with [P252](context.md) and [P253](context.md); [P255](context.md) is later. Connected apps: the Email app has no step: [P268](connected-apps.md).
 
 ## Notes for steps 8 to 14
 
