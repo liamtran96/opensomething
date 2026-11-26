@@ -64,6 +64,17 @@ proposal (a P-number in `docs/plan/<feature>.md`), and the author decides.
   - **Why:** the author asked why a proposal is a concern when we follow
     the reference, then said: "you should point it out why it is better
     than reference like this", with three examples of that form.
+- **The aim is to avoid the mistakes of the releases (2026-11-26):** a
+  better proposal is there to avoid a problem that the reference had in its
+  release history. Its "Problem in the reference" line names that problem
+  of section 5 of `docs/research/changelog.md` and the releases where it
+  came, and the table "The problems of the reference, and the proposals"
+  of `docs/plan/README.md` lists it. A better proposal that answers no
+  release problem is a judgment call: say so, so that the author can keep
+  the reference.
+  - **Why:** the author asked "why did u come up with those things that you
+    think it is better than reference", then said: "i want to avoid those
+    mistake from the release".
 
 ### The changelog is checked and up to date (2026-11-23)
 

@@ -32,6 +32,12 @@ this file.
   `decide(level, request, grants, floor, can_show_card)` gives `Allow`,
   `Ask` or `Deny`, each with its reason. A driver only maps the level to
   the mode of its engine.
+  - **Problem in the reference:** The decision runs in about six places,
+    each with its own inputs. So one request can get two answers: a command
+    that the floor cannot read gets a card in the central handler, but the
+    chat gate refuses it (`server/safety-floor-gate.ts:97-100`, `:155-177`;
+    `server/index.ts:6451-6456`). The release problem: "The approval model
+    changed" (v0.1.55, v0.1.109).
   - Kind: better than the reference, which decides in about six places.
     This is the proposal of the last row of section 7 of
     [`changelog.md`](../research/changelog.md).
@@ -40,6 +46,13 @@ this file.
 - **P113 (steps 3 and 10). The levels that a driver supports, and a native
   reviewer, are capabilities.** No code checks a driver name. This applies
   to each list of driver names in the reference.
+  - **Problem in the reference:** The levels of an engine and its reviewer
+    are lists of driver names, and an unknown engine gets every level but
+    Edits and Custom. Two rules disagree: the delegated level can pass Auto
+    to an engine with no reviewer, but the runtime cap does not
+    (`packages/phone-protocol/src/approval-mode.ts:22-26`, `:41-45`;
+    `server/auto-approve.ts:58`; `server/runtime/level.ts:16-19`). The
+    release problem: "The approval model changed" (v0.1.55, v0.1.74).
   - Kind: better than the reference (the rule of `AGENTS.md`).
   - Source: `approval-mode.ts:22-26`, `:41-45`, `server/runtime/capabilities.ts:57-65`,
     `src/lib/approval-mode-options.ts:50-83`, `server/index.ts:1067-1070`.
@@ -47,6 +60,15 @@ this file.
 - **P114 (step 10). One ordered level type.** `Ask < Edits < Auto < Full`
   with `Ord`, and `Custom` outside the order. An unknown stored value
   becomes Ask with a typed warning, and the store keeps the raw value.
+  - **Problem in the reference:** The load deletes an unknown stored level,
+    and an unset level then runs at the default, Full. So a damaged or newer
+    value gives Full access, not the Ask that the comment promises
+    (`server/store.ts:352-353`, `:522-523`;
+    `packages/phone-protocol/src/approval-mode.ts:86-87`, `:102`). The code
+    also has three orders of the levels (`approval-mode.ts:9-11`, `:48`;
+    `server/auto-approve.ts:38`). The release problem: "A file written over
+    after a failed read" (v0.1.103, v0.1.151) and "The approval model
+    changed" (v0.1.109, v0.1.167).
   - Kind: better than the reference: one order instead of three, and the
     bug above is fixed.
   - Source: `approval-mode.ts:9-11`, `:47`, `server/auto-approve.ts:38`,
@@ -60,10 +82,21 @@ this file.
     `:4514`.
 - **P116 (step 10). The window gets `request.opened` after the card is
   stored,** in one transaction with its event.
+  - **Problem in the reference:** The server sends `request.opened` to the
+    window before it stores the card. A crash or a failed write between the
+    two leaves the window with a request that has no stored card
+    (`server/index.ts:6298-6300`, `:6525-6528`). The release problem: "State
+    lost at a restart or a crash" (v0.1.115, v0.1.120).
   - Kind: better than the reference, which sends the event first.
   - Source: `server/index.ts:6311-6315`, `:6540`.
 - **P117 (step 10). A raise to Full or Custom only through a Tauri
   command,** in one transaction. No other path can raise a level.
+  - **Problem in the reference:** Full access applies from any client that
+    can reach the API. Outside the packaged desktop, on a local server, a
+    request with no session is the owner, so the shell of a bot can raise a
+    bot to Full (`server/routes/bot-patch.ts:548-549`, `:558-560`;
+    `server/request-auth.ts:112`). The release problem: "A secret or an
+    access right in the wrong place" (v0.1.113, v0.1.130).
   - Kind: better than the reference, where Full applies "from any client
     that can reach this API", and a grant takes five steps.
   - Source: `server/routes/bot-patch.ts:538-578`, `server/index.ts:3055-3056`,
@@ -75,6 +108,15 @@ this file.
     `server/host/ask-cards.ts:164-183`.
 - **P119 (step 10 or 12). Each driver states if a change of level applies
   during a turn.** The picker then says exactly when it applies.
+  - **Problem in the reference:** The picker says that a change applies
+    "from its next step where its AI allows it, otherwise from its next
+    turn", and the person cannot tell which. The Claude CLI gets its mode
+    when the turn starts, so a lower level does not apply to that turn,
+    except through the desktop's emergency downgrade
+    (`src/locales/en.json:3689`; `server/contracts.ts:134-136`;
+    `server/drivers/claude.ts:923-927`, `:952`;
+    `packages/phone-protocol/src/approval-mode.ts:105-108`). The release
+    problem: "The approval model changed" (v0.1.129).
   - Kind: better than the reference, whose text says "from its next step
     where its AI allows it, otherwise from its next turn".
   - Source: `server/contracts.ts:132-136`, `server/drivers/claude.ts:1142-1192`.
