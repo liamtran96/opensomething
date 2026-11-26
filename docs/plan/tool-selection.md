@@ -55,9 +55,11 @@ the reference project.
   turns `{}` and `{deny: []}` into `All`. A bad stored value stays on disk,
   and the turn start gives a typed refusal, as in the reference.
   - **Problem in the reference:** An empty exclude list `{deny: []}` allows
-    all tools, but it turns off the bridge and the prestart. The card saves it
-    as "Custom selection saved" (`server/agents-bridge-switch.ts:301-304`;
-    `src/components/bot-settings/ToolSelectionCard.tsx:28-30`).
+    all tools, but it turns off the bridge and the prestart. The card saves
+    it as "Custom selection saved"
+    (`server/agents-bridge-switch.ts:301-304`;
+    `src/components/bot-settings/ToolSelectionCard.tsx:28-30`). The release
+    problem: "The size of the tool list of one turn" (v0.1.111, v0.1.160).
   - Why: Better than the reference. The compiler refuses the wrong state. In
     the reference, `{deny: []}` allows all tools. But it also turns off the
     agents bridge and the prestart, and Claude Code then needs the strict
@@ -73,9 +75,10 @@ the reference project.
   backup and the apply of a team file give the scope to the create step. A
   copy keeps the scope of its source, also when a team member makes the
   copy. If it cannot, the copy is refused.
-  - **Problem in the reference:** Team apply gives a new bot all tools between
-    two requests. When the second request fails, the bot keeps all tools
-    (`server/headless/team-apply.ts:223-229`).
+  - **Problem in the reference:** Team apply gives a new bot all tools
+    between two requests. When the second request fails, the bot keeps all
+    tools (`server/headless/team-apply.ts:223-229`). The release problem: "A
+    secret or an access right in the wrong place" (v0.1.178, v0.1.181).
   - Why: Better than the reference, and our rule of one transaction for each
     state change ("an access right in the wrong place"). Team apply makes the
     bot with all tools, then sends the scope in a second request. When the
@@ -95,7 +98,8 @@ the reference project.
   - **Problem in the reference:** The card saves a selection that the engine
     cannot apply. Then each later turn of that bot fails
     (`src/components/bot-settings/ToolSelectionCard.tsx:86-93`;
-    `scripts/testing/tool-selection-ui.e2e.test.ts:73-78`).
+    `scripts/testing/tool-selection-ui.e2e.test.ts:73-78`). The release
+    problem: "The size of the tool list of one turn" (v0.1.101, v0.1.133).
   - Why: Better than the reference. The reference saves such a scope, shows
     only a warning, and fails each later turn ("This selection will stop
     before sending a prompt"). New facts for P237: the table has 31 engines,
@@ -116,7 +120,8 @@ the reference project.
   - **Problem in the reference:** When the person removes a tool, a tool
     behind a gate stays usable until the turn ends. Each gate got a copy of
     the scope at the turn start (`server/mcp-gate-config.ts:217`;
-    `server/index.ts:7500`).
+    `server/index.ts:7500`). The release problem: "The approval model
+    changed" (v0.1.129).
   - Why: Better than the reference. In the reference, the engine gets a copy
     of the scope at the turn start, and each gate gets it in its
     environment. A tool behind a gate does not stop until the turn ends.
@@ -153,7 +158,8 @@ the reference project.
   - **Problem in the reference:** Each selection turns off the bridge. So a
     bot with one tool removed gets all agent tools in full, 27 to 39 tools
     (`server/agents-bridge-switch.ts:301-304`;
-    `docs/agents-tool-bridge.md:72-78`).
+    `docs/agents-tool-bridge.md:72-78`). The release problem: "The size of
+    the tool list of one turn" (v0.1.111, v0.1.141).
   - Why: Better than the reference ("the size of the tool list of one
     turn"). In the reference, any scope turns off the bridge, so the list
     has all agent tools in full (27 to 39 tools, 43 to 57 KB). The gate of
@@ -166,9 +172,10 @@ the reference project.
   save waits for the acknowledgement and is not optimistic. A late error
   never shows on another bot. Each refusal has a translated text, not the
   raw text of the parser.
-  - **Problem in the reference:** The card shows the raw error of the parser,
-    and the text is not translated
-    (`src/components/bot-settings/ToolSelectionCard.tsx:89`).
+  - **Problem in the reference:** The card shows the raw error of the
+    parser, and the text is not translated
+    (`src/components/bot-settings/ToolSelectionCard.tsx:89`). The release
+    problem: none; this is a judgment call.
   - Why: follows the reference, with one change: the reference shows the
     raw text of the parser, and this text is not translated.
   - Source: `src/components/bot-settings/ToolSelectionCard.tsx:13`,
@@ -190,8 +197,9 @@ the reference project.
   a missing tool in the directory.** The author chooses between this answer
   and the message of the reference.
   - **Problem in the reference:** The directory tells the bot that a hidden
-    tool exists. It answers "excluded" for a withheld tool and "unknown" for a
-    missing tool (`server/mcp-directory.ts:351-353`, `:513-515`).
+    tool exists. It answers "excluded" for a withheld tool and "unknown" for
+    a missing tool (`server/mcp-directory.ts:351-353`, `:513-515`). The
+    release problem: none; this is a judgment call.
   - Why: Better than the reference: a small "access right in the wrong
     place". The reference tells the bot that a hidden tool exists. Against:
     the message of the reference helps the model to stop its tries.
