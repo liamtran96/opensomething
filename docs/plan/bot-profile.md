@@ -48,6 +48,11 @@ the reference project.
   minimum, the folder cannot be the data folder or a folder in it, the home
   folder itself, or an engine config folder. This is an exception to the
   apply-at-once rule of P404.
+  - **Problem in the reference:** A bot can set its working folder to any
+    folder that exists, also the home folder of the person, and the change
+    applies at once at the Ask level. The guard `sharedProjectFolder` exists,
+    but this path does not call it (`server/bot-cwd.ts:9-25`;
+    `server/profile-requests.ts:138-143`).
   - Why: better than the reference. `validateBotCwd` accepts each folder
     that exists, and the change applies at once at Ask, with only Undo. The
     reference has the guard `sharedProjectFolder`, but it does not use it
@@ -63,6 +68,10 @@ the reference project.
     `server/agents-bridge-switch.ts:232-234`.
 - **P408 (plan, the new step group 2, `bot-core`). The profile change and
   its log rows in one transaction.**
+  - **Problem in the reference:** A crash after the profile save loses the
+    history row, and the Undo of that change goes with it. The row is written
+    later through a queue that drops each error
+    (`server/profile-versions.ts:65-82`).
   - Why: better than the reference. The reference saves the change. Then it
     appends the row through a queue with no disk sync, and it drops each
     error. A crash loses the row and its Undo. Our `AGENTS.md` rule asks for
@@ -74,6 +83,10 @@ the reference project.
 - **P409 (plan, the step of `propose_profile`, `bot-core`, amends P404 and
   P405). One function decides if a proposal waits, and the same function
   gives each text about it.**
+  - **Problem in the reference:** The bot and the person read that a change
+    waits for a confirm, but the change applies at once
+    (`server/bot-folder.ts:80`; `server/bot-overview.ts:266`;
+    `server/direct-apply.ts:17-20`).
   - Why: better than the reference. Three texts still promise a confirm
     step that the code removed. The bot reads "proposed changes apply only
     after the user confirms". The person reads "arrives as a card you
@@ -85,6 +98,11 @@ the reference project.
   New-bot template is not a "safe" app setting.** A change to the template
   by a bot waits for the person. Or the change cannot raise the approval
   level or add grants.
+  - **Problem in the reference:** A bot can replace the New-bot template at
+    once. Each later new bot then starts with the approval level and the
+    always-allow list that the bot chose
+    (`server/app-settings/registry-config.ts:91-96`;
+    `server/app-settings/registry.ts:48`; `server/new-bot-defaults.ts:43-44`).
   - Why: better than the reference. The template holds the approval level
     up to Full, `alwaysAllow`, MCP servers and apps. A bot can replace it at
     once, and each later new bot and each Duplicate gets that access. The
@@ -95,6 +113,9 @@ the reference project.
     `docs/superpowers/specs/2026-11-12-app-settings-tool-design.md:209`.
 - **P411 (plan, the new step group 4, `bot-core`). Duplicate is one command
   that copies the source and starts inert.**
+  - **Problem in the reference:** When the second request fails, Duplicate
+    leaves a half-made bot, and nothing deletes it
+    (`src/state/store.tsx:2497-2516`).
   - Why: better than the reference. The reference makes the copy with a
     POST and a PATCH, with no rollback. A failed PATCH leaves a half bot.
     The copy gets the approval level, apps, skills and routines of the
@@ -105,6 +126,10 @@ the reference project.
     `docs/superpowers/plans/2026-08-31-02-bot-profile.md:185`.
 - **P412 (plan, the new step group 4, `bot-desktop`). Undo sends the
   revision that the person saw, and both views ask first.**
+  - **Problem in the reference:** Undo in the simple panel reads a new
+    revision just before it posts. So it can write over a change that came
+    after the change that the person saw
+    (`src/components/bot-panel/SoulChanges.tsx:19-31`).
   - Why: better than the reference. The simple panel reads a new revision
     just before it posts, with no confirm. Thus the revision check does not
     protect later changes. Only the Advanced dialog asks, and only it sends
@@ -113,6 +138,9 @@ the reference project.
     `src/components/bot-settings/useBotOverview.tsx:156`, `:162-179`.
 - **P413 (plan, the new step group 2, `bot-core`). Rollback finds each row
   by id through an index, and the log has a size rule.**
+  - **Problem in the reference:** The rollback of an old change fails with 400
+    when the log has more than 500 rows or 8 MiB, and nothing trims the log
+    (`server/profile-versions.ts:29`, `:142`; `server/index.ts:14650`).
   - Why: better than the reference. Rollback asks for all rows, but the
     read stops at 500 rows and 8 MiB. Thus an older row gives 400. Nothing
     trims the file.
@@ -133,6 +161,9 @@ the reference project.
   fixes:
   1. Write the mirror with a disk sync each time.
   2. Show a file over the limit as an error.
+  - **Problem in the reference:** After a power loss at the start, `SOUL.md`
+    can be empty, and "Use the file" applies the empty file with no warning
+    (`server/store.ts:328`, `:1318`; `server/bot-folder.ts:26-61`).
   - Why: follows the reference, with two fixes that are better than the
     reference. The reference skips the disk sync at the start and at create.
     A power loss can then give an empty file, and "Use the file" applies it
@@ -147,6 +178,9 @@ the reference project.
   character, no U+2028 and no U+2029. One typed patch with an enum of
   fields, not a strict and a lenient parser. The compiler refuses an
   unknown field.
+  - **Problem in the reference:** Two parsers check the same profile fields,
+    so two copies of each rule must stay the same
+    (`shared/bot-profile.ts:5-23`; `server/bot-profile.ts:42-149`).
   - Why: follows the reference for the limits and the one-line rule. Better
     than the reference: one parser, not two.
   - Source: `shared/bot-profile.ts:5-23`; `server/bot-profile.ts:42-149`.
@@ -171,6 +205,10 @@ the reference project.
   `bot-core`, amends P22 and P76). A typed load for `presets.json` and
   `profile-learned.json`.** A failed load gives a typed error, not empty
   lists.
+  - **Problem in the reference:** A parse error in `presets.json` or
+    `profile-learned.json` loads an empty list, and the next save deletes all
+    presets or all learned facts (`server/presets.ts:166-168`;
+    `server/profile-learned.ts:46-48`).
   - Why: better than the reference. Both files load empty after a parse
     error, and the next save writes over the file (`changelog.md` section
     5, "A file written over after a failed read").
@@ -180,6 +218,9 @@ the reference project.
   random names.** The template is `{profile, memory, skills, routines}`,
   with its limits. A blank name gives a random free name from a fixed list.
   A save of one part of the template does not remove the other parts.
+  - **Problem in the reference:** Each save writes the whole template, so a
+    save of one field can write over a change to another field
+    (`server/config.ts:923-929`).
   - Why: follows the reference for the template and the names. Better than
     the reference: the reference replaces the whole template on each save.
   - Source: `shared/new-bot-defaults.ts:33-38`;
@@ -188,11 +229,17 @@ the reference project.
 - **P421 (plan, the new step group 2, `bot-core`). The log names the real
   caller.** Our command knows if the desktop, a bot or a file made the
   change, and the log row stores it.
+  - **Problem in the reference:** The history names each change of a person as
+    `user` or `api`, so the log cannot say which caller made it
+    (`server/routes/bot-patch.ts:782-785`).
   - Why: better than the reference. Its PATCH route logs `user` / `api` for
     each caller.
   - Source: `server/routes/bot-patch.ts:782-785`.
 - **P422 (plan, a note for the dialog of the new step, `bot-desktop`). A
   capability flag, not a driver name.**
+  - **Problem in the reference:** The simple panel chooses its behaviour by
+    the driver name `antigravityAgent`, so a new engine with the same need
+    does not get it (`src/components/bot-panel/SettingsPage.tsx:62-63`).
   - Why: better than the reference. The simple panel tests
     `driverKind === "antigravityAgent"`. Our `AGENTS.md` rule forbids it.
   - Source: `src/components/bot-panel/SettingsPage.tsx:62-63`.
@@ -214,6 +261,9 @@ the reference project.
 - **P425 (decision, for `docs/decisions.md`, amends P404). "A bot cannot
   widen its own file access".** A change of a bot's working folder by a bot
   waits for a person. This is the decision for P407.
+  - **Problem in the reference:** A bot can point its own tools at any folder,
+    also the home folder of the person, with only Undo as the guard
+    (`server/bot-cwd.ts:9-25`; `server/direct-apply.ts:17-20`).
   - Why: better than the reference. The risk to the person's Claude
     settings is not traced (P407).
   - Source: `server/bot-cwd.ts:9-25`; `server/direct-apply.ts:17-20`.
