@@ -50,6 +50,10 @@ the reference project.
   bot's own. A skill that comes in from outside arrives off until a person
   turns it on. This rule is the same for a bot import, a person import and a
   skill from this computer.
+  - **Problem in the reference:** One risk has three rules. A skill that a bot
+    imports is on at once (`server/index.ts:13409-13411`). A skill that the
+    person imports is off (`server/skills.ts:546`). A skill from this computer
+    with no warning is on for each bot (`server/imported-skills.ts:303-308`).
   - Why: follows the reference for the bot's own changes. Better than the
     reference for a skill from outside: the reference has three rules for
     one risk. A bot import is on at once, a person import is off, and a
@@ -73,6 +77,11 @@ the reference project.
   The state of all switches goes in one table, with one rule on a read
   error: fail closed. A move between the store of a bot and the library is
   one transaction.
+  - **Problem in the reference:** A crash between the archive and the manifest
+    removal can lose a skill (`server/skills-library-migration.ts:57-60`,
+    `:127-137`). A damaged switch file turns skills on in one file and off in
+    another (`server/native-skill-choices.ts:19-34`;
+    `server/skills.ts:205-206`).
   - Why: follows the reference for the integrity checks. Better than the
     reference for the state: it has four files (the manifest, the native
     switches, the opt-outs and the choices for skills from this computer)
@@ -89,6 +98,10 @@ the reference project.
   index is full, it keeps the skills used most and the skills of this task,
   and it points to `skills_list` for the rest. The index stays in the
   stable half of the prompt.
+  - **Problem in the reference:** The skill index has no total size: up to
+    four blocks of 4,000 bytes each (`server/host/skills-library.ts:310-321`).
+    It cuts by name order, so a skill named `zz-...` never reaches the prompt
+    (`server/skills.ts:505`, `:1306-1311`).
   - Why: follows the reference for the place of the index. Better than the
     reference for the size: each block has a cap of 30 skills and 4,000
     bytes, but the index has up to four blocks and no total cap (changelog
@@ -105,6 +118,11 @@ the reference project.
   `claudeUserSkills`. The Codex driver gets the same switch. A turn never
   runs in the home folder of the person: a turn with no work folder fails
   or uses the bot folder.
+  - **Problem in the reference:** Codex bots load the own skills of the person
+    from `~/.codex/skills` with no switch
+    (`server/imported-skills.ts:445-455`;
+    `server/drivers/codex-shared-home.ts:15`). A turn with no folder runs in
+    the home folder (`server/drivers/claude.ts:1003`).
   - Why: follows the reference for Claude. Better than the reference for
     Codex: Codex bots load `~/.codex/skills`, `~/.agents/skills` and
     `/etc/codex/skills` with no switch, and the Codex homes link in the
@@ -134,6 +152,11 @@ the reference project.
   patterns. A person import is redacted, or it is refused. The hash of an
   imported folder covers every file in it, also a file that was added
   later. A warning never blocks a skill, and the person decides.
+  - **Problem in the reference:** An imported skill can carry a secret,
+    because the import does not run the secret detector that exists
+    (`server/skill-folder.ts:136-153`; `shared/redact.ts:96-98`). The folder
+    hash covers only the files that came in, so a bot can add a file beside
+    them (`server/skill-folder.ts:217-220`).
   - Why: follows the reference for the warnings. Better than the reference:
     its scanner has no secret pattern, the import does not use the detector
     that exists, and the code names the added-file case as an open risk
@@ -150,6 +173,9 @@ the reference project.
   adds a line to "Adapted components" in `NOTICE`, with the credit to Hermes
   Agent `agent/background_review.py` (MIT, Copyright (c) 2025 Nous
   Research).
+  - **Problem in the reference:** The review gets the transcript with no
+    redaction, and it can send it to the helper model
+    (`server/skill-review.ts:82-142`; `server/config.ts:603-615`).
   - Why: follows the reference for the review. Better than the reference:
     the transcript is not redacted in `skill-review.ts`, and it can go to the
     helper model. The reference credits this port only in the file header.
@@ -162,6 +188,10 @@ the reference project.
   only the person, changes the skills of many bots.** The skill tools that
   change many bots go on the Chief list. In a room, a change for all bots
   always waits on a card, as the reference does.
+  - **Problem in the reference:** Each bot, not only the Chief, can put a
+    skill on all bots or delete a shared skill, with no card
+    (`server/drivers/agents-catalog.ts:816-818`;
+    `server/skills-for-all-bots.e2e.test.ts:52-56`).
   - Why: follows the reference for the room rule. Better than the
     reference: the release note says "by asking your Chief", but the Chief
     list does not have the skill tools. A test has a bot that is not the
@@ -174,6 +204,9 @@ the reference project.
   P144). A skill card shows its files before "Enable" works.** "Enable"
   stays disabled until the person opens the preview. The review dialog of
   the bot page shows all files of an imported folder, not only `SKILL.md`.
+  - **Problem in the reference:** The person can press "Enable" and never open
+    the file preview, and the card still sends the skill hash as "reviewed"
+    (`src/components/PendingApproval.tsx:168`, `:273-283`).
   - Why: better than the reference. The preview starts closed, and "Enable"
     sends the hash as "reviewed" also when the person never opened it. The
     review dialog shows only the `SKILL.md` text.
@@ -206,6 +239,9 @@ the reference project.
   bot, trigger words matched on word boundaries, and a start that skips a
   broken skill. A port of `posts.html` carries its MIT (MiniMock) and ISC
   (Lucide) notices to `NOTICE`.
+  - **Problem in the reference:** A built-in skill is chosen by a substring of
+    the message, and one bot cannot switch it off
+    (`server/skill-library.ts:78-87`, `:116-128`).
   - Why: better than the reference. It selects a built-in skill by a
     substring of the message, and one bot cannot switch it off. A broken
     skill can stop the start, but the research did not verify whether the

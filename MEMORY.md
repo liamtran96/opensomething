@@ -55,6 +55,15 @@ proposal (a P-number in `docs/plan/<feature>.md`), and the author decides.
     reference" with its reason.
   - A difference that is neither is an error. Correct it, or raise it as a
     proposal.
+- **Name the problem of the reference (2026-11-26):** a proposal that is
+  better than the reference starts with the line "Problem in the
+  reference:". The line says what goes wrong for the person or the bot,
+  with the file and line. Example: "A damaged pause file makes every paused
+  bot start again (`server/host/bot-holds.ts:53-54`)." A text such as "it
+  has four JSON files" or "one transaction is our rule" is not enough.
+  - **Why:** the author asked why a proposal is a concern when we follow
+    the reference, then said: "you should point it out why it is better
+    than reference like this", with three examples of that form.
 
 ### The changelog is checked and up to date (2026-11-23)
 
