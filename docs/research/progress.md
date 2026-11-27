@@ -24,6 +24,8 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
 
 1. Read [`reference-features.md`](reference-features.md). Choose rows of the lowest group that
    is not complete (group 1 first). Use only rows that are marked core.
+   First run `gh pr list`: an open pull request can hold a batch that
+   `main` does not show yet (`MEMORY.md`, 2026-11-28).
 2. Read "What to do next" in `reference-features.md`, and the "Research" column of
    its table "What group 1 needs" (or the table of the next group).
 3. Read sections 5, 6 and 7 of [`changelog.md`](changelog.md). Write down
@@ -746,3 +748,69 @@ session gives the P-numbers from P626.
   `docs/comparison.md`. Row 135 of `reference-features.md` (the host
   adapter) is done: the adapter was never built, and a grant over a private
   port does its job (`server/desktop-computer.ts:2-6`).
+
+## Batch 13, started 2026-11-28
+
+The author said "start next analyzing feature". The main session first
+offered features that batch 12 had already done, because it did not look at
+the open pull requests. The author said "please check the list pr as well".
+The 13 pull requests of batch 12 (#140 to #152) were open. The author chose
+two features of the group "later" and "Merge them first". The main session
+merged #140 to #152, and then started the two worktrees from the new
+`main`. The author also said: "dont ask me anything in this session do
+it", so the main session approved the plans of the agents.
+
+The reference is at commit `95f3c9f16` (2026-11-27), the version commit of
+v0.1.185. It is one commit after `42f86aefd` and changes no document and no
+code: only the version, two ratchet tests, `server/data-format-released.json`
+and `src/locales/source-hashes.json`. On 2026-11-28 v0.1.185 has no release
+(`gh release list` shows v0.1.184 as the latest), so `changelog.md` gets no
+row yet. The agents numbered their proposals T1, T2, ..., and the main
+session gave the P-numbers from P689.
+
+| # | Rows of `reference-features.md` | Crate | Step | Name | State |
+|---|---|---|---|---|---|
+| 1 | `DESIGN.md`; docs site `features/themes.mdx`; `bidi.md`; `cloud-rail.md` (without the Cloud parts) | `bot-desktop` | none yet (6 and 8 for P690 and P691) | [`look-and-design`](features/look-and-design.md) | done, 2026-11-28, at commit `95f3c9f16`: research #153, plan #155 (P689 to P700) |
+| 2 | `sidebar.md` (the sidebar and departments); `teams.md` (the sidebar part); docs site `features/bots-and-tasks.mdx` | `bot-desktop`, `bot-core` | none yet (6, 11 and 14 by P701 and P704) | [`sidebar-and-departments`](features/sidebar-and-departments.md) | done, 2026-11-28, at commit `95f3c9f16`: research #154, plan #156 (P701 to P709) |
+
+- The prompts gave each agent its borders: `chat-ui.md`, `threads.md`,
+  `bot-settings-ui.md`, `bot-profile.md`, `desktop-shell.md` and
+  `environments-and-flags.md` for `look-and-design`; `notifications.md`,
+  `team-structure.md`, `threads.md`, `chat-and-teams-site.md`,
+  `recovery-and-pausing.md`, `bot-profile.md` and `bot-settings-ui.md` for
+  `sidebar-and-departments`. Each one had a limit of 8 groups of files.
+- The plans estimated about 2 to 3M tokens (`look-and-design`) and about 6
+  to 11M tokens (`sidebar-and-departments`). Both agents finished at 00:59
+  on 2026-11-28, with no usage limit. The usage limit of the main session
+  stopped it before the pull requests, and it continued after the reset.
+- The main session checked five or six key claims of each file at
+  `95f3c9f16`, and all 11 agree with the code. Some of them:
+  1. `look-and-design`: the checks of theme CSS block only loads
+     (`shared/theme.ts:191-202`), and a theme change has the tier "safe",
+     so it applies with no approval (`server/themes/tool.ts:77`,
+     `server/app-settings/host.ts:144-150`).
+  2. `look-and-design`: v0.1.151 deleted eight settings of Advanced mode
+     (`src/lib/new-look.ts:17-18`, `:53`), and a look change is three
+     separate writes (`server/themes/store.ts:178-184`).
+  3. `sidebar-and-departments`: a drag across lists sends two writes
+     (`src/components/SidebarBotDrag.tsx:84-85`), and the order route has
+     no version check (`server/routes/bot-order.ts:35`).
+  4. `sidebar-and-departments`: the window drops the time it saw when it
+     marks a thread read (`src/state/read-visible.ts:10-13`), and the
+     server marks read up to the newest message
+     (`server/index.ts:4039-4042`).
+- The plan pull requests are stacked: #156 on #155, because each one
+  changes the same tables of `docs/plan/README.md`.
+- This record also marks three rows "done" that said "partial" but were
+  read completely in earlier batches: `custom-engines.md`
+  (`driver-contract.md` read all 235 lines), the Connections Center UI
+  (section 5.1 of `custom-mcp-servers.md`: the tabs are gone), and the
+  state of a teammate (section 5 of `bot-coordination.md`: `peerStatus`).
+  It adds a note of batch 13 to section 5.4 of `notifications.md` (the
+  group "Unread" no longer shows since v0.1.182), and corrects section 12
+  of `docs/comparison.md`.
+- The agent of `sidebar-and-departments` said that the row of v0.1.182 in
+  `changelog.md` does not have "rows keep their place". The row has it
+  ("The sidebar keeps its order:"), so `changelog.md` does not change.
+- After this batch, the group "later" has two open themes: the avatars and
+  the mascot (six rows), and localization.

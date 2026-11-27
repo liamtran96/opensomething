@@ -1067,6 +1067,13 @@ browser settings shows with no prompt (`:30-41`).
   "Unread" while that chat is open, so the person can mark it unread again
   (`src/components/unread-notice.ts:38-48`).
 
+**Note of batch 13 (2026-11-28, reference `95f3c9f16`).** The sidebar group
+"Unread" in the last point no longer shows. Since v0.1.182 (`b8cf45d55`),
+rows keep their place, and unread and work show as marks
+(`src/components/Sidebar.tsx:1097-1099`). The hold code stays, and
+`useUnreadHold` has no caller. See section 3 of
+[`sidebar-and-departments.md`](sidebar-and-departments.md).
+
 ## 6. The tests
 
 | Test file | What it guarantees |
