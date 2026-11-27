@@ -357,7 +357,7 @@ This is a different feature. Only the connection points are given here.
   (`server/vault/mcp-keys.ts:4-5`, `:93-106`). A bot cannot type a pointer
   itself (`server/routes/internal-mcp.ts:167`).
 - 1Password and Bitwarden items connect through the same Vault store
-  (`server/index.ts:742`, `server/vault/mcp-keys.ts:116-131`).
+  (`server/index.ts:744` at `42f86aefd`, `server/vault/mcp-keys.ts:116-131`).
 
 ## 4. The data
 
