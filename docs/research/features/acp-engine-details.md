@@ -951,7 +951,7 @@ that differ by engine:
    `contextWindow` (`custom-model-catalog.ts:279-283`). OpenCode 1 gives it
    through `models --verbose` (`opencode-go.ts:142-147`), and Pi through its
    RPC (`server/drivers/pi-catalog.ts:21-29`).
-7. **The manifest schema file** credits P611 Code (MIT)
+7. **The manifest schema file** credits T3 Code (MIT)
    (`server/model-manifest/schema.ts:1-3`). A port of it needs that credit.
 
 ### 3.11 Pointers to other features
@@ -1376,7 +1376,7 @@ follows the reference says so.
     added the model of issue 1688 in code, without the context window on
     the row (commit `ad3ed7608`), and moved the lists to the file later
     (commit `5f245f96d`). That was work done two times.
-  - A port of the schema credits P611 Code (MIT) in `NOTICE`
+  - A port of the schema credits T3 Code (MIT) in `NOTICE`
     (`schema.ts:1-3`).
 - **P611 (plan, steps 4 and 9, `bot-engine`). The live model list of an
   instance keeps the last good list, says why it may be old, and reads a
