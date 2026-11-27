@@ -666,4 +666,11 @@ T2, ..., and the main session gave the P-numbers from P559.
   that a Claude turn that streamed only reasoning can still be sent again
   (`server/drivers/claude.ts:1391-1392`).
 - The worktrees are removed and the branches are kept. The proposals of
-  each agent are in `docs/plan/<name>.md`.
+  each agent are in `docs/plan/<name>.md`. The plan pull requests are #136
+  (`vault-bitwarden`), #137 (`bot-box`), #138 (`engine-turn-lifecycle`) and
+  #139 (`acp-engine-details`). They are stacked, because each one changes
+  the same tables of `docs/plan/README.md`. Each plan file keeps the full
+  text of its proposals, so each pull request has more than 200 lines.
+- The renumbering from T to P changed the name "T3 Code" (an MIT credit of
+  the reference) to "P611 Code" in `acp-engine-details.md`. #133 corrects
+  it. When you renumber, change only the T-numbers of the proposals list.
