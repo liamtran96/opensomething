@@ -406,7 +406,17 @@ lines in `AGENTS.md` is for code and for the other documents.
   Earlier research pull requests were also larger (1,240 and 5,457 lines).
 - **How:** One pull request for each research worktree. Keep a change to
   `docs/plan/`, `docs/decisions.md`, `docs/code/` or the code in its own
-  pull request of 200 lines or fewer.
+  pull request.
+- **Full content before the limit (2026-11-27):** a document must have all
+  that the author needs to learn the subject. For a plan file, that is
+  each proposal with its problem, its reason, its options and each file
+  and line. Do not shorten or drop content to stay under 200 lines. When
+  the full content needs more, the pull request goes over the limit. Split
+  a document only where the parts make sense alone.
+  - **Why:** the main session told the plan agents of batch 11 to fit each
+    plan file in 185 lines. The author said: "200-line limit is just i
+    want but we need to make sure the content should be fully enough to
+    learn if 200 is not enough please remove it".
 
 ## Facts about the environment
 
