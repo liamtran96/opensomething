@@ -1533,7 +1533,7 @@ Each point has a reason. A point that answers a problem of section 5 of
 [`changelog.md`](../changelog.md) names it, with its releases. A point that
 answers no release problem says "judgment call".
 
-The main session gives each T a P-number (from P515).
+The numbers P545 to P558 are the proposals of this file.
 
 1. **P545. Switch the data folder inside one process.**
    - Problem in the reference: a failed rollback "left no lease and no server
