@@ -88,16 +88,16 @@ research the release history again unless the author asks.
   many key changes that the rows of section 8 did not have. It corrected
   `changelog.md`. The findings and the full list of missing changes are in
   [`docs/research/changelog-check.md`](docs/research/changelog-check.md).
-  On 2026-11-26 the file covered v0.1.0 to v0.1.182, and v0.1.182
+  On 2026-11-27 the file covered v0.1.0 to v0.1.184, and v0.1.184
   (2026-11-26) was the latest release of the reference project. v0.1.179
-  has no tag and no release.
+  and v0.1.183 have no tag and no release.
 - **How:**
   - Use sections 5, 6 and 7 for the problems that each feature must check,
     as "How to run a batch" in `docs/research/progress.md` says. For the
     repeated fixes of one theme, look also in section 6 of
     `changelog-check.md`.
   - Keep it up to date: when the reference project publishes a release after
-    v0.1.182, add its row to section 8. Change sections 3 to 7 only when the
+    v0.1.184, add its row to section 8. Change sections 3 to 7 only when the
     new release changes them.
 
 ### A changelog row has all the key changes of its release (2026-11-23)
@@ -295,26 +295,19 @@ analysis tasks only, not for other worktrees.
     rule. After a restart, the lead reads the files that exist and starts
     only the missing readers.
 
-- **At most two analysis workflows at a time (2026-11-25):** start the
-  next worktree when one finishes. A reader adds its notes to its report
-  after each file, not only at its end.
-  - **Why:** in batch 6, six workflows (about 55 readers) ran at the same
-    time. The 5-hour limit stopped all of them before any of them
-    finished, and only 2 reports were saved. Each restart began again and
-    used the weekly limit. The author asked: "because of limit 5 hours I
-    run it many time but did not finish the workflow maybe because 6
-    workflow cost many token right?", then said "keep the two running,
-    pause the other four".
-  - **How:** step 1.6 of "How to run a batch" and the "Rules" of the
-    prompt template in `docs/research/progress.md`.
-
-- **One analysis workflow at a time (2026-11-25):** this replaces the
-  limit of two above. Approve the next worktree only when the one before
-  it is done.
-  - **Why:** at the start of batch 7, the main session made two worktrees
-    for two workflows. The author said: "wait start one by one".
-  - **How:** a worktree can exist and wait at its approval step. Send the
-    approval to one agent at a time.
+- **The worktrees of a batch run at the same time (2026-11-27):** this
+  replaces the limits of two (2026-11-25) and of one (2026-11-25). Approve
+  all the worktrees of a batch together. A reader adds its notes to its
+  report after each file, not only at its end, so that a stop loses little.
+  - **Why:** batches 9, 10 and 11 ran their worktrees at the same time. The
+    main session asked how to change the note "one at a time", and the
+    author chose "Parallel is the default". The older limits came from
+    batch 6, where six workflows (about 55 readers) used the 5-hour limit
+    before any finished, and from batch 7 ("wait start one by one").
+  - **How:** before the approval, show the author the cost estimate of
+    each plan and their total. If the total is much larger than an earlier
+    batch, say so, and offer the cheaper plans of the agents. Step 1.6 of
+    "How to run a batch" in `docs/research/progress.md`.
 
 - **Watch the worktrees with a background watcher (2026-11-26):** after
   the main session approves analysis worktrees, it starts one background

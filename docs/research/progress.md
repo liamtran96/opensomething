@@ -4,7 +4,7 @@ The unit of work is one row of [`reference-features.md`](reference-features.md):
 one document row that has several features. Each feature is analyzed in its
 own worktree by one agent, with the prompt of [`README.md`](README.md). The
 worktree is made with `orca worktree create`, so that it shows in the sidebar
-of the Orca application. Five or six features run at the same time.
+of the Orca application. The features of a batch run at the same time.
 
 - A feature that is not in the table below is **open**.
 - State: **running** (a subagent works on it), **to check** (the file is
@@ -33,9 +33,11 @@ The main session does these steps. Batch 2 used them on 2026-11-23.
    the crate and the module that get the port of each feature.
 5. Choose three to six features. Give each one a short name. Its file is
    `features/<name>.md`.
-6. Run one workflow at a time. Start the next feature when it finishes.
-   Six workflows at the same time used the usage limit before any reader
-   finished (batch 6), and the author asked for one at a time (batch 7).
+6. Run the worktrees of a batch at the same time (the author, 2026-11-27).
+   Before the approval, give the author the cost estimate of each plan and
+   the total. Six workflows used the 5-hour limit before any reader
+   finished in batch 6, so offer the cheaper plans when the total is much
+   larger than an earlier batch.
 
 ### 2. Prepare the reference project
 
@@ -629,3 +631,39 @@ session gave the P-numbers from P515.
 - This batch also marks the row "Docs site: `providers/`" of
   `reference-features.md` as done. Batch 9 read it for
   `engines-and-accounts.md`, but did not change its row.
+
+## Batch 11, started 2026-11-27
+
+The author said "start analyzing new features" and chose four features of
+the group "later", all running at the same time. The reference is at commit
+`42f86aefd` (2026-11-27), 231 commits after batch 10. It includes the
+release v0.1.184, which this batch adds to `changelog.md`. v0.1.183 has a
+version commit and no release. The agents numbered their proposals T1,
+T2, ..., and the main session gave the P-numbers from P559.
+
+| # | Rows of `reference-features.md` | Crate | Step | Name | State |
+|---|---|---|---|---|---|
+| 1 | `bot-box.md` | `bot-core`, `bot-engine` | none yet (9 and 11 for the allow list and the process gate) | [`bot-box`](features/bot-box.md) | done, 2026-11-27, at commit `42f86aefd`: research #131 (P576 to P588) |
+| 2 | `claude-endpoint.md`, `claude-tool-lifecycle.md`; `codex-browser-routing.md`, `codex-helpers.md`, `codex-instructions.md` | `bot-engine` | 5, 9 | [`engine-turn-lifecycle`](features/engine-turn-lifecycle.md) | done, 2026-11-27, at commit `42f86aefd`: research #132 (P589 to P608) |
+| 3 | The OpenCode Go plans and page; the DeepSeek plan; `opencode-variants.md`; `pi-shell-timeouts.md`; `qwen-models.md`; `cline.md`, `copilot-engine.md`, `custom-acp-models.md`, `kimi-models.md` and the steering engine; issue 1688 | `bot-engine` | 4, 9 | [`acp-engine-details`](features/acp-engine-details.md) | done, 2026-11-27, at commit `42f86aefd`: research #133 (P609 to P625) |
+| 4 | `bitwarden.md` | `bot-core` | none yet | [`vault-bitwarden`](features/vault-bitwarden.md) | done, 2026-11-27, at commit `42f86aefd`: research #134 (P559 to P575) |
+
+- The prompts gave each agent its rows and its borders. Inside the batch,
+  steering into a running turn went to `engine-turn-lifecycle`, the
+  credential broker to `bot-box`, and the `bw://` references to
+  `vault-bitwarden`. `bot-box` added new facts to the two open proposals
+  of `changelog.md` section 7 (the allow list and the process gate), and
+  did not propose them again.
+- The four plans estimated about 24 to 35M tokens together, most of them
+  cache reads of the two engine features. The author approved all four as
+  planned.
+- All four agents finished between 21:44 and 21:57 on 2026-11-27, with no
+  usage limit.
+- The main session checked four or five key claims of each file at
+  `42f86aefd`, and all 18 agree with the code. The two engine files found
+  that the reference often chooses behaviour by a driver name, for example
+  the approval levels (`server/drivers/acp/approval-mode.ts:22-26`), and
+  that a Claude turn that streamed only reasoning can still be sent again
+  (`server/drivers/claude.ts:1391-1392`).
+- The worktrees are removed and the branches are kept. The proposals of
+  each agent are in `docs/plan/<name>.md`.
