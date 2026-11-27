@@ -586,3 +586,43 @@ proposals T1, T2, ..., and the main session gives the P-numbers from P471.
   not the GitHub token), and adds a note to `team-structure.md` and
   `bot-coordination.md`: their "no board" is about the plan of 2026-08-31,
   not the Team Board.
+
+## Batch 10, started 2026-11-27
+
+The author said "start the next analyzing features" and chose four
+features of the group "later". The reference is at commit `fcce0b6de`
+(2026-11-26), 13 commits after the tag v0.1.182. No release came after
+v0.1.182. The agents numbered their proposals T1, T2, ..., and the main
+session gave the P-numbers from P515.
+
+| # | Rows of `reference-features.md` | Crate | Step | Name | State |
+|---|---|---|---|---|---|
+| 1 | `digests.md`; `plans/2026-09-14-phase-0-foundation.md` | `bot-core` | none yet | [`work-digests`](features/work-digests.md) | done, 2026-11-27, at commit `fcce0b6de`: research #121 (P515 to P524) |
+| 2 | Search of past sessions (`2026-08-31-06-memory-review-loop.md`); search in a worker (`persistence-performance.md`) | `bot-core` | none yet | [`session-search`](features/session-search.md) | done, 2026-11-27, at commit `fcce0b6de`: research #122 (P525 to P534) |
+| 3 | `plans/2026-09-02-goal-mode-v2.md` | `bot-core`, `bot-protocol`, `bot-desktop` | none yet | [`goals`](features/goals.md) | done, 2026-11-27, at commit `fcce0b6de`: research #123 (P535 to P544) |
+| 4 | `feature-flags.md`; `local-environments.md`; `plans/local-environments.md`; `plans/2026-10-07-local-environments.md` | `bot-core`, `bot-desktop` | none yet | [`environments-and-flags`](features/environments-and-flags.md) | done, 2026-11-27, at commit `fcce0b6de`: research #124 (P545 to P558) |
+
+- The prompts gave each agent its border with the files that are done:
+  `memory.md`, `event-bus-fold.md`, `context.md` and `safety-floor.md` for
+  `work-digests`; `memory.md` and `skills.md` for `session-search`;
+  `automations.md`, `chat-turns.md` and `bot-coordination.md` for `goals`;
+  `store-and-data-format.md` for `environments-and-flags`.
+- The author approved all four at the same time: "approved and go all".
+  The four plans estimated about 5 to 7M tokens together.
+- All four agents finished between 00:58 and 01:08 on 2026-11-27. The Orca
+  application was not running for some hours after that, so the main
+  session reached the agents only at about 20:45. The agents kept running
+  in the background services of Orca, and no work was lost.
+- The main session checked 7 to 10 key claims of each file at
+  `fcce0b6de`, and all 33 agree with the code. The agent of `work-digests`
+  corrected two claims of its readers before the main session saw the
+  file: the hook token does not change each turn, and some lines of
+  `server/index.ts` were off by 3 to 7.
+- The author said "merge them all", and the four research pull requests
+  were merged on 2026-11-27.
+- The worktrees are removed and the branches are kept. The proposals of
+  each agent are in `/private/tmp/batch10-<name>-proposals.md`. The plan
+  files `docs/plan/<name>.md` are not written yet.
+- This batch also marks the row "Docs site: `providers/`" of
+  `reference-features.md` as done. Batch 9 read it for
+  `engines-and-accounts.md`, but did not change its row.

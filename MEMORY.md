@@ -340,6 +340,21 @@ analysis tasks only, not for other worktrees.
     agent to write its proposals to a file outside the repository (step
     5.6 of "How to run a batch"), and push the branch.
 
+### Record a batch before you report it done (2026-11-27)
+
+When the research pull requests of a batch are open or merged, record the
+batch in the same session, before the report: its section in
+`docs/research/progress.md`, the "Research" column and "What to do next"
+of `reference-features.md`, and the parts table of
+`docs/research/README.md`. Then write the plan files of its proposals.
+
+- **Why:** after batch 10 was merged, the main session reported it as done
+  and offered the record as a next step. The author asked: "DID U RECORD
+  ALL THE PROGRESS".
+- **How:** steps 5.4 to 5.6 of "How to run a batch" in
+  [`docs/research/progress.md`](docs/research/progress.md) are part of the
+  batch, not a follow-up. Say what is not recorded yet.
+
 ### Analysis agents run on Opus 5.5 (2026-11-26)
 
 The agent of an analysis worktree and all its readers use the model Opus

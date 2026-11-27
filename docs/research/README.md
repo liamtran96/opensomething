@@ -137,7 +137,7 @@ number of its part. This table has a part for each of them.
 | 10 | Approvals: the levels, permission requests, tool selection, the command allow list, the safety floor, the decision log | `docs/approval-levels.md`, `docs/tool-selection.md`, `server/auto-approve.ts`, `shared/approval-mode.ts`, `shared/tool-scope.ts`, `server/mcp-gate.ts`, `server/safety-floor.ts`, `server/decision-log.ts` | 10 | partial: [`features/approval-levels.md`](features/approval-levels.md), [`features/approval-cards.md`](features/approval-cards.md) |
 | 11 | Security: secrets, redaction, the Vault, password managers, logs, file permissions | `shared/redact.ts`, `server/vault/`, `SECURITY.md`, `docs/bitwarden.md` | 6, 9 | partial: [`features/security-model.md`](features/security-model.md) |
 | 57 | The sandbox of a bot process on Linux | `server/bot-box/` (47 files), `docs/bot-box.md` | 9 | open |
-| 62 | Work summaries of a turn: digests and receipts | `server/digest.ts`, `docs/plans/2026-09-14-phase-0-foundation.md` | 8 | open |
+| 62 | Work summaries of a turn: digests and receipts | `server/digest.ts`, `docs/plans/2026-09-14-phase-0-foundation.md` | 8 | done: [`features/work-digests.md`](features/work-digests.md) |
 | 64 | Message branches: edit, rewind, the version switcher, Undo | `server/branching.test.ts`, `src/components/ChatView.tsx` | 8 | partial: [`features/harness-upgrades.md`](features/harness-upgrades.md) |
 
 ### B. A team of bots: needed for part 3 of our plan
@@ -149,7 +149,7 @@ number of its part. This table has a part for each of them.
 | 14 | The assignment runtime | `server/runtime/` (25 files), `docs/runtime-contract.md` | 13 | done: [`features/assignment-runtime.md`](features/assignment-runtime.md) |
 | 15 | Work between bots: rooms, hand-offs, the Chief, questions between bots, the aside lane | `server/host/` (376 files), `server/peer-roster.ts`, `docs/specs/aside-injection-seams.md` | 14 | done: [`features/bot-coordination.md`](features/bot-coordination.md) |
 | 55 | Departments: groups of bots, shared instructions, who is in charge | `server/section-context.ts`, `src/lib/team-map.ts` | 14 | open |
-| 63 | Goals: the goal record, the goal loop, the `/goal` command | `server/group-goal-run.ts`, `server/host/one-on-one-goals.ts`, `server/host/goal-turns.ts`, `docs/plans/2026-09-02-goal-mode-v2.md` | later | open |
+| 63 | Goals: the goal record, the goal loop, the `/goal` command | `server/group-goal-run.ts`, `server/host/one-on-one-goals.ts`, `server/host/goal-turns.ts`, `docs/plans/2026-09-02-goal-mode-v2.md` | later | done: [`features/goals.md`](features/goals.md) |
 | 66 | Incidents: the server detects a problem and the Chief reports | `docs/team-incidents.md` | later | open |
 | 16 | Memory: the files, recall, upkeep, the tidy-up, the journal, proposals | `docs/memory.md`, `server/recall.ts`, `server/memory-upkeep.ts`, `server/memory-journal.ts` | 15 | done: [`features/memory.md`](features/memory.md) |
 | 17 | Context: the transcript rebuild, compaction, summaries, the context budget, a model switch | `server/context-rebuild.ts`, `server/delta-context.ts`, `server/turn-context.ts`, `server/host/conversation-compaction.ts` | 8, 15 | done: [`features/context.md`](features/context.md), [`features/harness-upgrades.md`](features/harness-upgrades.md) |
@@ -171,11 +171,11 @@ number of its part. This table has a part for each of them.
 | 25 | Onboarding and the set-up of an engine | `src/components/onboarding/`, `docs/cli-onboarding.md`, `server/provider-auth-sessions.ts` | 6, 7 | open |
 | 26 | The design system: tokens, skins, themes, motion, the rules of `DESIGN.md` | `DESIGN.md`, `docs/design/`, `server/themes/`, `shared/theme.ts` | 1 | open |
 | 46 | Avatars and the mascot: body shapes, expressions, generated pictures | `shared/mascot-bodies.ts`, `src/components/Avatar.tsx`, `docs/avatar-storage.md` | 1 | open |
-| 47 | Search | `server/message-search-worker.ts`, `server/message-db.ts` | later | open |
+| 47 | Search | `server/message-search-worker.ts`, `server/message-db.ts` | later | partial: [`features/session-search.md`](features/session-search.md) |
 | 50 | Notifications: the types, sounds, the unread badge | `server/notify.ts`, `shared/notification.ts`, `docs/notification-and-proactivity-qa.md` | later | open |
 | 27 | The other UI code | `src/components/` (1,430 files), `src/lib/` (723 files), `src/hooks/` (27 files) | later | open |
 | 28 | Languages and right-to-left text | `src/locales/` (34 files), `docs/localization.md` | later | open |
-| 29 | The desktop shell: the window, local environments, links, packaging, updates, the tray | `electron/` (569 files), `build/`, `docs/releasing.md`, `docs/linux-desktop.md` | all of `bot-desktop` | open |
+| 29 | The desktop shell: the window, local environments, links, packaging, updates, the tray | `electron/` (569 files), `build/`, `docs/releasing.md`, `docs/linux-desktop.md` | all of `bot-desktop` | partial: [`features/environments-and-flags.md`](features/environments-and-flags.md) (local environments only) |
 
 ### D. Features that our plan does not have
 
