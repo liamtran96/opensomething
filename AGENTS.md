@@ -106,3 +106,7 @@ including the code an agent wrote.
   lines. Lock files and generated files do not count.
 - Split a larger change into a sequence of pull requests. Each one builds and
   passes the checks without the ones after it.
+- A document keeps all the content that a reader needs to learn its
+  subject. When that content needs more than 200 lines, its pull request
+  goes over the limit; do not shorten the document to fit (`MEMORY.md`,
+  2026-11-27).
