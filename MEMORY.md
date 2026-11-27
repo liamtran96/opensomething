@@ -333,6 +333,19 @@ analysis tasks only, not for other worktrees.
     agent to write its proposals to a file outside the repository (step
     5.6 of "How to run a batch"), and push the branch.
 
+- **A temporary file goes into the docs or is deleted (2026-11-27):** a
+  file outside the repository, such as the proposals file of an agent in
+  `/private/tmp`, is only a step. When its content is needed, put the
+  content in the repository (the proposals go to `docs/plan/<name>.md`).
+  Then delete the file. When its content is not needed, delete it. Do not
+  point to a temporary file from a document.
+  - **Why:** the author asked what the proposals in the tmp files were,
+    then said: "do we need it if we do please add to docs if we dont delete
+    it", and then "update that to memory".
+  - **How:** step 5.6 of "How to run a batch" in
+    `docs/research/progress.md`. Delete the proposals file of a feature
+    when its plan file is in a pull request.
+
 ### Record a batch before you report it done (2026-11-27)
 
 When the research pull requests of a batch are open or merged, record the
