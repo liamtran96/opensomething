@@ -10,8 +10,7 @@ this file. A path that starts with `crates/`, `docs/plan/`, `docs/research/`,
 the reference project.
 
 - **Steps:** 8 (the index in the first schema), 15 (the memory index), and a
-  later step for the search of past conversations, which does not exist
-  yet. That step goes to `bot-core` (the scan, the worker, the CJK text and
+  new step for the search of past conversations. That step goes to `bot-core` (the scan, the worker, the CJK text and
   the index) and `bot-desktop` (one command).
 - **State:** all open.
 - **The main finding:** the reference has two search engines over one
