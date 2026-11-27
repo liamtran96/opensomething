@@ -1282,6 +1282,14 @@ that it does (`team-messages.ts:333-338`, `server/cloud-team-people.e2e.test.ts:
 | Sign-in to an engine | Fixed for a second opinion: no fall back to the bot's own model when a model cannot run | `server/thread-model.ts:28-31`, `own-threads.ts:44-49` |
 | One slow or stuck part blocks the others | Fixed on the map: departments show after 1.5 s even when the computers request hangs | `TeamCanvas.tsx:91-92`, `:217-220` |
 
+**Note of batch 12 (2026-11-27, reference `42f86aefd`).** The release
+note of v0.1.178 (`announcements/releases.json:294`) says "A teammate on
+another server gets at most 4 redos per request." `docs/bot-api.md` does
+not say it. The remote count is kept in memory, by the root of the request
+and the teammate, and its window of 6 hours counts from the last rework
+(`server/host/remote-teammate-handoff.ts:85`, `:143-158`). See
+[`remote-bots.md`](remote-bots.md).
+
 ## 9. Not verified
 
 - The "Cloud stable default" folder (mdx:137). The readers found a folder

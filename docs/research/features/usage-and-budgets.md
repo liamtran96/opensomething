@@ -950,6 +950,18 @@ The check of the row "Usage and cost numbers corrected" of
   the difference of a running total, as the proposal of the row says
   (`claude-cost-history.ts:40-46`, `codex.ts:1055-1062`).
 
+**Note of batch 12 (2026-11-27, reference `42f86aefd`).** `server/side-jobs.ts`
+has 331 lines now. This file cites a copy with 315 lines, so some of its
+lines of that file moved: the summary on the bot's own engine is at
+`:307-308`, the switch `helperModel` at `:323`, the list of jobs at `:44`,
+and `quickModel` at `:148`. The full record of the helper model is
+[`helper-bot.md`](helper-bot.md). This file asked if a failed side-job call
+books usage. It does on Claude and on the HTTP runtime, and it does not on
+Codex and ACP (`server/drivers/claude.ts:1832-1839`,
+`server/drivers/openai-chat.ts:315-330`,
+`server/drivers/codex-background-text.ts:168-176`,
+`server/drivers/acp/background-text.ts:120`).
+
 ## 9. Not verified
 
 - Whether `turn.completed` can be folded two times for one turn (a reconnect,

@@ -674,3 +674,75 @@ T2, ..., and the main session gave the P-numbers from P559.
 - The renumbering from T to P changed the name "T3 Code" (an MIT credit of
   the reference) to "P611 Code" in `acp-engine-details.md`. #133 corrects
   it. When you renumber, change only the T-numbers of the proposals list.
+
+## Batch 12, started 2026-11-27
+
+The author said "start next analyzing feature" and chose four features of
+the group "later", all running at the same time. Later the author added two
+more (rows 5 and 6). The reference is at commit
+`42f86aefd` (2026-11-27), the same commit as batch 11. No release came
+after v0.1.184. The agents number their proposals T1, T2, ..., and the main
+session gives the P-numbers from P626.
+
+| # | Rows of `reference-features.md` | Crate | Step | Name | State |
+|---|---|---|---|---|---|
+| 1 | `mausbot.md` (the default helper bot); `memory-layer.md` (the helper model) | `bot-core`, `bot-engine` | none yet (9 and 16 for the helper model) | [`helper-bot`](features/helper-bot.md) | done, 2026-11-27, at commit `42f86aefd`: research #142, plan #143 (P636 to P643) |
+| 2 | `superpowers/specs/2026-10-14-chat-apps-design.md`; `rich-tables.md`; the open part of `chat-polish.md` | `bot-desktop`, `bot-engine` | none yet (16 for the MCP applications) | [`chat-apps-and-tables`](features/chat-apps-and-tables.md) | done, 2026-11-27, at commit `42f86aefd`: research #144, plan #145 (P644 to P659) |
+| 3 | `onboarding.md`; `plans/2026-09-09-onboarding.md`; `first-hour.md`; `cli-onboarding.md`; docs site `getting-started/` | `bot-desktop`, `bot-core` | none yet | [`onboarding`](features/onboarding.md) | done, 2026-11-27, at commit `42f86aefd`: research #140, plan #141 (P626 to P635) |
+| 4 | `startup-tray.md`; `desktop-server-connection.md`; `desktop-server-recovery.md`; `desktop-chat-links.md`; `linux-desktop.md`; the host adapter of `2026-08-31-05-headless-harness.md` | `bot-desktop`, `bot-cli` | none yet (7 for the start and stop of the server) | [`desktop-shell`](features/desktop-shell.md) | done, 2026-11-27, at commit `42f86aefd`: research #146, plan #147 (P660 to P668) |
+| 5 | `bot-settings.md`; `bot-continuity.md` (the parts that `bot-profile.md` did not cover) | `bot-desktop`, `bot-core` | none yet | [`bot-settings-ui`](features/bot-settings-ui.md) | done, 2026-11-27, at commit `42f86aefd`: research #150, plan #151 (P680 to P688) |
+| 6 | Bot to bot across servers (`bot-api.md`, `runtime-contract.md`) | `bot-core`, `bot-engine` | none yet (13 and 14) | [`remote-bots`](features/remote-bots.md) | done, 2026-11-27, at commit `42f86aefd`: research #148, plan #149 (P669 to P679) |
+
+- Most starting documents are in `docs/verification/`. `cli-onboarding.md`,
+  `desktop-chat-links.md` and `linux-desktop.md` are in `docs/`, and the
+  onboarding plan is in `docs/plans/`, not in `docs/superpowers/plans/`.
+- The prompts give each agent its borders with the files that are done:
+  `notifications.md`, `memory.md`, `bot-profile.md` and
+  `engines-and-accounts.md` for `helper-bot`; `chat-widgets-and-proposals.md`,
+  `bot-attachments.md`, `chat-ui.md` and `custom-mcp-servers.md` for
+  `chat-apps-and-tables`; `engines-and-accounts.md`, `skills.md`,
+  `bot-profile.md` and `security-model.md` for `onboarding`;
+  `composition-root.md`, `engine-process-lifecycle.md` and
+  `security-model.md` for `desktop-shell`.
+- The author approved rows 1 to 4 at the same time: "approved all, go".
+  Their plans estimated about 21 to 29M tokens together. Then the author
+  said "start 2 more features analyzing" and chose rows 5 and 6.
+  `bot-settings-ui` starts from section 9 of `bot-profile.md`, and
+  `remote-bots` builds on `agent-tools.md`, `bot-coordination.md` and
+  `assignment-runtime.md`.
+- All six agents finished between 23:07 and about 23:30 on 2026-11-27, with no
+  usage limit. The account had 25% of its weekly limit left at the end.
+- The main session checked five or six key claims of each file at
+  `42f86aefd`, and all 31 agree with the code. Some of them:
+  1. `onboarding`: the welcome opens the chat before it saves its end, and
+     the `catch` of the save is empty
+     (`src/components/onboarding/WelcomeFlow.tsx:96-102`).
+  2. `helper-bot`: the cap gate of a side job passes no bot id
+     (`server/index.ts:5054`), and a title books no usage
+     (`server/thread-title-generate.ts:32`).
+  3. `chat-apps-and-tables`: the row text of an MCP application is
+     redacted, and the stored `toolResult` is not
+     (`server/chat-apps-mcp.ts:220-225`, `:252-255`).
+  4. `desktop-shell`: a file of environments that cannot be read gives an
+     empty list, and the next save writes over it
+     (`electron/environments-file.mjs:13-23`).
+  5. `remote-bots`: an approval on the other server completes the hand-off
+     as a success, and "Nothing more comes back"
+     (`server/host/remote-teammate-handoff.ts:225-227`).
+  6. `bot-settings-ui`: a field save waits 400 ms in memory
+     (`src/state/bot-patch-queue.ts:160`), and Duplicate has no guard
+     against a second click (`src/state/store.tsx:2497-2499`).
+- The main session wrote the plan file of each feature right after its
+  research pull request (`MEMORY.md`, 2026-11-27). The plan pull requests
+  are stacked in this order, because each one changes the same tables of
+  `docs/plan/README.md`: #141, #143, #145, #147, #149, #151.
+- The worktrees are removed and the branches are kept. The proposals
+  files of the agents are deleted: each plan file has all of their content.
+- This record also corrects done files: a note of batch 12 in `context.md`,
+  `memory.md` and `usage-and-budgets.md` (the lines of
+  `server/side-jobs.ts` moved), in `threads.md` (the title prompt changed),
+  in `assignment-runtime.md`, `agent-tools.md` and `chat-and-teams-site.md`
+  (remote teammates), and one fact in the Bot API row of
+  `docs/comparison.md`. Row 135 of `reference-features.md` (the host
+  adapter) is done: the adapter was never built, and a grant over a private
+  port does its job (`server/desktop-computer.ts:2-6`).

@@ -1627,6 +1627,13 @@ design of the reference.
 | The same work done two times | A paused capture asks the model again. A crash between the archive and `MEMORY.md` archives lines two times | `server/memory-upkeep.ts:466-469`, `:681-685` |
 | The person's own engine config reaches the bots | The engine's own memory is off only for isolated turns: "a bot that inherits this machine's setup keeps it" | `server/drivers/claude-own-memory.ts:1-6` |
 
+**Note of batch 12 (2026-11-27, reference `42f86aefd`).** `server/side-jobs.ts`
+has 331 lines now. This file cites a copy with 315 lines, so some of its
+lines of that file moved: the summary on the bot's own engine is at
+`:307-308`, the switch `helperModel` at `:323`, the list of jobs at `:44`,
+and `quickModel` at `:148`. The full record of the helper model is
+[`helper-bot.md`](helper-bot.md).
+
 ## 9. Not verified
 
 - What the tidy-up writes when the first read of `MEMORY.md` fails and the
