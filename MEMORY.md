@@ -360,6 +360,13 @@ of `reference-features.md`, and the parts table of
 - **How:** steps 5.4 to 5.6 of "How to run a batch" in
   [`docs/research/progress.md`](docs/research/progress.md) are part of the
   batch, not a follow-up. Say what is not recorded yet.
+- **The plan of each feature after its analysis (2026-11-27):** when the
+  research file of a feature is checked and its pull request is open, write
+  its `docs/plan/<name>.md` with the proposals of its agent in the same
+  session, one feature at a time. Do not wait for the other features of the
+  batch, and do not offer the plan as a next step.
+  - **Why:** the author said: "please remember that you should write the
+    plan for each features after analyzing".
 
 ### Analysis agents run on Opus 5.5 (2026-11-26)
 
