@@ -124,3 +124,65 @@ the reference project.
     whose folder holds the default folder is accepted
     (`electron/environments.cjs:418`).
   - Judgment call: no release names this.
+
+## Feature flags
+
+- **P552 (plan, the skills step of P428, new facts for P76). The opt-out
+  file refuses a save after a failed read.** The read stays "fail open" for
+  turns, but a write after a failed read gives a typed error.
+  - **Problem in the reference:** a damaged `library-opt-out.json` gives an
+    empty set, and the next switch-off writes a file with only the new
+    name. All earlier opt-outs are lost, and the person is not told
+    (`server/skill-library.ts:323-353`). The index writers of the same
+    module refuse in that case (`:391-392`, `:434-435`). No test covers the
+    overwrite. The release problem: "A file written over after a failed
+    read" (v0.1.103, v0.1.107, v0.1.151).
+- **P553 (plan, step 6). One `Features` struct with its defaults in one
+  place.** `settings.rs` has one struct with `serde` defaults. The settings
+  UI and the runtime read the same value. A test lists every key.
+  - **Problem in the reference:** a schema and a second type list the keys
+    (`server/config.ts:200-229`, `:470`). The defaults are in about ten gate
+    functions (`server/config.ts:599-651` and others) and again in the
+    Settings registry. For `shareLearnedSkills`, Settings shows `off`
+    (`server/app-settings/registry-config.ts:115`), but the runtime acts as
+    `ask` (`server/skill-share.ts:34`). The document lists 18 of the 25 keys
+    (`docs/feature-flags.md:44-61`).
+  - Judgment call: no release names this.
+- **P554 (plan, step 6, new facts for P22 and P77). A bad flag value
+  refuses with its key, and does not reset all flags.** `load` gives a
+  typed error that names the key. The desktop shows it and offers a dated
+  copy, as the reference keeps 10 copies (`server/config-backup.ts:16`).
+  - **Problem in the reference:** one wrong value in any checked section
+    makes the whole stored config fail (`server/config.ts:543-547`). Then
+    `loadConfig` uses all defaults, with only a console line (`:699-714`). So the "on unless false" features turn on.
+  - Judgment call, near "State lost at a restart": the choices of the
+    person are lost at the next start.
+- **P555 (plan, step 6). A list of retired keys.** Follow the reference:
+  drop the key and keep it on disk. Add a list of retired keys with the
+  release that removed each, and a test that a retired key loads with one
+  log line.
+  - **Problem in the reference:** five flags were removed and one was
+    retired. Cloud overflow lived six releases (`df207eb7a` in v0.1.90 to
+    `3764befd6` in v0.1.96). The code drops a removed key with no log
+    (`server/config.ts:199`, `:892-902`). The release problem: "A feature
+    added, then removed or reversed" (v0.1.96, v0.1.152, v0.1.166,
+    v0.1.182).
+- **P556 (plan, step 6). One parser for environment overrides.** One
+  function accepts the same words for every flag, and refuses an unknown
+  word at start.
+  - **Problem in the reference:** one idea has four parse styles.
+    `OMB_CLOUD_COMPUTER_AUTO_REPLACE=true` works
+    (`server/boat-recovery.ts:65-75`), and `OMB_PHONE_PUSH=true` does
+    nothing (`server/phone-push.ts:77-81`). The document says "exactly 1 or
+    0" for all (`docs/feature-flags.md:97-108`).
+  - Judgment call: no release names this.
+
+## Notes
+
+- `docs/comparison.md:251` cites `server/config.ts:219-248`. The lines are
+  now `server/config.ts:199-229`.
+- The data folder lease needs a research row of its own. No finished file
+  reads `electron/data-dir-lease.mjs` (864 lines) completely.
+- The code history adds v0.1.165 (`c18fe85e5`, `fafedc516`) to "Process
+  control on Windows". `MEMORY.md` says to change section 5 of
+  `changelog.md` only for a new release, so this is a note for the author.

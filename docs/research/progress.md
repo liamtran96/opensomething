@@ -622,7 +622,10 @@ session gave the P-numbers from P515.
   were merged on 2026-11-27.
 - The worktrees are removed and the branches are kept. The proposals of
   each agent are in `/private/tmp/batch10-<name>-proposals.md`. The plan
-  files `docs/plan/<name>.md` are not written yet.
+  pull requests are #126 (`work-digests`), #127 (`session-search`), #128
+  (`goals`), and #129 and #130 (`environments-and-flags`). They are
+  stacked, because each one changes the same tables of
+  `docs/plan/README.md`.
 - This batch also marks the row "Docs site: `providers/`" of
   `reference-features.md` as done. Batch 9 read it for
   `engines-and-accounts.md`, but did not change its row.
