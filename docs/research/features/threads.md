@@ -557,7 +557,10 @@ What the main thread changes:
    asks the engine of the bot for a title, in the background
    (`server/index.ts:7523-7533`):
    - The prompt asks for "a short title: 3 to 6 words, plain text, no quotes,
-     no trailing period", from the first 1,500 characters.
+     no trailing period", from the first 1,500 characters. At `42f86aefd`
+     (batch 12) it asks for "a concise phrase of at most 48 characters" in
+     the language of the request (`server/thread-title.ts:49`). A title
+     that is made again has 30 s (`server/thread-title-generate.ts:6`).
    - It waits for one of 3 shared background slots, ahead of memory upkeep.
    - It has 10 s once it has a slot. A timeout or an error gives nothing.
    - The answer must be 1 to 48 characters after clean-up.

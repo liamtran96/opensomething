@@ -1138,6 +1138,14 @@ P-numbers.
 | Scans of ended work | Three full reads (A3) | section 8.1 |
 | A secret in the wrong place | The brief, the question and the result are stored and sent with no redaction (A5) | `envelope.ts:140`, `:183` |
 
+**Note of batch 12 (2026-11-27, reference `42f86aefd`).** The wrapper
+`remoteHandoff.host` is now read (`server/host/remote-teammate-handoff.ts:247-264`).
+For a remote node, `busy` is false, `levelOf` is `full`, `outward` is
+empty, `report` only removes the marker, and `park` and `remind` do
+nothing. The runtime still holds a second node with the same destination
+thread (`server/runtime/runtime.ts:389-403`). The full record is
+[`remote-bots.md`](remote-bots.md).
+
 ## 9. Not verified
 
 - Whether `runtime.open()` runs before the engines are read, through

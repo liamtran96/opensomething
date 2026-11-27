@@ -1186,6 +1186,13 @@ has here:**
 | The same work done two times | Guarded: rebuild only before accept, `nothingRan`, the fold append key. Open: a steered message is offered again, the room keep-warm gap, ACP `before-accept` |
 | A bot at a usage limit and the backup engine | Two paths (A and B), a room path and a bot-to-bot path. See section 3.10. A sign-in hiccup "no longer counts as signed out or hands the chat to the backup engine" (v0.1.178) |
 
+**Note of batch 12 (2026-11-27, reference `42f86aefd`).** `server/side-jobs.ts`
+has 331 lines now. This file cites a copy with 315 lines, so some of its
+lines of that file moved: the summary on the bot's own engine is at
+`:307-308`, the switch `helperModel` at `:323`, the list of jobs at `:44`,
+and `quickModel` at `:148`. The full record of the helper model is
+[`helper-bot.md`](helper-bot.md).
+
 ## 9. Not verified
 
 - The time limit and the usage booking of the Claude `/compact` on a fork.

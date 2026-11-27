@@ -1361,6 +1361,11 @@ option b.
 | State lost at a restart | All tokens, saved results, learned limits and tool budgets are in memory | accept for tokens and saved results (they end with the turn). Keep learned limits in the store |
 | A feature added, then removed | Five delegation tools for one release (v0.1.108). The bridge, kept but off. The flags of each kind of turn, now ignored | one tool surface for hand-offs from the first version (step 14) |
 
+**Note of batch 12 (2026-11-27, reference `42f86aefd`).** `list_bots`
+adds the remote teammates for each caller with no filter
+(`server/index.ts:13018`), unlike the linked bots, which
+`linkedRoster.reaches` filters. See [`remote-bots.md`](remote-bots.md).
+
 ## 9. Not verified
 
 - How the hidden ids of a linked or remote bot in `list_bots` are filtered
