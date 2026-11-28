@@ -8,9 +8,13 @@ goes to `bot-core` (the goal loop and its record), `bot-protocol` (the card
 and the decision types) and `bot-desktop` (the card and the composer).
 
 - **Reference commit:** `fcce0b6de`, 13 commits after the tag v0.1.182.
-  No tag after v0.1.182 exists at this commit, so no newer release note
-  exists. Each line number in this file is at that commit. None of the 13
-  commits changes a goal file (`git show --stat` of each).
+  None of these 13 commits changes a goal file (`git show --stat` of each).
+- **Update of 2026-11-28:** this file is correct for the changes in the
+  section "Changes up to `e1cc6a290` (v0.1.186)" at commit `e1cc6a290`
+  (2026-11-28). The tag v0.1.186 is commit `70eb44c1a` (2026-11-27), and
+  its release note exists now. The citations in that section and in each
+  corrected statement are at `e1cc6a290`. All other parts and citations
+  were read at `fcce0b6de`, and their line numbers can be old.
 - **Method:** eight readers read eight groups of files, each completely or
   in recorded ranges. The lead then read the key code again (section 2.9).
 - **Names:** "the reference project" is the other project. Paths are
@@ -91,6 +95,73 @@ The feature changed direction two times:
 2. A separate one-on-one `/goal` engine came on 2026-10-24 and was deleted
    two days later (1,087 lines). The one-on-one goal now runs on the room
    loop.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+One reader read the commits from `fcce0b6de` to `e1cc6a290` that touch the
+goal files, and the lead checked the key lines again. Paths are in the
+reference project, and the lines are at `e1cc6a290`. "In the tag" means
+that `git merge-base --is-ancestor <commit> 70eb44c1a` is true.
+
+| Change | Commits | Tag | File and line | Sections of this file |
+|---|---|---|---|---|
+| A lead reply with no valid control envelope is asked again, up to 3 replies in a row, before the run ends `blocked` | `9d7297ac1` (merge `b7ad69c58`), `05d5978b4`, `255f6e3d7` | In the tag | `server/group-goal-run.ts:10-11`, `:17-20`, `:320`, `:363-377` | 3.4, 4.4, 6, 8 (P536, P540), 8.1 |
+| A goal sent through the bot API with `answer: "never"` is refused with 409 `card_waiting` while a card waits | `6b7ca34a3` | After the tag | `server/routes/bot-messages.ts:172-186`, `:228-234`, `:280` | none (a new detail of 3.2 and 3.3) |
+
+The release note of v0.1.186 says: "**Goal runs:** ask the coordinator again
+when its reply is malformed." (`announcements/releases.json:87`).
+
+### The re-ask of a malformed reply
+
+1. Before (`fcce0b6de`): a settled lead reply with no valid decision ended
+   the run at once with `blocked` (`server/group-goal-run.ts:355-359` at
+   `fcce0b6de`).
+2. The new constant `GROUP_GOAL_CONTROL_MISSES = 3` has the doc "How many
+   replies in a row may miss the control envelope before the run is
+   blocked." (`server/group-goal-run.ts:10-11`). No environment switch sets
+   it. Commit `9d7297ac1` added the switch `OMB_GOAL_CONTROL_MISSES`, and
+   commit `05d5978b4` removed it before the tag.
+3. The loop counts the misses in the variable `controlMisses` (`:320`).
+   When `parseGroupGoalDecision` gives no decision (`:363-376`):
+   1. `controlMisses` goes up by one.
+   2. At 3 misses, or when `turnCount` is at `maxTurns`, the run ends
+      `blocked`: "<lead> did not provide a valid next-step decision after N
+      reply/replies." (`:367-369`).
+   3. Else the card gets the progress line "<lead>'s reply did not end with
+      a valid control envelope. Asking again (N/3)." (`:371`). This line is
+      plain English. It has no `ServerText` code, but the line of the
+      transient retry has one (`:302-303`).
+   4. The next lead prompt gets the note of `controlMissNote` as its
+      "Harness note" (`:17-20`, `:372-374`). The note says: "Do not repeat
+      the work or the assignments you already made." and gives an example
+      envelope. A solo note names the bot's own id and "Your next step". A
+      room note says "Exact member id from the roster" and "Concrete next
+      assignment".
+   5. The loop goes on with a new lead step. That step is a new turn and
+      counts in the 13 turns.
+4. A valid decision sets `controlMisses` to 0 (`:377`). So the limit is for
+   misses in a row, not for the whole run.
+5. The transient retry did not change (`:295-305`). A lead step that is
+   retried and then settles with no envelope counts as one miss. So a
+   stalled lead step can now use up to 4 lead turns before the run ends
+   (`server/room-roots.e2e.test.ts:544`).
+6. The parser did not change (section 3.7).
+7. Tests: `server/group-goal-run.test.ts:97-99`, `:211-216`, `:218-232`,
+   `:234-253`; `server/group-goal-run-one-on-one.e2e.test.ts:202-219`
+   (`turnCount: 3`); `server/room-roots.e2e.test.ts:526-548`. No test
+   covers a re-ask in a room (not solo), or a miss on the last turn.
+
+### A goal through the bot API that must not answer a card
+
+1. The route `POST /api/bots/:id/messages` has a new body field `answer`.
+   Only the value `"never"` is accepted. Any other value gives 400
+   (`server/routes/bot-messages.ts:228-230`).
+2. In the goal branch, after the `sendId` check, `answer: "never"` and an
+   open question, approval, password or sign-in card give 409 with
+   `code: "card_waiting"`, and the route writes nothing (`:172-186`,
+   `:280`).
+3. The tests (`server/routes/bot-messages.test.ts:673-788`) cover plain
+   sends only. No test sends `mode: "goal"` with `answer: "never"`.
 
 ## 2. Files read completely
 
@@ -203,7 +274,7 @@ The reader also read the commit messages and `git show --stat` of
 | Claim | Where | Result |
 |---|---|---|
 | 13 turns, 30-minute wait cap with a 1 s floor, 3 exhausted waits | `server/group-goal-run.ts:6-9` | agrees |
-| A transient step gets one retry. A spend cap refusal gets none | `server/group-goal-run.ts:288-298` | agrees |
+| A transient step gets one retry. A spend cap refusal gets none | `server/group-goal-run.ts:295-305` at `e1cc6a290` | agrees |
 | A worker that is busy or parked counts as one exhausted wait. At 3, the run ends `blocked` | `server/group-goal-run.ts:405-418` | agrees |
 | After the loop: `limit-reached`, "Paused at the 13-turn safety limit" | `server/group-goal-run.ts:426-428` | agrees |
 | One-on-one: one deadline for the busy wait and the lost-slot retries | `server/host/one-on-one-goals.ts:105-137` | agrees |
@@ -213,7 +284,7 @@ The reader also read the commit messages and `git show --stat` of
 | Room step: after a lost claim race, a bot that is busy again gets a new wait with a new 30-minute timer. The step has no total deadline | `server/index.ts:10467-10527`, `:4154-4171`, `:9537-9541` | agrees. This is a new finding (section 8, P538) |
 | The room composer's Stop ends a room goal | `src/components/Composer.tsx:443-445`, `server/index.ts:4370-4391` | agrees |
 | A restart rerun of a goal step is refused | `server/index.ts:3776-3778`, `:3790-3792` | agrees |
-| At start, each `working` card is closed. A routine run result wins | `server/store.ts:892-933`, `server/index.ts:8777-8800` | agrees |
+| At start, each `working` card is closed. A routine run result wins | `server/store.ts:892-933`, `server/index.ts:8790-8813` at `e1cc6a290` | agrees |
 | `finish` of a card runs once, and settles the routine run before the card | `server/host/goal-cards.ts:94-110` | agrees |
 | A room goal run never adds `turn.completed` cost to its routine run | `server/routines.ts:1262-1269`, `:1289` | agrees |
 | `finishGoalRun` saves with `saveLater`, not at once | `server/routines.ts:1335-1366`, `failRun` at `:1382-1385` | agrees |
@@ -324,7 +395,8 @@ what the host gives it in `GoalRunDeps` (`:272-286`).
      the lead coordinator for a bounded team goal run.".
    - the goal, and for a team, the members with their ids.
    - "This is turn N of M; R turn(s) remain after this one."
-   - a "Harness note" line when the loop has one.
+   - a "Harness note" line when the loop has one. Since v0.1.186 the note
+     can also be the note of a malformed reply (step 5).
    - "Do not claim completion unless the requested deliverable or answer is
      present in the conversation.".
    - an example envelope, and "Never mention, quote, or explain the control
@@ -345,6 +417,10 @@ what the host gives it in `GoalRunDeps` (`:272-286`).
 5. The loop reads the decision from the reply (section 3.7). No valid
    decision: `blocked`, "<lead> did not provide a valid next-step
    decision." (`:355-359`). A reply with no envelope never counts as done.
+   **Since v0.1.186** the loop asks the lead again first. The third miss in
+   a row, or a miss on the last turn, ends the run `blocked` with "...
+   after N replies." (`server/group-goal-run.ts:363-377` at `e1cc6a290`).
+   See the section "Changes up to `e1cc6a290`".
 6. `completed`, `needs-input` or `blocked`: the run ends with that status and
    the `detail` of the decision (`:360-363`).
 7. `continue` on the last turn: the loop leaves, and the run ends
@@ -365,7 +441,7 @@ what the host gives it in `GoalRunDeps` (`:272-286`).
 11. **The worker's step.** The worker prompt has the goal, the lead's name,
     the lead's instruction as the assignment, and "team turn N of M". It
     says: "Do not invent a new orchestration protocol or emit an
-    openmaus-goal control envelope." (`:229-244`, `:388-395`)
+    openmaus-goal control envelope." (`:236-251` at `e1cc6a290`, `:406-413` at `e1cc6a290`)
 12. The loop reads the outcome of the worker's step:
     - `unavailable` or `spend_capped`: `blocked`, as for the lead
       (`:397-404`).
@@ -520,7 +596,7 @@ escaped tag ended the run `blocked`.
 5. "Busy here is a lost claim race, so retry in-step" (`:10526`). The loop
    goes back to step 1. `waitForGroupMemberBot` claims the member at once
    when it is free (`:4154-4155`). When the member is busy again, a new wait
-   starts with a new 30-minute timer (`:4171`). `runGroupMemberTurn` gives
+   starts with a new 30-minute timer (`:4184` at `e1cc6a290`). `runGroupMemberTurn` gives
    `busy` when the bot is busy after the wait ("the last-line guard for a
    1:1 that re-claimed the bot after the member wait settled", `:9537-9541`),
    and when the bot changed during the start (`:9711`, `:9727`, `:9742`,
@@ -613,7 +689,7 @@ escaped tag ended the run `blocked`.
 ### 3.11 Restart
 
 1. All goal state is in memory: the run loop
-   (`server/group-goal-run.ts:303-312`), `LiveGoalRun`
+   (`server/group-goal-run.ts:310-320` at `e1cc6a290`), `LiveGoalRun`
    (`server/host/goal-cards.ts:12-22`), the live map of one-on-one goals
    (`server/host/one-on-one-goals.ts:54`), the room operation
    (`server/index.ts:3467-3471`) and the lead-turn guards
@@ -624,7 +700,7 @@ escaped tag ended the run `blocked`.
    (`server/store.ts:892-911`, `server/message-db.ts:472-480`).
 3. For a card of a routine run, the run's status wins. The comment says:
    "Separate durable stores: after a crash between the two writes, the
-   correlated RoutineRun's terminal state wins." (`server/index.ts:8777-8800`)
+   correlated RoutineRun's terminal state wins." (`server/index.ts:8790-8813` at `e1cc6a290`)
 4. Each other card gets `failed`, "<product> restarted before this goal
    finished." (`server/store.ts:900`, `:912-916`).
 5. The runtime runs a cut root again after a restart. For a goal step whose
@@ -743,8 +819,9 @@ Wrapped as `<openmaus-goal>{...}</openmaus-goal>` on its own line
 | `GROUP_GOAL_MAX_TURNS` | 13 | `server/group-goal-run.ts:7` |
 | `GROUP_GOAL_WAIT_MAX_MS` | 30 min, env `OMB_GOAL_WAIT_MAX_MS`, at least 1 s | `:8` |
 | `GROUP_GOAL_MAX_WAIT_EXHAUSTIONS` | 3 | `:9` |
+| `GROUP_GOAL_CONTROL_MISSES` (since v0.1.186) | 3 replies in a row with no valid envelope | `server/group-goal-run.ts:11` at `e1cc6a290` |
 | same assignment | 3 times | `:379` |
-| transient retry | 1 for each step | `:288-298` |
+| transient retry | 1 for each step | `:295-305` at `e1cc6a290` |
 | `detail` / `next` / `instruction` | 500 / 100 / 2,000 characters | `:117-120` |
 | reason in a message | 120 characters | `:350`, `:411`, `:420` |
 | instruction in a reassign note | 160 characters | `:415` |
@@ -761,7 +838,7 @@ Wrapped as `<openmaus-goal>{...}</openmaus-goal>` on its own line
 | `LiveGoalRun` | `runId`, `cardMessageId`, `goal`, `coordinatorBotId`, `coordinatorName`, `turnCount`, `maxTurns`, `startedAt`, `finished` | `server/host/goal-cards.ts:12-22` |
 | `LiveGoal` (one-on-one) | `run`, `botId`, `cancelled`, `wake?` | `server/host/one-on-one-goals.ts:41-46` |
 | `GoalLeadTurn` | `token`, `turnId?`, `assistantItems`, `discard`, `cleanupTimer?` | `server/host/goal-turns.ts:4-11` |
-| loop state | `assignmentCounts`, `coordinatorNote`, `waitExhaustions` | `server/group-goal-run.ts:303-312` |
+| loop state | `assignmentCounts`, `coordinatorNote`, `waitExhaustions`, and since v0.1.186 `controlMisses` | `server/group-goal-run.ts:310-320` at `e1cc6a290` |
 
 ### 4.6 Stored links
 
@@ -871,7 +948,7 @@ of the goal UI is about cost or a budget.
 | One-on-one done | `server/group-goal-run-one-on-one.e2e.test.ts:140-172` | 2 prompts. The second has "Your next step:". The same `sendId` gives the same line and one card |
 | Envelope in another turn | `:174-182` | It is removed |
 | One-on-one Stop | `:184-200` | 409 for a second goal. Stop gives `stopped`. The late text is not stored |
-| No decision | `:202-219` | `blocked`, "did not provide a valid next-step decision" |
+| No decision | `:202-219` | `blocked`, "did not provide a valid next-step decision". Since v0.1.186: `turnCount: 3` and "... after 3 replies." |
 | One-on-one limit | `:221-227` | 13 prompts, `limit-reached` |
 | One-on-one routine | `:235-260` | A routine with no room runs the goal in the bot's own chat |
 | Worker busy past the cap | `server/group-goal-wait-cap.e2e.test.ts:136-175` | The lead reassigns, and the goal completes |
@@ -883,14 +960,14 @@ of the goal UI is about cost or a budget.
 | Restart | `server/index.test.ts:1609-1637` | A `working` card becomes `failed`, or takes the routine run result. Nothing runs |
 | Restart, store | `server/group-tasks.test.ts:113-162` | The same at the store, for each room task |
 | Restart, goal step | `server/room-roots.e2e.test.ts:498-524`, `:649-664` | The cut step is not run again, and no notice shows |
-| Stalled step with a card | `:526-546` | The step fails `stalled`, and the credential card stops |
+| Stalled step with a card | `:526-546` | The step fails `stalled`, and the credential card stops. Since v0.1.186 (`:526-548` at `e1cc6a290`): the retry and the two re-asks each reply with no envelope, so the third miss ends the run |
 | One-on-one step gives work | `:627-647` | The step is a root. The child result comes later as a normal turn |
 | Computer wait ceiling | `server/index.test.ts:3990-4155` | The parked worker step fails and never runs again |
 | Lead protection | `server/index.test.ts:1939-1988` | 409 when a person removes the lead of a team-goal routine |
 | Paused lead | `server/room-quoted-replies.e2e.test.ts:260-300` | `blocked` with 0 turns. A held member is not the lead |
 | Routine mapping | `server/routines.test.ts:3083-3277` | Each goal status gives its routine run status. A late finish after a cancel does nothing |
 | Backup | `server/team-backup.test.ts:63-81` | A card comes back as text only |
-| Loop and parser | `server/group-goal-run.test.ts:24-394` | The parser, the lead choice, the solo loop, the retry and the limits |
+| Loop and parser | `server/group-goal-run.test.ts:24-394` | The parser, the lead choice, the solo loop, the retry and the limits. Since v0.1.186 the file has 437 lines, with the re-ask tests at `:97-99`, `:211-253` |
 | One-on-one lost race | `server/host/one-on-one-goals.test.ts:79-135` | The busy wait and lost races share one cap |
 | Card | `src/components/GoalRunCard.test.ts:30-76` | Labels, the turn line and Stop on the one-on-one card only |
 
@@ -921,7 +998,7 @@ Our rules that touch this feature:
   runtime" (`docs/runtime-contract.md:144`).
 - `AGENTS.md`: "Text that opens a delegated turn is built from stored data,
   never from model output." The reference puts the lead's `instruction` into
-  the worker's prompt (`server/group-goal-run.ts:229-244`) and into the next
+  the worker's prompt (`server/group-goal-run.ts:236-251` at `e1cc6a290`) and into the next
   solo prompt (`:383-386`).
 - `AGENTS.md`: "Every state change in the runtime writes the row and its
   event in one transaction before anything acts on it."
@@ -934,7 +1011,7 @@ Each point says what goes wrong in the reference, with the file and line.
   it.**
   - Problem in the reference: a restart ends every goal. The person sees
     "<product> restarted before this goal finished." and must send the goal
-    again. All loop state is in memory (`server/group-goal-run.ts:303-312`,
+    again. All loop state is in memory (`server/group-goal-run.ts:310-320` at `e1cc6a290`,
     `server/host/one-on-one-goals.ts:54`, `server/store.ts:892-916`). This
     is "State lost at a restart or a crash" of `changelog.md` section 5
     (v0.1.24, v0.1.165).
@@ -957,7 +1034,10 @@ Each point says what goes wrong in the reference, with the file and line.
   - Problem in the reference: the parser of the text envelope failed when the
     close tag was cut, escaped or followed by text. Each such reply ended the
     goal `blocked` (issue #5209, release v0.1.154,
-    `announcements/releases.json:1237`). The envelope also reached the person
+    `announcements/releases.json:1237`). Since v0.1.186 the loop asks the
+    lead again, up to 3 replies in a row, before it ends the goal `blocked`
+    (`server/group-goal-run.ts:363-377` at `e1cc6a290`). Each re-ask uses a
+    turn of the 13 and a paid model turn. The envelope also reached the person
     from a turn that a teammate's result woke (commit `ec5c9ed0f`). Three
     separate guards now hide it (section 3.6).
   - Ours: the lead calls one tool, for example `goal_decision`, with typed
@@ -969,8 +1049,8 @@ Each point says what goes wrong in the reference, with the file and line.
 - **P537. The worker's prompt comes from the stored decision row.**
   - Problem in the reference: the loop copies the lead's model text (up to
     2,000 characters) straight into the worker's prompt
-    (`server/group-goal-run.ts:229-244`, `:388-394`), into the next solo
-    prompt (`:383-386`) and into the reassign note (`:414-416`). Nothing
+    (`server/group-goal-run.ts:236-251` at `e1cc6a290`, `:406-412` at `e1cc6a290`), into the next solo
+    prompt (`:401-404` at `e1cc6a290`) and into the reassign note (`:432-434` at `e1cc6a290`). Nothing
     stores the decision first. `AGENTS.md` says: "Text that opens a delegated
     turn is built from stored data, never from model output."
   - The worker cannot read the instruction in the conversation, because the
@@ -988,7 +1068,7 @@ Each point says what goes wrong in the reference, with the file and line.
   - Problem in the reference: in a room step, a lost claim race goes back to
     the wait. If the bot is busy again, a new 30-minute timer starts. The
     loop has no count and no total deadline (`server/index.ts:10467-10527`,
-    `:4171`, `:9537-9541`). A bot that a one-on-one chat takes back again
+    `:4184` at `e1cc6a290`, `:9537-9541`). A bot that a one-on-one chat takes back again
     and again can keep the step waiting with no end. The tests do not cover
     this (section 9). The one-on-one step had the same fault. Commit `7eaaac9c7` (#3967) fixed it there only, because
     "the run could spin forever". This is "A turn or a wait that does not
@@ -1012,7 +1092,12 @@ Each point says what goes wrong in the reference, with the file and line.
     what the first attempt did. A worker step that timed out after it sent
     an email or wrote a file can do that work two times (not seen in a test,
     section 9). This is "The same work done or delivered two times" (v0.1.108,
-    v0.1.150, v0.1.182).
+    v0.1.150, v0.1.182). Since v0.1.186 a second path runs a lead step
+    again: the re-ask of a malformed reply. A solo lead does the work in its
+    own turn, so the work of the first reply can be done two times. The
+    only guard is the prompt text "Do not repeat the work or the
+    assignments you already made." (`server/group-goal-run.ts:19` at
+    `e1cc6a290`).
   - Ours: the runtime already knows if a turn did an outward action (the
     restart rule, `server/runtime/runtime.ts:109-158`, row "State lost at a
     restart" of `changelog.md` section 7). A goal step uses the same rule.
@@ -1022,7 +1107,7 @@ Each point says what goes wrong in the reference, with the file and line.
     stores. The routine run is saved later (`saveLater`), after the card
     write (`server/host/goal-cards.ts:110`, `server/routines.ts:1350-1362`).
     The code needs a repair rule for a crash between the two writes
-    (`server/index.ts:8777`). This is "State lost at a restart or a crash"
+    (`server/index.ts:8790` at `e1cc6a290`). This is "State lost at a restart or a crash"
     (v0.1.24, v0.1.107, v0.1.165).
   - Ours: one SQLite transaction for the three rows (step 8 store).
 - **P542. The goal has its own cost, and an optional spend limit.**
@@ -1054,13 +1139,27 @@ Each point says what goes wrong in the reference, with the file and line.
 | Problem | In this feature | Proposal |
 |---|---|---|
 | A turn or a wait that does not end | Guarded: 13 turns, 30-minute wait, 3 exhausted waits, 3 same assignments, one retry, the `finally` end of a card. Open: the room lost-race loop (section 3.8) | P538 |
-| The same work done or delivered two times, or lost | Guarded: `sendId` with mode, one goal for each chat, `finish` runs once, no rerun of a goal step after a restart, no backup-engine resend. Open: the transient retry. The client patch drop (judgment call) | P540, P544 |
+| The same work done or delivered two times, or lost | Guarded: `sendId` with mode, one goal for each chat, `finish` runs once, no rerun of a goal step after a restart, no backup-engine resend. Open: the transient retry. Since v0.1.186 also the re-ask of a malformed reply, guarded only by prompt text (`server/group-goal-run.ts:19` at `e1cc6a290`). The client patch drop (judgment call) | P540, P544 |
 | "Busy" and races between bots | Guarded: synchronous claim, the last check after subscribe, a goal step waits for teammates (commit `ec5c9ed0f`), the lead cannot leave a room with a team-goal routine | none |
 | State lost at a restart or a crash | Every goal ends at a restart. Two stores for the card and the routine run | P535, P541 |
 | A feature added, then removed or reversed | v1 (busy is fatal) to v2 (wait and reassign). The separate one-on-one engine, two days. The planned `goals.json`, never shipped | P543 |
 | Usage and cost numbers corrected | No goal cost. A goal can spend one turn over the limit. Commit `938fa58c3` corrected the month total | P542 |
 
+**Repaired in v0.1.186.** "**Goal runs:** ask the coordinator again when
+its reply is malformed." (`announcements/releases.json:87`). Before, one
+reply with no valid envelope ended the goal `blocked`. Now the lead gets up
+to 3 replies in a row (`server/group-goal-run.ts:363-377` at `e1cc6a290`).
+No theme of section 5 names this problem. It is the same problem as issue
+#5209 of v0.1.154 (section 3.7), so it is a repeated fix of the text
+envelope (P536).
+
 ## 9. Not verified
+
+- The update of 2026-11-28: no test of the reference was run. The reader
+  read `server/group-goal-run.ts` at `e1cc6a290` in the ranges `:1-25` and
+  `:190-447`, and the parser only through the diff (no change). What the
+  person sees in the chat for a lead reply that is asked again was not
+  checked.
 
 - Whether a lost claim race in a room step repeats many times in real use.
   The code allows it (`server/index.ts:10526`, `:9537-9541`). No test makes
