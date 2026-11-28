@@ -848,7 +848,7 @@ of v0.1.186 to `changelog.md`. The agents numbered their proposals T1, T2,
   of the weekly limit at the start and 15% at the end. The author said
   "approved all". All three agents finished between 15:38 and 15:50, with
   no usage limit.
-- During the work, the author said: "for the mascot I want to make it like
+- During the work, the author said: "for the mastcot I want to make it like
   an ant". The main session sent this to the mascot agent, and section 7.4
   of `mascot.md` says how an ant fits each part of the reference design.
   The decision is D23 of `docs/decisions.md`. Its form (one ant, or ant

@@ -72,10 +72,12 @@ Decide P736 first.
   3. **Word tables in code**: `server/host/first-hour-words.ts` and
      `server/host/brief-words.ts` write final text on the server from their
      own tables (P737).
-- The three forms need a contract test, and they drift (P737). A server
-  line is final text, so a row that is stored in one language does not
-  change when the person changes the language later. That is a property,
-  not a reported failure.
+- **Problem in the reference:** a server line is final text, so a row that
+  is stored in one language keeps that language when the person changes
+  the language later (`server/server-lines.ts:1-25`). The three forms also
+  need a contract test (`src/lib/server-word-contracts.test.ts:14-52`), and
+  the word tables drift from the packs (P737). No release names this
+  problem: it is a property of the design, not a reported failure.
 - Options:
   - (a) Follow the reference fully: the server writes final text in the
     language of the person (`serverLine`). This is simple for
@@ -372,13 +374,15 @@ Decide P736 first.
     placeholders (`:552-555`).
   - It writes atomically: the pack first, then the hashes (`:186-210`,
     `:566-569`).
-- Open points in the reference:
+- **Problem in the reference (for the change):** the tool does not read the
+  pack again after the wait of up to 5 minutes for the model
+  (it reads the pack at `scripts/generate-locale.mjs:541` and writes it at `:568`). An edit that a person
+  makes to the pack in that time is lost when the tool writes. No release
+  names this problem: a judgment call.
+- Other open points in the reference:
   - The child process gets the whole environment of the shell of the
     developer (`:461-469`). Only the `claude` program sees it. The model
     runs with `--tools ""`, so the model cannot read it.
-  - The tool does not read the pack again after the wait of up to 5
-    minutes for the model (`:542`, then `:568`). An edit made in that time
-    is lost.
   - Nothing compares the answer with English. A value that is the same as
     English is accepted.
   - The full draft and accept writes have no test.
@@ -443,7 +447,9 @@ Decide P736 first.
 
 ### P745. The shell words of `bot-desktop` read the same catalog at build time (part 2 of P738)
 
-- Kind: a choice. Better than the reference, as a judgment call.
+- Kind: a choice that Tauri makes possible, as a judgment call. The
+  research found no failure of the reference here, so this proposal has no
+  "Problem in the reference" line.
 - What the reference does: the shell process reads the same JSON packs at
   run time (`electron/native-text.cjs:4`, `:36`). The installer ships them
   (`electron-builder.yml:48-49`). It keeps only `native.*`, `teamMove.*` and
@@ -470,6 +476,10 @@ Decide P736 first.
 
 - Kind: a choice. Follows the reference, with one change as a judgment
   call.
+- **Problem in the reference (for the change):** the fallback title is
+  always the English "New task" (`UNTITLED_TASK`,
+  `server/thread-title.ts:6`), also for a person who reads another
+  language. No release names this problem: a judgment call.
 - What the reference does: the title prompt says "Reply with only a short
   title in the same language as the user's request. Use a concise phrase
   of at most 48 characters, in plain text, with no quotes or trailing

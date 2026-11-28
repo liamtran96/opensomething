@@ -518,8 +518,8 @@ Decide P724 and P725 first.
     that waits), then the pinned face, and no word rule (recommended).
 - Why (b): the live state is the useful signal. A pinned face that hides a
   failure can mislead the person. The word rule matches English only, and
-  the window will have more languages (the feature "localization" of
-  batch 14).
+  the window will have more languages (see
+  [`localization.md`](localization.md)).
 - Crate: `bot-desktop/ui` (a pure function of the typed thread state).
 
 ## The problems of the reference in this feature
