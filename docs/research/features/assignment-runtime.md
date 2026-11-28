@@ -4,6 +4,13 @@ Research for step 13 of [`../../plan/README.md`](../../plan/README.md). The
 reference project was read at commit `eee23ebbe` (2026-11-24, the release
 v0.1.179 has no tag). The port goes to `bot-core`, module `runtime`.
 
+**Update of 2026-11-28.** This file is correct for the changes in the
+section "Changes up to `e1cc6a290` (v0.1.186)" at commit `e1cc6a290`
+(2026-11-28). The tag v0.1.186 is commit `70eb44c1a` (2026-11-27). The
+citations in that section and in each corrected statement are at
+`e1cc6a290`. All other parts and citations were read at `eee23ebbe`, and
+their line numbers can be old.
+
 Rows of [`../reference-features.md`](../reference-features.md), group 3:
 `runtime-contract.md`; "Limits of the runtime: depth 4, 24 requests for each
 root, a 24-hour queue"; "Recovery after a restart: a cut turn of a teammate
@@ -60,13 +67,13 @@ The four rows of `reference-features.md` and what the code does:
    requests and 96 turns for each root, not 24 and 48**
    (`server/runtime-coordinator.ts:48-49`, `:180`). Depth 4 and the 24-hour
    queue stay, because the constructor merges the defaults under the options
-   (`server/runtime/runtime.ts:100`).
+   (`server/runtime/runtime.ts:104` at `e1cc6a290`).
 3. **The restart.** Each running row runs again one time, roots too, not
    only the turns of teammates. A row that gave out work, that did an
    outward action, that ran again already, or that froze for want of memory
-   does not run again (`server/runtime/runtime.ts:109-158`).
+   does not run again (`server/runtime/runtime.ts:113-162` at `e1cc6a290`).
 4. **The stop.** Stop ends the request and all the work that it gave out,
-   with teammates in the middle of a turn (`server/runtime/runtime.ts:675-693`).
+   with teammates in the middle of a turn (`server/runtime/runtime.ts:717-735` at `e1cc6a290`).
    The contract still says that running children "keep their process and
    still report" (`docs/runtime-contract.md:48`). That sentence is old.
 
@@ -84,6 +91,94 @@ What this file adds to earlier research:
   crash, and the waits store.
 - [`chat-turns.md`](chat-turns.md) has the turn of a person. This file adds
   how such a turn becomes a root with `begin()` and `end()`.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+Four readers read the commits from `eee23ebbe` to `e1cc6a290`, and the lead
+checked the key lines again. Paths are in the reference project, and the
+lines are at `e1cc6a290`. "In the tag" means that
+`git merge-base --is-ancestor <commit> 70eb44c1a` is true.
+
+| Change | Commits | Tag | File and line | Sections of this file |
+|---|---|---|---|---|
+| A settlement that the store refused is kept in memory and retried on the next 5 ticks, not lost | `dc668ab6c`, `14b421cdd`, `827c728bf` (merge `5810c6e11`) | In the tag | `server/runtime/runtime.ts:58-59`, `:90-91`, `:200-206`, `:523-538`, `:540-564`, `:325-327`, `:363` | 3.5, 3.6, 4.4, 6.2, 8.3 |
+| Work goes back to an ancestor when its reply does not wait (`none` or `poll`). Only `resume` is refused | `c47a9d772` | After the tag | `server/runtime/runtime.ts:232-243`; `server/runtime-coordinator.ts:307-310` | 3.4, 3.11, 3.12 |
+| A child's `NEEDS INPUT:` question is read from the full reply, before the clip to 12,000 characters | `d184bc6f9`, `8e2e3223c`, `830c25f10` (merge `91a83e654`) | After the tag | `server/runtime-coordinator.ts:97-103`, `:724`; `server/coordinator.ts:97`; `server/index.ts:5032-5033` | 3.6 |
+| The 4-hour limit of an unattended turn uses a monotonic clock | `b0b8cdf0f` | In the tag | `server/host/unattended-turns.ts:91-92` | 3.11 |
+| A parked root keeps the cards of its earlier turns | `d54cdee6a` (merge `fed715d20`) | In the tag | `server/index.ts:1965`, `:1995-1999` | none (a host detail) |
+| `ownThreads` is built before the coordinator, because `runtime.open()` can run while the server is still built | `a15f6ab26` | After the tag | `server/index.ts:3845-3857`; test `server/coordinator-restart-report.e2e.test.ts:16` | 9 |
+| DeepSeek Harness is added to the name list of engines with their own auto reviewer | `579dd35b2` | In the tag | `packages/phone-protocol/src/approval-mode.ts:44-45`; `server/runtime/level.ts:16-21` | 3.12 (item 5 stays true) |
+
+Checked, with no change of the runtime: "release rejected background-job
+waiters" (`d78209fe6`, merge `f6e21fc5b`, after the tag) changes
+`server/job-slots.ts:63-68`, the limiter of background jobs, which belongs
+to [`helper-bot.md`](helper-bot.md). `2d156d909` (after the tag) batches the
+saves of the routine scheduler. `6766ba4ca` (in the tag) removes the raw
+input of a tool from the driver event `request.opened`, not from
+`runtime.db`.
+
+### The settlement retry
+
+1. Before: when the store threw in `turnEnded` or in `end()`, the runtime
+   only wrote a log line. The result was lost. The node stayed `running`
+   with no live turn, until the turn stall or the tree stall failed it.
+2. Now the result goes into the in-memory map `pendingSettlements`
+   (`server/runtime/runtime.ts:90-91`). `end()` adds an entry when
+   `finishTurn` throws (`:200-206`). `turnEnded` adds one only when its
+   guard reads passed (`:523-538`).
+3. `retrySettlements()` runs first in each tick (`:325-327`, `:540-564`).
+   For each entry:
+   1. It drops the entry when the node is gone, ended, not `running`, or
+      dispatched again (a new `executions` count).
+   2. Else it runs `finishTurn` again in one batch. A success drops the
+      entry.
+   3. A failure adds one attempt. After `SETTLE_RETRIES = 5` (`:58-59`) it
+      drops the entry and writes "giving up after 5 retries".
+4. While an entry is pending, the tree stall skips that tree (`:363`).
+5. After the give-up, nothing settles the node. The row stays `running`
+   with no handle until the tree stall fails the root (4 h in the
+   product). The test `runtime.test.ts:1769` shows this path.
+6. The map is lost at a crash. The row is then still `running`, so
+   `open()` treats it as a cut turn and can run it again.
+7. Tests: `server/runtime/runtime.test.ts:1705-1790` (four tests). The
+   tests at `:1727` and `:1750` call `checkInvariants`. The tests at
+   `:1753` and `:1769` do not.
+
+### The ancestor rule
+
+1. `admit` computes `reply` before the guard:
+   `req.reply ?? (mode === "notify" ? "none" : "resume")`
+   (`server/runtime/runtime.ts:232`). It refuses an ancestor only when
+   `reply === "resume"` (`:238-243`). The comment says that a reply that
+   cannot wait on the ancestor cannot close a wait cycle.
+2. The coordinator does the same check (`server/runtime-coordinator.ts:310`).
+   It also changes the reply to `poll` when the root's reply is `poll`
+   (`:307-308`). The runtime does not do this.
+3. Through the tools, the new path is mostly a one-way notice. A `poll` ask
+   back to the bot that delegated still meets the crossed-wait check:
+   `waitingOn` finds the open request of the ancestor and throws the
+   `crossed()` text (`:322-323`, `:775-782`). Only `mode: "notify"` skips
+   that check (`:322`).
+4. The refusal text did not change: "Cannot assign work back to an
+   ancestor; results return automatically" (`runtime.ts:242`).
+5. The contract still says that Enqueue refuses work back to an ancestor,
+   with one exception, `ownThread` (`docs/runtime-contract.md:36`).
+6. Tests: `server/runtime/runtime.test.ts:204`;
+   `server/runtime-coordinator.test.ts:396`, `:402-403`, `:410-411`.
+
+### The question of a child
+
+1. Before: the host clipped the reply to 12,000 characters, and `run()` read
+   the `NEEDS INPUT:` line from the clipped text. A question line after
+   character 12,000 was lost, and the child ended `completed`.
+2. Now `handoffReply(text)` returns the clipped text and the question from
+   the full text (`server/runtime-coordinator.ts:97-99`). The host uses it
+   (`server/index.ts:5032-5033`). `HostTurnResult` has the new field
+   `question` (`server/coordinator.ts:97`). `handoffQuestion` uses the
+   field, else it parses the text (`runtime-coordinator.ts:101-103`).
+   `run()` uses `handoffQuestion` (`:724`).
+3. The runtime itself did not change. The question that it parks is still
+   clipped to 12,000 characters (`server/runtime/runtime.ts:606`).
 
 ## 2. Files read completely
 
@@ -184,15 +279,15 @@ code, except where the "Result" column gives a correction.
 | Claim | Lines | Result |
 |---|---|---|
 | The product limits are depth 4, 64 requests, 96 executions, a turn stall of 24 h, a reminder after 24 h and a close after 72 h | `server/runtime-coordinator.ts:42-49`, `:180` | Agrees |
-| The defaults stay under the options, so the 24-hour queue, the 4-hour tree stall and 48 wakes apply in the product | `server/runtime/runtime.ts:100`, `server/runtime/types.ts:374-386` | Agrees. One reader said that there is no 24-hour queue. That is wrong |
-| `open()` has five branches for a running row, in this order: gave out work, outward action, cut twice, `restartCut`, run again | `server/runtime/runtime.ts:109-158` | Agrees |
-| `stopRequester` cancels running children too | `server/runtime/runtime.ts:675-693` | Agrees. `docs/runtime-contract.md:48` says the opposite |
+| The defaults stay under the options, so the 24-hour queue, the 4-hour tree stall and 48 wakes apply in the product | `server/runtime/runtime.ts:104` at `e1cc6a290`, `server/runtime/types.ts:374-386` | Agrees. One reader said that there is no 24-hour queue. That is wrong |
+| `open()` has five branches for a running row, in this order: gave out work, outward action, cut twice, `restartCut`, run again | `server/runtime/runtime.ts:113-162` at `e1cc6a290` | Agrees |
+| `stopRequester` cancels running children too | `server/runtime/runtime.ts:717-735` at `e1cc6a290` | Agrees. `docs/runtime-contract.md:48` says the opposite |
 | `report()` calls the host before it writes `reportedAt` | `server/runtime/runtime.ts:790-803` | Agrees |
-| The park and the wake of a child's question are two transactions | `server/runtime/runtime.ts:568`, `:572`, `:805-826` | Agrees |
+| The park and the wake of a child's question are two transactions | `server/runtime/runtime.ts:610` at `e1cc6a290`, `:614` at `e1cc6a290`, `:847-868` at `e1cc6a290` | Agrees |
 | The brief goes into the envelope with `escapeEnvelope` only | `server/runtime/envelope.ts:140`, `:266-268` | Agrees. One reader said "not clipped". `admit` clips it to 12,000 characters (`runtime.ts:224`). Nothing redacts it |
 | `answeredElsewhere` reads `all({openSince})` with no other filter | `server/runtime-coordinator.ts:712-720` | Agrees |
 | The tick timer is 250 ms, 10 s or 1 h, and a kick is ignored while a tick runs or one is near | `server/handoff-ticks.ts:5`, `:44-50` | Agrees |
-| The pace is "busy" while the engines are not read or a parked node waits for its check | `server/index.ts:9385` | Agrees |
+| The pace is "busy" while the engines are not read or a parked node waits for its check | `server/index.ts:9386` at `e1cc6a290` | Agrees |
 | The partial index `assignments_live` exists | `server/runtime/store.ts:136-140` | Agrees |
 | The contract refusal "no turn" is in the coordinator, not in the runtime | `server/runtime-coordinator.ts:25`, `:268` | Agrees |
 | v0.1.180 changes no file of the runtime | `git diff --stat eee23ebbe 5478065c4 -- server/runtime server/runtime-coordinator.ts server/coordinator.ts docs/runtime-contract.md server/handoff-ticks.ts` is empty | Agrees |
@@ -292,10 +387,14 @@ code, except where the "Result" column gives a correction.
       ancestor; results return automatically". Two exceptions:
       `ownThread` (a bot opens work on itself in a new thread) and
       `answersSender` (a one-way notice back to the sender)
-      (`server/runtime/tree.ts:80-91`).
+      (`server/runtime/tree.ts:80-91`). **Since `c47a9d772` (after the tag
+      v0.1.186)** a third exception applies: the rule refuses only a reply
+      of `resume`. Work with reply `none` or `poll` may go to an ancestor
+      (`server/runtime/runtime.ts:232-243` at `e1cc6a290`). See the section
+      "Changes up to `e1cc6a290`".
    5. Dedupe: the same brief, mode, bot, thread and group under the same
       parent returns the row that exists, unless `rework` is set and that
-      row ended (`:237-239`). This check comes before the depth check.
+      row ended (`:246-248` at `e1cc6a290`). This check comes before the depth check.
    6. Depth: `parent.depth + 1 > depth` refuses with "Assignment depth limit
       reached (4)" (`:240`). So the deepest child has depth 4.
    7. For an unattended root, the total of 300 turns
@@ -313,14 +412,18 @@ code, except where the "Result" column gives a correction.
    `outcome: "duplicate"`, but no code returns it.
 4. The coordinator changes the refusal to text and throws it: a budget
    refusal gets its own wording, and a depth refusal becomes "Room handoff
-   depth limit reached" (`server/runtime-coordinator.ts:309-312`).
+   depth limit reached" (`server/runtime-coordinator.ts:339-342` at `e1cc6a290`).
 
 ### 3.5 The tick
 
 `tick()` does not overlap itself and does nothing after `close()`
 (`server/runtime/runtime.ts:286-295`). One tick does these steps:
 
-1. It reads all open rows through the partial index (`:319`) and goes
+0. **Since v0.1.186:** first, `retrySettlements()` settles each result that
+   the store refused before (`server/runtime/runtime.ts:325-327`,
+   `:540-564` at `e1cc6a290`).
+
+1. It reads all open rows through the partial index (`:330` at `e1cc6a290`) and goes
    deepest first, so that each node fails with its own reason.
 2. **Queue clock.** A `queued` row with no continuation and not away, older
    than 24 h, fails with `expired` and "never started" or "not resumed"
@@ -330,12 +433,13 @@ code, except where the "Result" column gives a correction.
    (section 3.7).
 4. **Turn stall.** A running turn with no activity for `turnStallMs` fails
    with `stalled` (`:332-334`). The clock is monotonic. The product sets 24 h,
-   so the host watchdog (20 minutes, `server/index.ts:4915`) acts first.
+   so the host watchdog (20 minutes, `server/index.ts:4928` at `e1cc6a290`) acts first.
 5. **Validate.** The host's `validate` runs for each open row. A text fails
    the row with `refused` (`:338-345`).
 6. **Tree stall.** A tree with no progress of its root for 4 h fails as a
    whole, unless a node waits on the person, holds a continuation or is
-   away (`:346-356`).
+   away (`:346-356`). Since v0.1.186, a node with a pending settlement also
+   stops the tree stall (`server/runtime/runtime.ts:363` at `e1cc6a290`).
 7. **Resume.** A `waiting` node becomes `resume` when all its awaited
    children ended and were reported, or when a child asks a question
    (`:362-375`). A root whose reply is `poll`, or that has nothing to answer,
@@ -346,7 +450,7 @@ code, except where the "Result" column gives a correction.
      restart".
    - A rerun whose thread has newer work from another root since the boot
      fails with "cut by a restart; newer work in this conversation started
-     before it could run again, so it was not run again" (`:393`, `:429-431`).
+     before it could run again, so it was not run again" (`:393`, `:440-442` at `e1cc6a290`).
    - Turns in the same thread never overlap (`:395`). In a room, the turn of
      the requester holds its thread (`:398`).
    - The executions budget (96) refuses a new turn but never the owed
@@ -358,7 +462,7 @@ code, except where the "Result" column gives a correction.
 
 `pace()` tells the host how soon to tick again: "busy" while any row runs or
 waits in the queue, "parked" while only parked work is open, else "idle"
-(`:276-283`). The host maps these to 250 ms, 10 s and 1 h
+(`:285-292` at `e1cc6a290`). The host maps these to 250 ms, 10 s and 1 h
 (`server/handoff-ticks.ts:5`). Section 8 has the risk of a loop that stays
 "busy".
 
@@ -388,7 +492,11 @@ waits in the queue, "parked" while only parked work is open, else "idle"
    1. aborted: `failed` with `stopped`.
    2. a step cap: `continue`.
    3. open cards: `needs_input` with the cards.
-   4. a `NEEDS INPUT:` line, children only: `needs_input`.
+   4. a `NEEDS INPUT:` line, children only: `needs_input`. Since
+      `d184bc6f9` (after the tag v0.1.186), the line is read from the full
+      reply before the clip to 12,000 characters, and it comes as the field
+      `question` (`server/runtime-coordinator.ts:97-103`, `:724` at
+      `e1cc6a290`).
    5. an unanswered approval, children with a person origin: `needs_input`
       with "Default: Try again".
    6. not ok: `failed` with `stalled` or `provider_error`.
@@ -396,7 +504,10 @@ waits in the queue, "parked" while only parked work is open, else "idle"
       reply is only an acknowledgement (`server/runtime/status-reply.ts:14-41`).
 6. **Settle** (`server/runtime/runtime.ts:511-600`). Only the live in-memory
    handle can settle the turn, so a late result of a stopped turn is dropped
-   (`:511-522`). Then:
+   (`:511-522`). **Since v0.1.186**, a result whose store write threw is also
+   kept in `pendingSettlements` and settles on a later tick, with no handle,
+   while the node is still `running` with the same `executions` count
+   (`server/runtime/runtime.ts:523-564` at `e1cc6a290`). Then:
    - `continue`: the loop guard checks the evidence. A stop gives `failed`
      with `stalled`. Else the row is `queued` again with event `continued`
      (`:542-560`).
@@ -415,7 +526,7 @@ waits in the queue, "parked" while only parked work is open, else "idle"
    a notification (`server/host/ask-cards.ts:185-248`). With `decide`, the
    card is posted already answered by the requester bot.
 3. In a **second** transaction it writes the `needs_input` inbox item and
-   counts a wake (`runtime.ts:572`, `:805-826`). More than 48 wakes fail the
+   counts a wake (`runtime.ts:614` at `e1cc6a290`, `:847-868` at `e1cc6a290`). More than 48 wakes fail the
    whole root with `budget`.
 4. On the next tick the waiting requester becomes `resume` with
    "resume: a teammate asks" (`:362-375`, `:848-857`). Its turn carries the
@@ -475,7 +586,7 @@ Some traffic from a requester to a child does not go through the runtime
    2. It calls `coordinator.stopAwaitingDirect(threadId, cause)`, which calls
       `runtime.stopRequester` (`:2237`, `server/runtime-coordinator.ts:470`).
    3. Only then does it interrupt the engine of this thread (`:2243`).
-2. `stopRequester` (`server/runtime/runtime.ts:675-693`), whose comment says
+2. `stopRequester` (`server/runtime/runtime.ts:717-735` at `e1cc6a290`), whose comment says
    "stop means stop":
    - for each open node of that conversation, it cancels every open child
      tree, started or not, with "Stopped before it started", "Stopped before
@@ -491,20 +602,20 @@ Some traffic from a requester to a child does not go through the runtime
 5. **The person stops one hand-off** (new in v0.1.180, merged before
    `eee23ebbe`). `POST /api/threads/:id/job/:assignmentId/stop` calls
    `coordinator.stopHandoff`, which calls `runtime.cancel(id, "stopped")`
-   (`server/routes/jobs.ts:78-90`, `server/runtime-coordinator.ts:474-486`).
+   (`server/routes/jobs.ts:78-90`, `server/runtime-coordinator.ts:504-516` at `e1cc6a290`).
    The requester hears it and goes on.
 6. **cancel** cascades down the tree, aborts running turns and writes
    `cancelled` with `stopped` (`runtime.ts:668-673`). The requester gets
    the report.
 7. The coordinator remembers for 24 h, in memory, that the person stopped
-   that work (`server/runtime-coordinator.ts:160`, `:498-516`). A guard keeps
+   that work (`server/runtime-coordinator.ts:168` at `e1cc6a290`, `:498-516`). A guard keeps
    a stop that the system made (a restart, a cut) from being recorded as the
    person's stop (`:462-495`).
 
 ### 3.9 The restart
 
 `open()` runs one time and uses only stored rows
-(`server/runtime/runtime.ts:109-158`).
+(`server/runtime/runtime.ts:113-162` at `e1cc6a290`).
 
 1. It reads the open rows and sorts them deepest first, so that the fate of
    a child marks its parent first.
@@ -528,7 +639,7 @@ Some traffic from a requester to a child does not go through the runtime
 5. The parent of a cut child gets `restart = "teammates"`. Its next turn
    lists the cut teammates (`tree.ts:150-162`).
 6. Each ended row with no `reportedAt` goes into `reportDue`. This line
-   reads **all** rows, ended rows too (`runtime.ts:157`).
+   reads **all** rows, ended rows too (`runtime.ts:161` at `e1cc6a290`).
 
 The rerun turn opens with a note: "… First check what that turn already did
 (files, commits, messages, anything sent or started) and verify anything
@@ -537,7 +648,7 @@ uncertain, so nothing is done twice …" (`tree.ts:153`).
 Rows are the roots too. A person's cut turn runs again one time
 (`server/runtime-roots.e2e.test.ts:333-361`). The host's `outward` port
 blocks one case: "A person's cut root never reruns after a follow-up in its
-thread" (`server/index.ts:4022-4030`).
+thread" (`server/index.ts:4035-4043` at `e1cc6a290`).
 
 At shutdown the host closes the runtime before it stops the engines, "so
 what the teardown fails stays cut for the next start" (`:15188-15189`). After
@@ -566,7 +677,7 @@ a crash, the running rows stay `running`, so the next start runs them again
   failures in a row (`:769-773`).
 - Waits with no limit by design: a root parked on cards, any park when the
   wait limit is infinite, a node queued to continue, and work held for an
-  away place (`types.ts:366-368`, `runtime.ts:325`, `:859-861`).
+  away place (`types.ts:366-368`, `runtime.ts:325`, `:901-903` at `e1cc6a290`).
 
 ### 3.11 Loop guards
 
@@ -576,7 +687,10 @@ Four separate things carry this name or do this work:
    continuations in a row with no successful tool call, or the same error
    three times, end the node with `failed` and `stalled`. A continuation
    with no evidence counts neither way.
-2. **The ancestor rule** in `admit` (section 3.4, step 2.4).
+2. **The ancestor rule** in `admit` (section 3.4, step 2.4). Since
+   `c47a9d772` (after the tag v0.1.186), it guards only wait cycles: it
+   refuses only a reply of `resume` (`server/runtime/runtime.ts:238-243` at
+   `e1cc6a290`).
 3. **The crossed wait** in the coordinator: two bots that wait on each other
    (`server/runtime-coordinator.ts:137-143`).
 4. **The shell repeat guard** of the host, for one command that fails the
@@ -584,13 +698,15 @@ Four separate things carry this name or do this work:
    steered note at 5, and a stop at 20 for unattended turns only
    (`server/host/loop-guard.ts:1-4`, `:44-46`, `:100`, `:149-155`).
    Unattended turns also stop after 4 h, 400 model requests or 5 denials
-   (`server/host/unattended-turns.ts:19`).
+   (`server/host/unattended-turns.ts:19`). Since v0.1.186 the 4 h are on a
+   monotonic clock, so a clock set forward or a computer asleep does not
+   count (`server/host/unattended-turns.ts:91-92` at `e1cc6a290`).
 
 ### 3.12 Where the contract and the code differ
 
 1. **Stop.** The contract says that running children "keep their process
    and still report" (`docs/runtime-contract.md:48`). The code cancels them
-   (`runtime.ts:675-693`, tests `runtime.test.ts:547-568`).
+   (`runtime.ts:717-735` at `e1cc6a290`, tests `runtime.test.ts:547-568`).
 2. **Budgets.** The contract has "three budgets per root" and "Progress
    renews them; nothing else does" (`:89`). The code also has the total of
    300 and the 5 failures in a row, and a failed child renews the budgets of
@@ -616,6 +732,11 @@ Four separate things carry this name or do this work:
    requests and 48 turns (`:465-471`), a question that expires after 30
    minutes (`:470-471`), and that a person's own turn does not run again
    (`:54-55`).
+10. **The ancestor rule (since `c47a9d772`, after the tag v0.1.186).** The
+    contract says that Enqueue refuses work back to an ancestor, with one
+    exception, `ownThread` (`docs/runtime-contract.md:36` at `e1cc6a290`).
+    The code also lets through each reply that does not wait (`none`,
+    `poll`) (`server/runtime/runtime.ts:238-243` at `e1cc6a290`).
 
 ### 3.13 The problems of `changelog.md` in this code
 
@@ -763,6 +884,10 @@ These are lost at a crash (`runtime.ts:81-94`, `:299-301`):
   `awayNow`.
 - `reportDue` (rebuilt by `open`), `rootActivity`, `nextRerunAt`,
   `rerunsStarted`, `bootAt`.
+- Since v0.1.186, `pendingSettlements`: the results that the store refused
+  (`server/runtime/runtime.ts:90-91` at `e1cc6a290`). After a crash in the
+  retry window, the row is still `running`, so `open()` treats it as a cut
+  turn and can run it again.
 
 In the coordinator: the memory of the person's stops (24 h), the stop cause,
 the join wait of a shared answer (`server/runtime-coordinator.ts:160-166`).
@@ -773,7 +898,7 @@ In the host: the dispatch claims, the settlers, the parked seats, the set
 
 ### 4.5 The views
 
-- `HandoffView` (`server/runtime-coordinator.ts:97-125`) maps a row for the
+- `HandoffView` (`server/runtime-coordinator.ts:105-133` at `e1cc6a290`) maps a row for the
   product layer. `needs_input` shows as `"waiting"`, so the view cannot tell
   a park from a wait on children. A running root on its first turn shows as
   `"source"`.
@@ -890,7 +1015,7 @@ These come from the port calls `park`, `remind` and `report`
 | I7 an event for each status change | S22, R-S6 | Only the status is replayed |
 | I8 at most one rerun | S08, R-S3, `runtime.test.ts:423`, `:1600` | none |
 | I9 a wake only when idle | `runtime.test.ts:701`, `:1375`, S21, S29 | The checker does not test "idle" |
-| I10 no throw into a turn | S23, S23b, S23c, R-S7 | No checker. A `validate` or a store write that throws at enqueue has no test |
+| I10 no throw into a turn | S23, S23b, S23c, R-S7 | No checker. A `validate` or a store write that throws at enqueue has no test. Since v0.1.186, a store write that throws at settle has four tests (`server/runtime/runtime.test.ts:1705-1790` at `e1cc6a290`) |
 
 ### 6.3 Behaviours that only the tests show
 
@@ -915,7 +1040,7 @@ These come from the port calls `park`, `remind` and `report`
 `answersSender`, `doneWhen`, `fault`, the queue expiry of a row that ran
 already, a stop of a queued rerun, an enqueue with no parent, the clip of a
 brief at 12,000, and a `completed` result after `close()`
-(`server/runtime/runtime.ts:276-283`, `:660-666`, `:572-574`, `:221`,
+(`server/runtime/runtime.ts:285-292` at `e1cc6a290`, `:660-666`, `:572-574`, `:221`,
 `:224`, `:326`, `:517`, `:687`).
 
 ### 6.5 The coordinator and the end-to-end tests
@@ -1024,9 +1149,9 @@ P-numbers.
   the model.
   - Why: `AGENTS.md` says "The runtime returns typed refusals". The
     reference returns a free-text `reason` (`types.ts:237-239`), a bare
-    `false` from `answer` (`runtime.ts:645`), and a throw from `begin` on a
-    repeated identifier (`:172-175`). The coordinator then matches the text
-    with a regular expression (`runtime-coordinator.ts:309-312`). The
+    `false` from `answer` (`runtime.ts:687` at `e1cc6a290`), and a throw from `begin` on a
+    repeated identifier (`:176-179` at `e1cc6a290`). The coordinator then matches the text
+    with a regular expression (`runtime-coordinator.ts:339-342` at `e1cc6a290`). The
     compiler can check an enum. It cannot check a regular expression.
 - **A2. The limits of the product are named settings.** Depth, requests,
   turns, wakes, the total, the failures in a row and the four clocks are one
@@ -1040,36 +1165,36 @@ P-numbers.
 - **A3. No read of all rows, from the first version.** The three full reads
   that remain become reads through an index:
   - `open()` reads all rows to find unreported results
-    (`runtime.ts:157`). Use a partial index on rows where `reportedAt` is
+    (`runtime.ts:161` at `e1cc6a290`). Use a partial index on rows where `reportedAt` is
     null.
-  - `newerWorkIn` reads all rows of a thread, ended rows too (`:429-431`).
+  - `newerWorkIn` reads all rows of a thread, ended rows too (`:440-442` at `e1cc6a290`).
     Use the index of the thread with `created_at >= boot`.
   - `answeredElsewhere` reads all rows open since a time
-    (`runtime-coordinator.ts:717`), a full scan.
+    (`runtime-coordinator.ts:747` at `e1cc6a290`), a full scan.
   - Why: changelog section 5, the scans of ended work. The reference fixed
     it two times and three cases remain.
 - **A4. A tick that cannot stay busy for nothing.** `pace()` says "busy"
-  for a queued row that `canStart` refuses for ever (`runtime.ts:280`,
-  `:418-420`). A tick that throws, for example on one bad row, keeps the
+  for a queued row that `canStart` refuses for ever (`runtime.ts:289` at `e1cc6a290`,
+  `:429-431` at `e1cc6a290`). A tick that throws, for example on one bad row, keeps the
   pace at "busy" (`server/handoff-ticks.ts:33-38`, `store.ts:190`). The set
   `parkedNodesToReconcile` can hold the pace at "busy"
-  (`server/index.ts:9385`, `:9398`). Each case gives 4 ticks each second.
-  Each tick reads all open rows two times (`runtime.ts:319`, `:380`).
+  (`server/index.ts:9386` at `e1cc6a290`, `:9399` at `e1cc6a290`). Each case gives 4 ticks each second.
+  Each tick reads all open rows two times (`runtime.ts:330` at `e1cc6a290`, `:391` at `e1cc6a290`).
   Proposal: the pace counts only rows that can start, and a tick that fails
   backs off.
   - Why: changelog section 5, "Busy" and races (v0.1.149). These are
     possible, not proven by a test.
 - **A5. Redact the brief, the question and the result before the store
   write.** The reference redacts an answer only when it is longer than
-  12,000 characters (`runtime.ts:647-648`). It stores and sends the brief
+  12,000 characters (`runtime.ts:689-690` at `e1cc6a290`). It stores and sends the brief
   with no redaction (`envelope.ts:140`), and the result also
   (`envelope.ts:183`). The host redacts only the result row of the chat
-  (`server/index.ts:3920`).
+  (`server/index.ts:3933` at `e1cc6a290`).
   - Why: `AGENTS.md` says "Redact tokens and keys before text reaches
     disk".
 - **A6. One dedupe.** The coordinator and the runtime each check for a
-  duplicate sibling, with different keys (`runtime-coordinator.ts:281-283`,
-  `runtime.ts:237-239`). We keep the one in the runtime.
+  duplicate sibling, with different keys (`runtime-coordinator.ts:313-315` at `e1cc6a290`,
+  `runtime.ts:246-248` at `e1cc6a290`). We keep the one in the runtime.
   - Why: less code, and one rule.
 - **A7. A child's view that keeps `needs_input`.** `HandoffView` shows
   `needs_input` as `"waiting"` (`runtime-coordinator.ts:99`), and
@@ -1077,11 +1202,11 @@ P-numbers.
   (`:561`). Our view keeps the status of the runtime.
   - Why: a wrong state that the type can refuse.
 - **A8. The person's stop survives a restart.** The reference keeps it in
-  memory for 24 h (`runtime-coordinator.ts:160`). After a restart a stopped
+  memory for 24 h (`runtime-coordinator.ts:168` at `e1cc6a290`). After a restart a stopped
   request can be given out again.
   - Why: changelog section 5, state lost at a restart.
 - **A9. Follow the code on Stop, and correct the contract.** Stop cancels
-  running children too (`runtime.ts:675-693`). Our contract says so.
+  running children too (`runtime.ts:717-735` at `e1cc6a290`). Our contract says so.
   - Why: the reference document is old (`docs/runtime-contract.md:48`).
 - **A10. A requester's question of a child in a language other than English
   or German goes to the person.** The reference treats it as a question that
@@ -1093,21 +1218,21 @@ P-numbers.
 
 - **P83 (one transaction for each restart decision, and a delivery rule).**
   Three more places:
-  - The park of a child's question (`runtime.ts:568`) and its wake
-    (`:572`) are two transactions. `open()` parks the child again but never
+  - The park of a child's question (`runtime.ts:610` at `e1cc6a290`) and its wake
+    (`:614` at `e1cc6a290`) are two transactions. `open()` parks the child again but never
     sends the wake again, and the requester resumes only when that inbox
-    item exists (`:855-856`). A crash between the two leaves the requester
+    item exists (`:897-898` at `e1cc6a290`). A crash between the two leaves the requester
     waiting with no question.
   - `report()` calls the host before it writes `reportedAt`
     (`:795-799`), and the wake of a result is a third transaction (`:802`,
     `:815`). A crash between them gives a second report, or loses the wake
     of a polling requester.
   - The outward branch and the cut-twice branch of `open()` write
-    `restart_reconciled` and then `settle` as two writes (`:134-139`).
+    `restart_reconciled` and then `settle` as two writes (`:138-143` at `e1cc6a290`).
 - **P84 (the fifth restart branch).** v0.1.180 publishes it: "After a
   restart caused by running out of memory, the task that was using the
   browser is not started again by itself." It is a host hook, not a rule of
-  the runtime (`runtime.ts:140-142`).
+  the runtime (`runtime.ts:144-146` at `e1cc6a290`).
 - **P85 (run the invariant checks after a restart).** The checker reads all
   rows (`invariants.ts:39`), so it is not cheap on a large store. It also
   has no check for I10.
@@ -1117,7 +1242,7 @@ P-numbers.
   nothing.
 - **P133 (a time limit for a whole turn).** The product sets the runtime's
   turn stall to 24 h and leaves the stall to the host watchdog (20 min,
-  `server/index.ts:4915`). The host turn has no time limit of its own
+  `server/index.ts:4928` at `e1cc6a290`). The host turn has no time limit of its own
   (`:3974-3998`).
 - **P138 (a limit for a question in the bot's own chat).** A parked root has
   no limit and is never pruned. A test keeps one for 40 days
@@ -1132,8 +1257,8 @@ P-numbers.
 | Problem | Here | Lines |
 |---|---|---|
 | A turn or a wait that does not end | A parked root has no limit. The host turn has no time limit. A shared answer polls each second until the first request ends | `types.ts:366-368`, `index.ts:3974-3998`, `runtime-coordinator.ts:730-742` |
-| The same work done two times, or lost | A second report after a crash. A lost wake of a question after a crash. A rerun can repeat work that had no outward label | `runtime.ts:795-799`, `:568-572`, `tree.ts:153` |
-| "Busy" and races | A pace that stays "busy" (A4). The coordinator reads all open rows on each call of about 18 methods, also for each host event | `runtime-coordinator.ts:703-705`, `:608-616` |
+| The same work done two times, or lost | A second report after a crash. A lost wake of a question after a crash. A rerun can repeat work that had no outward label. **Repaired in v0.1.186:** "a result the store couldn't save is kept and retried." A result whose store write threw was lost before. Now it is kept in memory and retried on the next 5 ticks. It is still lost at a crash or after the fifth failure | `runtime.ts:795-799`, `:568-572`, `tree.ts:153`; at `e1cc6a290`: `runtime.ts:58-59`, `:90-91`, `:540-564` |
+| "Busy" and races | A pace that stays "busy" (A4). The coordinator reads all open rows on each call of about 18 methods, also for each host event. Since v0.1.186, a settlement that the store refused five times leaves a `running` row with no handle, and the pace stays "busy" until the tree stall (4 h) | `runtime-coordinator.ts:703-705`, `:608-616`; at `e1cc6a290`: `runtime.ts:289`, `:557-561` |
 | State lost at a restart | The person's stop, `heldFor`, the chips, the dispatch claims | section 4.4 |
 | Scans of ended work | Three full reads (A3) | section 8.1 |
 | A secret in the wrong place | The brief, the question and the result are stored and sent with no redaction (A5) | `envelope.ts:140`, `:183` |
@@ -1149,7 +1274,18 @@ thread (`server/runtime/runtime.ts:389-403`). The full record is
 ## 9. Not verified
 
 - Whether `runtime.open()` runs before the engines are read, through
-  `drainQueuedSends()` (`server/index.ts:15130`).
+  `drainQueuedSends()` (`server/index.ts:15130`). New fact at `e1cc6a290`:
+  `open()` can run inside the constructor of `RoutineManager`, while
+  `server/index.ts` still builds the host objects. Commit `a15f6ab26`
+  (after the tag v0.1.186) builds `ownThreads` before `createCoordinator`
+  for this reason (`server/index.ts:3845-3857`; test
+  `server/coordinator-restart-report.e2e.test.ts:16`).
+- The update of 2026-11-28: the readers read the large files
+  (`server/runtime/runtime.ts`, `server/runtime-coordinator.ts`,
+  `server/index.ts`) in ranges and through the diffs, not completely.
+  Whether a pending settlement acts with `stopRequester` in other ways than
+  the test `server/runtime/runtime.test.ts:1731` shows is not verified. No
+  coordinator test sends a `poll` ask back to an ancestor.
 - What the host's `run` does when the turn throws. `run()` of the
   coordinator has no catch.
 - Whether the tree stall of 4 h can fail a request that waits for a shared
