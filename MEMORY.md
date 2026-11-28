@@ -88,16 +88,16 @@ research the release history again unless the author asks.
   many key changes that the rows of section 8 did not have. It corrected
   `changelog.md`. The findings and the full list of missing changes are in
   [`docs/research/changelog-check.md`](docs/research/changelog-check.md).
-  On 2026-11-27 the file covered v0.1.0 to v0.1.184, and v0.1.184
-  (2026-11-26) was the latest release of the reference project. v0.1.179
-  and v0.1.183 have no tag and no release.
+  On 2026-11-28 the file covered v0.1.0 to v0.1.186, and v0.1.186
+  (2026-11-27) was the latest release of the reference project. v0.1.179,
+  v0.1.183 and v0.1.185 have no tag and no release.
 - **How:**
   - Use sections 5, 6 and 7 for the problems that each feature must check,
     as "How to run a batch" in `docs/research/progress.md` says. For the
     repeated fixes of one theme, look also in section 6 of
     `changelog-check.md`.
   - Keep it up to date: when the reference project publishes a release after
-    v0.1.184, add its row to section 8. Change sections 3 to 7 only when the
+    v0.1.186, add its row to section 8. Change sections 3 to 7 only when the
     new release changes them.
 
 ### A changelog row has all the key changes of its release (2026-11-23)

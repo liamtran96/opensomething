@@ -22,7 +22,7 @@ wide first, and its base parts came late.
 | **1** | The core: one bot answers | 1 to 7 | You type a message, and the answer appears word by word | 12 | 12 |
 | 2 | The bot remembers and acts | 8 to 10 | The conversation is there after a restart, and an approval works | 13 | 13 |
 | 3 | A team of bots | 11 to 16 | One bot gives work to a second bot and gets the result | 100 | 100 |
-| later | We want it, after step 16 | none | none | 110 | 103 |
+| later | We want it, after step 16 | none | none | 110 | 110 |
 | no | Not in our plan. We read it only to understand it | none | none | 140 | 0 |
 
 - **Ours** is the crate that gets the port: `bot-protocol` (types, no I/O),
@@ -106,6 +106,12 @@ wide first, and its base parts came late.
     (`driver-contract.md`), the Connections Center UI and the state of a
     teammate. Open in the group "later": the avatars and the mascot (six
     rows) and localization.
+14. Batch 14 of [`progress.md`](progress.md), on 2026-11-28 at `e1cc6a290`
+    (v0.1.186), did the last seven open rows of the group "later": the
+    mascot (the body shapes, the faces and the vendored engine), the
+    avatars (the storage, the providers and the removed Living avatar) and
+    localization. The author chose an ant as our mascot (decision D23). The
+    group "later" has no open core row now.
 
 ## Plans in `docs/superpowers/plans/`, files 1 to 12
 
@@ -142,9 +148,9 @@ All 12 files were read completely (5,477 lines).
 | Token usage split into new input, cache write and cache read | `2026-08-31-01-usage-accounting-and-budgets.md` | not stated | 21 | later | `bot-core` | done: [`usage-and-budgets.md`](features/usage-and-budgets.md) |
 | Spend caps for each bot and for the workspace, checked before a turn starts | `2026-08-31-01-usage-accounting-and-budgets.md` | not stated | 21 | later | `bot-core` | done: [`usage-and-budgets.md`](features/usage-and-budgets.md) |
 | The bot profile: one document for all parts of a bot, with a version log and rollback | `2026-08-31-02-bot-profile.md` | not stated | 45 | later | `bot-desktop` | done: [`bot-profile.md`](features/bot-profile.md) |
-| Ten mascot body shapes for a bot, made by a generator | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | open |
-| The "Living" avatar: an uploaded picture is the body, with the live face on it | `2026-08-31-04-mascot-shape-catalog.md`, and its specification | removed | 46 | later | `bot-desktop` | open |
-| The 25 face expressions, the gaze and the mouths of the mascot | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | open |
+| Ten mascot body shapes for a bot, made by a generator | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | done: [`mascot.md`](features/mascot.md) |
+| The "Living" avatar: an uploaded picture is the body, with the live face on it | `2026-08-31-04-mascot-shape-catalog.md`, and its specification | removed | 46 | later | `bot-desktop` | done: [`avatars.md`](features/avatars.md) |
+| The 25 face expressions, the gaze and the mouths of the mascot | `2026-08-31-04-mascot-shape-catalog.md` | built | 46 | later | `bot-desktop` | done: [`mascot.md`](features/mascot.md) |
 | The host adapter: what a computer without a desktop session cannot do | `2026-08-31-05-headless-harness.md` | not stated | 29, 33 | later | `bot-desktop` | done: [`desktop-shell.md`](features/desktop-shell.md) (the adapter was never built) |
 | Copy of a skill to another bot | `2026-08-31-06-memory-review-loop.md` | not stated | 19 | later | `bot-core` | done: [`skills.md`](features/skills.md) |
 | Search of past sessions | `2026-08-31-06-memory-review-loop.md` | built | 47 | later | `bot-core` | done: [`session-search.md`](features/session-search.md) |
@@ -333,14 +339,14 @@ a feature is marked. Each row has all the features of one page.
 | `proactive-routines.md` | The default routine "keep an eye on my day"; the daily brief card; a meeting preparation card and a 10-minute reminder; routine checks; read-and-draft runs; inbox triage with the helper model; reliability rules; state files; a morning brief on a personal Cloud | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `routine-schedules.md` | Routines from natural language with cron; the schedule types; the `check_back` tool; an on/off switch; one-time routines; delete cascade; where a routine runs; keep the computer awake; catch-up after downtime and "Missed" rows; a ledger of occurrences; a cap on run rows; restart of a lost run; run time limits; a busy bot misses after 60 minutes; safety for an unreadable routines file; waits for approval | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `runtime-contract.md` | The assignment record and its database; the lifecycle; one answer to the same request; a question from a child interrupts the wait; a requester with full access answers; typed questions become cards; continue and loop guards; wake, cancel, stop; the level rule; the envelope; the restart policy; budgets and clocks; ten invariants; ports; the tool surface | 14 | 3 | `bot-core` | done: [`assignment-runtime.md`](features/assignment-runtime.md) |
-| `avatar-storage.md` | Bot avatars in the attachment store; an avatar made with AI | 46 | later | `bot-desktop` | open |
+| `avatar-storage.md` | Bot avatars in the attachment store; an avatar made with AI | 46 | later | `bot-desktop` | done: [`avatars.md`](features/avatars.md) |
 | `bitwarden.md` | A password manager in the Vault: server choice, a check before save, a CLI runner, `bw://` references, a secrets manager, a pinned download | 11 | later | `bot-core` | done: [`vault-bitwarden.md`](features/vault-bitwarden.md) |
 | `bot-box.md` | The bot box: a sandbox for the process of a bot on Linux; a list of permitted environment variables; an egress gate; a credential broker; a broker for MCP headers; a system-call filter; a self-check | 11, 57 | later | `bot-core`, `bot-engine` | done: [`bot-box.md`](features/bot-box.md) |
 | `cli-onboarding.md` | Install with `npx`; a set-up wizard in the terminal; sign-in with a device code; a test message; phone access (a managed tunnel, Tailscale, or an existing address); pairing with a QR code; where credentials are stored | 25, 33, 53 | later | `bot-desktop` | done: [`onboarding.md`](features/onboarding.md) |
 | `desktop-chat-links.md` | "Copy link" to a bot; the `://bot/<id>` link; link handling; links to the Cloud and to the organization | 29 | later | `bot-desktop` | done: [`desktop-shell.md`](features/desktop-shell.md) |
 | `feature-flags.md` | The `features` switches in the config; the opt-out file of the library; three states of server lending; environment overrides; the loop guard; removed flags | 39, 4 | later | `bot-core` | done: [`environments-and-flags.md`](features/environments-and-flags.md) |
 | `linux-desktop.md` | The Linux desktop (beta): packages, the updater, CLI discovery, the screen preview, local control on Xorg, a GPU switch; on GNOME Wayland all works except local control | 29 | later | `bot-desktop` | done: [`desktop-shell.md`](features/desktop-shell.md) |
-| `localization.md`, `localization-pt-br.md` | Locale packs with English as the fallback; the language setting; a check script; a draft tool that uses a model; a style guide and a glossary for one language; localization of server messages; vocabulary tests | 28 | later | `bot-desktop` | open |
+| `localization.md`, `localization-pt-br.md` | Locale packs with English as the fallback; the language setting; a check script; a draft tool that uses a model; a style guide and a glossary for one language; localization of server messages; vocabulary tests | 28 | later | `bot-desktop` | done: [`localization.md`](features/localization.md) |
 | `notification-and-proactivity-qa.md` | The types of notification; notifications off for a bot; quiet threads that a bot opened; a click goes to the exact bot and task; read-on-open across applications; no notification when the window has focus; notifications on iOS | 50 | later | `bot-desktop` | done: [`notifications.md`](features/notifications.md) |
 | `opencode-go.md` | One ACP engine in detail: its key, keys for its other providers, model discovery, a retry at 128 tools, usage limits | 7 | later | `bot-engine` | done: [`acp-engine-details.md`](features/acp-engine-details.md) |
 | `pausing-bots.md` | Pause a bot, a department or all bots; what a pause does; who can pause; the API and the CLI | 45, 55 | later | `bot-desktop` | done: [`recovery-and-pausing.md`](features/recovery-and-pausing.md) |
@@ -386,7 +392,7 @@ describes a check of it. Each row has all the features of one record.
 | `handoff-status.md` | The state row of a hand-off: claimed, working, waiting, done, failed | 15 | 3 | `bot-core`, `bot-engine` | done: [`bot-coordination.md`](features/bot-coordination.md) |
 | `interval-restrictions.md` | A routine "each X minutes" with limits by weekday, hours and an end date | 18 | 3 | `bot-core` | done: [`automations.md`](features/automations.md) |
 | `automatic-recovery.md` | Backup models for each bot (up to 5); a backup engine for all bots; take-over when a usage limit is reached; recovery from a refused sign-in | 21 | later | `bot-core` | done: [`recovery-and-pausing.md`](features/recovery-and-pausing.md) |
-| `avatar-providers.md` | Providers for avatar pictures | 46 | later | `bot-desktop` | open |
+| `avatar-providers.md` | Providers for avatar pictures | 46 | later | `bot-desktop` | done: [`avatars.md`](features/avatars.md) |
 | `bidi.md` | Right-to-left text in messages | 23 | later | `bot-desktop` | done: [`look-and-design.md`](features/look-and-design.md) |
 | `bot-continuity.md` | The set-up interview of a bot, only on `/setup`; the scope of a model change; files across threads; the model picker for a signed-out or absent engine | 45, 12 | later | `bot-desktop` | done: [`bot-settings-ui.md`](features/bot-settings-ui.md), [`bot-profile.md`](features/bot-profile.md) |
 | `bot-settings.md` | The bot settings dialog and its sections (identity, standing instructions, history with Undo, memory, skills, routines, access, model, permissions, voice, usage); duplicate a bot; "New bot" and its defaults; the simple bot panel with six tabs | 45 | later | `bot-desktop` | done: [`bot-settings-ui.md`](features/bot-settings-ui.md), [`bot-profile.md`](features/bot-profile.md) |
@@ -552,7 +558,7 @@ read. They are not here yet.
 | Bot to bot across servers: an admin saves a teammate on another server (address and Bot API key), and local bots give it work with `coordinate_bots` | `bot-api.md`, `runtime-contract.md` | built | 15, 33 | later | `bot-core`, `bot-engine` | done: [`remote-bots.md`](features/remote-bots.md) |
 | The Skill Burger card: after a run of two or more real steps, "Add skill" saves the run as a workflow skill, with Undo | `verification/chat-ui.md` | built | 19, 48 | later | `bot-desktop`, `bot-core` | done: [`chat-ui.md`](features/chat-ui.md) |
 | Prompt-cache keep-warm: off by default; it holds a Claude process for 3 hours by default, one day at most | `verification/context-compaction.md` | built | 17 | later | `bot-engine` | done: [`context.md`](features/context.md) |
-| The vendored Open Bot Avatar engine (MIT) | `packages/phone-protocol/src/open-bot-avatar/README.md` | built | 46 | later | `bot-desktop` | open |
+| The vendored Open Bot Avatar engine (MIT) | `packages/phone-protocol/src/open-bot-avatar/README.md` | built | 46 | later | `bot-desktop` | done: [`mascot.md`](features/mascot.md) |
 | The computer wait ceiling: a turn waits 30 minutes at most, then parks and continues when the computer is free; the model is told its place in line, never who holds the computer | `verification/computer-wait.md` | built | 32, 54 | no | not planned | open |
 | Ask once before the first action of a bot on the person's own computer, at each approval level, unless the person picked that computer | `superpowers/specs/2026-10-27-saved-steps-design.md` | built | 32, 10 | no | not planned | open |
 | A different computer for one chat: a chat overrides the "Works on" of its bot | docs site: `computers/index.mdx` | built | 54 | no | not planned | open |
