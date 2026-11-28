@@ -2,7 +2,8 @@
 
 The proposals from the research file
 [`../research/features/engine-turn-lifecycle.md`](../research/features/engine-turn-lifecycle.md)
-(batch 11, reference commit `42f86aefd`, tag v0.1.184). The steps, the pull
+(batch 11, reference commit `42f86aefd`, tag v0.1.184; updated on
+2026-11-28 to commit `e1cc6a290`, after the tag v0.1.186). The steps, the pull
 requests and the order are in [`README.md`](README.md). The author decides
 each proposal. Then it becomes a decision, a pull request or a choice, and its
 text leaves this file. A path that starts with `crates/`, `docs/plan/`,
@@ -126,6 +127,16 @@ other paths are in the reference project.
     `server/resume-recovery.ts:44-46`). After an ACP rebuild, the person is
     not told.
   - Judgment call: no release names this.
+  - At `e1cc6a290` the problem stays: the ACP core still sets
+    `rebuilt: true` with no notice (`server/drivers/acp/core.ts:1195`).
+    Codex now has two notices: `instructionsOverflowNotice` for the
+    instruction overflow rebuild and `rebuiltSessionNotice` for the others
+    (`server/drivers/codex.ts:1331`, `server/resume-recovery.ts:44-50`).
+    Two ACP failures now tell the person in their failure text that the next
+    message starts a fresh session: an image refusal by a text-only model
+    (`src/locales/en.json:10222`) and an Antigravity session that is broken
+    (`server/drivers/antigravity-turn-outcome.ts:174-176`, commit
+    `f44b41d31`, after the tag). The rebuilt turn itself still has no notice.
 - **P595 (plan, step 9, `bot-engine::acp`). One `SteerStrategy` enum.**
   Follows the reference.
   - The variants are `None`, `Command { name }`, `Request { method }` and
@@ -158,6 +169,10 @@ other paths are in the reference project.
     `server/drivers/codex-warm.ts:215-235`).
   - A kept process is never given to another conversation
     (`server/drivers/codex-warm.ts:266`).
+  - At `e1cc6a290` an equal key is not enough for the Claude driver: it
+    also closes a process after a turn when a configured MCP server did not
+    connect at the start (`server/drivers/claude.ts:1293`, `:1375`, commit
+    `3ce9cc7bf`, after the tag v0.1.186). P779 takes this rule.
 - **P597 (plan, step 9, `bot-engine::acp`). The MCP transport and the byte
   budget come from capability flags and the `initialize` answer, not from
   an agent name.** The behaviour follows the reference.
@@ -227,6 +242,12 @@ other paths are in the reference project.
     (`server/drivers/claude.ts:919-921`). The release problems: "Sign-in to
     an engine, and engine CLIs that change" (v0.1.101, v0.1.177, v0.1.178)
     and "The person's own engine config reaches the bots" (v0.1.104).
+  - At `e1cc6a290` the reference separates an unknown version in one place:
+    the rebuild for a stale system prompt does not trust an unknown or
+    unparsed version (`knowsRecordedPrompt`, `server/drivers/claude.ts:931`,
+    commit `642968816`, v0.1.186). A flag still passes on an unknown version
+    (`server/drivers/claude-cli-version.ts:36-38`, and `claude.ts:932` gives
+    `--system-prompt-snapshot off` to it). So the problem stays.
   - The ACP core probes the version of a CLI
     (`server/drivers/acp/core.ts:104`). Nobody read if it gates flags on a
     version floor, so this proposal stays "later".
@@ -315,6 +336,68 @@ other paths are in the reference project.
     Inferred, not tested. The release problem: "The same work done or
     delivered two times, or lost" (v0.1.182).
 
+### New proposals from the update to `e1cc6a290` (v0.1.186)
+
+The main session gives these proposals their P-numbers.
+
+- **P778 (plan, later, the Claude adapter, and each adapter that cannot
+  refresh the system prompt of a resumed session). The store keeps the
+  hash of the system prompt that each native session holds.** The adapter
+  writes the hash in the row of the native session when the engine
+  confirms the session (the `init` of the CLI), in the same transaction as
+  the event (`AGENTS.md`). Before a resume, the runtime compares that hash
+  with the hash of the prompt of now. When they are different and the
+  adapter cannot refresh the prompt, the runtime rebuilds from the stored
+  recovery text in a new session. A version that is `Unknown` (P601) counts
+  as "cannot refresh". A capability flag gives "can refresh", never a
+  driver name.
+  - **Problem in the reference:** the record of the prompt is a map in
+    memory (`server/drivers/claude.ts:747`). After a server restart the map
+    is empty, so an older Claude CLI resumes a session with the old
+    instructions again (`:941-942`). That is the problem that v0.1.186
+    repaired: "An older Claude CLI starts a fresh session when the bot's
+    instructions change." (commits `5638d70a4`, `642968816`, `af534cdca`).
+    Inferred from the code. No test covers the restart. The release
+    problems: "Sign-in to an engine, and engine CLIs that change"
+    (v0.1.186) and "State lost at a restart or a crash" (v0.1.165).
+- **P779 (plan, step 9, `bot-engine`, with P596). A warm process is not
+  kept after a start where a configured MCP server failed.** Follows the
+  reference. An adapter with the capability flag `mcp_connects_at_start`
+  marks its session as not keepable when the session-start event names a
+  failed configured server. The runtime closes the process after the turn.
+  The next turn starts a new process and resumes the native session, so
+  the server connects again (`server/drivers/claude.ts:1293`, `:1375`,
+  commit `3ce9cc7bf`, issue #4386, after the tag v0.1.186; test
+  `server/drivers/claude.test.ts:3848`). Codex already does this: a failed
+  server stops the keep (`server/drivers/codex.ts:679`).
+  - The reference fixed this problem after the tag: the tools of a failed
+    server did not come back in a warm process until an app restart, a
+    server edit or a model change. The release problem: "One slow or stuck
+    part blocks all the others" (v0.1.153, "A turn carries on when one
+    optional MCP server dies").
+  - A risk to decide: a server that fails at each start makes each turn
+    start a new process, until the start check leaves the server out of
+    turns (`server/mcp-health.ts:142-145`). Inferred, not tested. Options:
+    - a. Follow the reference: no limit of its own.
+    - b. Close the process at most one time for each failed server and
+      each start key, and then keep the process with a notice (P598).
+- **P780 (plan, step 9, `bot-engine::acp`, with P461 and P594). A set of
+  native sessions that are never loaded again.** Follows the reference. The
+  ACP adapter keeps the ids of native sessions that a typed failure marks as
+  broken. The next turn does not load such a session and rebuilds from the
+  recovery text (`server/drivers/acp/core.ts:1127`, `:1353`, `:1387`). The
+  typed failures in the reference at `e1cc6a290`:
+  - Antigravity: a lost thinking signature, and since `f44b41d31` (after
+    the tag v0.1.186) a media part that Google cannot decode
+    (`server/drivers/antigravity-turn-outcome.ts:48`, `:192`).
+  - Any ACP engine: an image refusal by a text-only model (`image_content`,
+    `server/drivers/engine-errors.ts:40`, `:102`, commit `e60bfef8a`,
+    v0.1.186).
+  - Our port takes the failure kind from a `DriverError` variant, not from
+    the words of the error, where the engine gives a structured error. The
+    reference finds all three by words. That part is a judgment call: no
+    release problem names it.
+
 ## New facts for open proposals
 
 - **P34** (`queue-and-steer.md`) and **P64** (`driver-contract.md`):
@@ -372,12 +455,21 @@ other paths are in the reference project.
 - **P461** (`recovery-and-pausing.md`):
   - The ACP rebuild is always `before-accept`, and it fails with no
     recovery text (`server/drivers/acp/core.ts:1166-1181`).
-  - New, in no tag: Claude rebuilds when a CLI below 2.1.267 keeps an old
-    system prompt (`server/drivers/claude.ts:939-951`, commit `5638d70a4`).
-  - New, in no tag: Codex moves a thread to a new session past 85,000
-    characters of instruction blocks
-    (`server/drivers/codex-instructions.ts:38-39`, `:104-109`, commits
+  - In v0.1.186: Claude rebuilds when a CLI below 2.1.267 keeps an old
+    system prompt (`server/drivers/claude.ts:941-950` at `e1cc6a290`,
+    commits `5638d70a4`, `642968816`, `af534cdca`). It also rebuilds when
+    the version does not parse, when the probe gave no version, or when the
+    turn finds another copy of the CLI (`:909`, `:930-931`). The record of
+    the prompt is in memory only (`:747`). See P778.
+  - In v0.1.186: Codex moves a thread to a new session past 85,000
+    characters of instruction blocks, only when the thread has recovery
+    text (`server/drivers/codex-instructions.ts:39`, `:104-108`,
+    `server/drivers/codex.ts:1322-1323` at `e1cc6a290`, commits
     `b683e4116`, `5b740a190`).
+  - After the tag v0.1.186: an Antigravity session with a media part that
+    Google cannot decode is marked broken, and the next turn rebuilds
+    (`server/drivers/antigravity-turn-outcome.ts:48`, `:192`, commit
+    `f44b41d31`).
 - **P504** (`engines-and-accounts.md`): checked again at `42f86aefd`. Codex
   keeps the person's own home, and so reads `AGENTS.md`, in four cases
   (`server/drivers/codex-shared-home.ts:148-155`): no `auth.json`, a login
@@ -402,6 +494,31 @@ other paths are in the reference project.
 - `docs/verification/codex-instructions.md:26-28` of the reference is out of
   date. It says that a failed resume is not replayed. The code now rebuilds
   one time (`server/drivers/codex.ts:1280-1294`).
-- Three commits that the research file cites are in no release tag:
-  `5638d70a4`, `b683e4116` and `5b740a190`. Check them again at the next
-  release.
+- The three commits `5638d70a4`, `b683e4116` and `5b740a190` were in no
+  release tag on 2026-11-27. On 2026-11-28 all three are in v0.1.186
+  (`70eb44c1a`), and their code is the same at `e1cc6a290`.
+
+## Cited lines at `e1cc6a290`
+
+The proposals above cite the reference at `42f86aefd`, unless a line gives
+`e1cc6a290`. The code of these cites moved by `e1cc6a290`. The new lines
+have the same code, unless the row says that the code changed. A script
+compared each cited block at `42f86aefd` with the file at `e1cc6a290` and
+found the one place where the same block is now. The cites that this table
+does not name have the same lines at `e1cc6a290`, or their path was not
+found at `42f86aefd`.
+
+| Cite at `42f86aefd` | Line at `e1cc6a290` |
+|---|---|
+| `server/index.ts:7186-7191` | `:7198-7203` |
+| `server/routes/bot-messages.ts:431-434` | `:458-461` |
+| `server/index.ts:7166` | `:7178` |
+| `server/index.ts:7735-7746` | `:7747-7758` |
+| `server/index.ts:7697` | `:7709` |
+| `server/index.ts:8352` | `:8364` |
+| `server/drivers/claude.ts:1376-1377` | `:1376-1377` (the code of the line changed; the notice is at `:1377`) |
+| `server/index.ts:5161` | `:5173` |
+| `server/drivers/claude.ts:919-921` | `:918-920` |
+| `server/drivers/claude.ts:1301` | `:1300` |
+| `server/drivers/claude.ts:756` | `:755` |
+| `server/drivers/claude.ts:939-951` | `:938-950` |
