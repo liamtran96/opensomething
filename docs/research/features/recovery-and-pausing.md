@@ -9,6 +9,14 @@ The record of three parts of the reference project:
 - Reference: the reference project at commit `83d18e3af` (2026-11-26). The
   clone has no tag for v0.1.181, but the code of that release note that
   concerns this feature is in the commit (section 3.9).
+- Updated on 2026-11-28 to commit `e1cc6a290` (2026-11-28). The tag
+  v0.1.186 is commit `70eb44c1a`, and `e1cc6a290` has commits after it.
+  The section "Changes up to `e1cc6a290` (v0.1.186)" lists the changes of
+  this feature from `83d18e3af` to `e1cc6a290`. This file is correct for
+  those changes at `e1cc6a290`. The other parts were read at `83d18e3af`,
+  and their line numbers are from that commit, unless a line gives
+  `e1cc6a290`. Four subagents read the diffs of the range, and the main
+  session checked the key lines against the code.
 - Rows of [`reference-features.md`](../reference-features.md), group "later":
   - "Backup models for each bot (up to 5); a backup engine for all bots;
     take-over when a usage limit is reached; recovery from a refused sign-in"
@@ -114,6 +122,31 @@ What this file adds to the earlier research:
   section 6), and `limit-takeover.ts:194-196` confirms it.
 - [`notifications.md`](notifications.md) records that the incident ledger is
   in memory. This file gives the exact limits and their effect at a restart.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+All lines are at `e1cc6a290`. "Tag" means that the commit is in v0.1.186
+(`git merge-base --is-ancestor <commit> 70eb44c1a`). No change of the range
+changes how a person pauses a bot: the pause items of the menus only moved
+(for example `src/components/SidebarBotMenu.tsx:213-221` is now
+`:217-225`).
+
+| Change | Commit | Tag or after | File and line | Sections of this file |
+|---|---|---|---|---|
+| The bot settings refuse a new backup AI that `recoveryCapabilityError` rejects (another kind of workspace, or a tool flag of the main engine that the backup does not have). A saved entry stays. `PUT /api/config` for the installation backup has no such check | `248379166` | tag | `server/routes/bot-patch.ts:259-279`; `server/automatic-recovery.ts:34-43` | 3.1 |
+| An OpenCode usage limit holds only the models of the provider that hit it. A full Go meter is a model-scope hold, so other models of the same instance can take over | `645566fe8`, `2624b5105` (#4878) | after | `server/drivers/acp/opencode-go.ts:782-806`; `server/limit-resets.ts:163-173`; `server/host/limit-takeover.ts:278-288`; `server/index.ts:8647` | 3.2, 3.6 |
+| A short throttle of a provider that Grok reports is a rate limit, not a usage limit: no hold, no take-over, no notice, one automatic retry | `c7b2af0bb` (#7635) | tag | `server/drivers/acp/grok-signals.ts:39`, `:47`; `server/routine-recovery.ts:121` | 3.11 |
+| A Chief's retry of its own failed request goes out as a new `coordinate_bots` request in the same thread, so the result wakes the Chief. A question stays a question | `1254fb66c`, `e5b6e12df` | tag | `server/host/chief-notices.ts:83-91`, `:153-161` | 3.11 |
+| A Chief's retry of an idle thread whose bot is busy elsewhere or at its capacity goes into the steer queue, and the endpoint answers 200 `{queued: true}` | `579b341aa`, `d84b29142` (#7639) | tag | `server/host/chief-notices.ts:166-172`; `server/index.ts:13730-13733` | 3.11 |
+| An image refusal by a text-only model is a final failure (no automatic retry). The ACP session is never loaded again, and the next turn rebuilds | `e60bfef8a` | tag | `server/drivers/engine-errors.ts:40`, `:102`; `server/routine-recovery.ts:82`; `server/drivers/acp/core.ts:1353`, `:1127` | 3.9, 3.11 |
+| An Antigravity session with a media part that Google cannot decode is never loaded again, and the next turn rebuilds | `f44b41d31` | after | `server/drivers/antigravity-turn-outcome.ts:48`, `:192` | 3.9 |
+| A cut stream of an OpenAI-compatible provider is the transient reason `stream_cut` | `a91ee14e1`, `b0b545aa3` | tag | `server/drivers/retry.ts:17`, `:48`; `server/drivers/openai-chat.ts:713-718` | 3.11 |
+| A routine whose approval timed out gives the held reason in its error. The reason is in memory only, at most 500 entries | `65780d818` | tag | `server/routine-held-reasons.ts:3-15`; `server/routine-waits.ts:56` | new fact |
+| A scheduled run of a routine waits while the conversation of a finished run works on a follow-up | `681bc6f50` (#3080) | tag | `server/routines.ts:1123-1125` | new fact (the pause check at `:1144` did not change) |
+| The team backup file exports and restores cron and limit-reset routines, paused on the new owner | `24a632800` | tag | `shared/routine-schedule-schema.ts:35-39`; `shared/team-backup.ts:75` | new fact (not a backup AI) |
+| Work with the reply `none` or `poll` may go back to an ancestor bot. Only `resume` is refused | `c47a9d772` (#6539) | after | `server/runtime-coordinator.ts:307-310` | new fact |
+| A scheduler pass writes its wait marks once, not once for each run | `2d156d909` (#4260) | after | `server/routines.ts:1019-1020`, `:1200` | new fact |
+| The server builds `ownThreads` before the coordinator, so a restart report can name the thread | `a15f6ab26` (#7777) | after | `server/index.ts:3845-3857` | new fact |
 
 ## 2. Files read completely
 
@@ -339,13 +372,28 @@ The flows of the take-over are in the order of the time of the failure:
      not available`), but the server does not check that it is enabled.
    - a duplicate entry is removed with no error.
    - an entry with `effort` or `variant` goes through `checkedModelSelection`.
+   - At `e1cc6a290` (commit `248379166`, v0.1.186): for each entry that the
+     bot did not already have, the server runs `recoveryCapabilityError`
+     against the main engine (the new selection, else the saved one). It
+     answers 400 "The backup cannot use the same workspace." or "The backup
+     does not support all of this AI's tools and attachments."
+     (`server/routes/bot-patch.ts:259-279`). An entry that was saved before
+     this check stays and can be edited, so a list can be repaired without a
+     delete first (`:262`, `:275`). With no main selection, or a main engine
+     that is not in the registry, no check runs (`:261`). The release note
+     says: "bot settings refuse a backup AI that could never take over the
+     bot's work." Tests: `server/routes/bot-patch.test.ts:665`, `:677`,
+     `:686`. The entry loop is now at `bot-patch.ts:263-286`, and the list is
+     saved at `:287`.
 6. The server does not refuse the bot's main model in its own list. The UI
    does not offer it (`BackupAis.tsx:224-225`, `ModelSection.tsx:83-85`).
 7. A change that adds a backup from the local API with no paired session is a
    "loosening". It gets 409 while any bot is busy (`bot-patch.ts:637-638`,
    `:656-661`).
 8. To save the installation backup, `PUT /api/config` runs these checks
-   (`server/routes/config.ts:194-201`):
+   (`server/routes/config.ts:194-201`). At `e1cc6a290` they still do not
+   include `recoveryCapabilityError`: `248379166` changed only
+   `bot-patch.ts`.
    - the model must exist.
    - the engine must be enabled, or 400 "Enable the backup engine before
      selecting it for recovery.".
@@ -360,7 +408,9 @@ The flows of the take-over are in the order of the time of the failure:
     backup, the server saves `{enabled: false}` (`index.ts:2505-2512`).
 
 A backup is usable only when it keeps what the turn needs
-(`recoveryCapabilityError`, `automatic-recovery.ts:34-43`):
+(`recoveryCapabilityError`, `automatic-recovery.ts:34-43`). At `e1cc6a290`
+the same function also guards the save of a new entry of a bot's own list
+(item 5 above):
 
 - the same workspace-file support, or "The backup cannot use the same
   workspace.".
@@ -382,7 +432,13 @@ the engine no longer offers, so an engine update does not refuse the switch.
    (`server/contracts.ts:160-161`).
 3. `limitTakeover.heldAtStart(bot, selection, startupRecovery)`
    (`index.ts:8298`, `host/limit-takeover.ts:284-289`) looks for a hold on
-   the engine, on the model, or a sign-out (`holdOn`, `:275-282`).
+   the engine, on the model, or a sign-out (`holdOn`, `:275-282`). At
+   `e1cc6a290`, after the tag v0.1.186 (commit `645566fe8`), a block of the
+   engine clock is not always the scope "engine": `holdOn` asks
+   `holdScope` (`host/limit-takeover.ts:278-288`, `:281`). When only the
+   OpenCode meter (the Go subscription's) holds a named model, the scope is
+   "model" (`server/limit-resets.ts:166-173`). Then backups on the same
+   instance are allowed (`host/limit-takeover.ts:211`).
 4. A hold counts only when a backup can carry the turn, or when the turn is
    a recovery and the hold is not a sign-out. Otherwise the engine is tried
    as usual (`:313-315`).
@@ -623,6 +679,17 @@ The engine hold (`server/limit-resets.ts`, class `LimitResetClock`):
 1. A refusal with a reset time holds the engine until that time. A refusal
    with no time holds it for `UNNAMED_LIMIT_MS` = 60 minutes, as a guess
    (`:110`, `:218-223`). A named hold is never made shorter (`:220-221`).
+   At `e1cc6a290`, after the tag v0.1.186 (commits `645566fe8`,
+   `2624b5105`, issue #4878): an OpenCode usage-limit refusal that names a
+   provider holds only the models of that provider, as a model hold. The
+   provider is `opencode-go` when the text names Go with a capital "G" or
+   the failing model is a Go model, else the provider prefix of the failing
+   model (`server/drivers/acp/opencode-go.ts:782-798`). The driver reads the
+   failing model from the error row of the OpenCode log
+   (`server/drivers/acp/quiet-status.ts:88-100`). A limit with no known
+   provider, or with no listed model of that provider, still holds the
+   whole engine (`opencode-go.ts:793`, `:798`). Before, every such limit
+   held the whole engine.
 2. The clock reads the plan usage of Claude, Codex, the Grok CLI, OpenCode
    and Antigravity (`:22`):
    - every 5 minutes while turns run, and every 60 minutes when idle.
@@ -639,6 +706,12 @@ The engine hold (`server/limit-resets.ts`, class `LimitResetClock`):
 4. One turn that works on the engine, by any bot, ends the hold (`:211`).
 5. "Try again now" ends the hold at once. A new refusal holds again
    (`release`, `:281-288`).
+   - At `e1cc6a290` a new reader `holdScope(engine, model)` tells the
+     take-over how far a hold reaches: null when nothing holds, "model" when
+     no refusal holds the engine and only an OpenCode meter is full for a
+     named model, else "engine" (`server/limit-resets.ts:163-173`, commit
+     `645566fe8`, after the tag). The test of the driver is by name:
+     `usage?.driver === "opencode"` (`:172`).
 6. The holds are in `limit-holds.json`, written atomically with mode 0o600. A
    failed save is only logged (`:365-389`). A refusal stays 10 minutes past
    its time, so that a run due at that time still finds it (`:16`,
@@ -659,7 +732,15 @@ How the backups are chosen (`weighBackups`, `:198-223`):
 
 1. An unknown current engine gives no backups.
 2. For a model or credits limit, the default model of the same engine comes
-   first, if the person chose any backup (`:217-220`).
+   first, if the person chose any backup (`:217-220`). At `e1cc6a290`
+   (commit `645566fe8`, after the tag) a full OpenCode Go meter is also a
+   model-scope hold, so the default model and the other providers of the
+   same OpenCode instance can carry on (`host/limit-takeover.ts:211`,
+   `:219-222`; test `server/host/limit-takeover.test.ts:123`). The notice
+   key is then the model, not the instance (`:112-113`). A move by a
+   model-scope hold records no `meter` mark (`:265`), so the conversation
+   goes back at `resetsAt`, not when the meter clears. That last point is
+   inferred: no test covers it.
 3. Then the chosen list follows. A sign-out uses `signedOutChosen`, which is
    `startupBackups` (`:221`, `index.ts:8634`).
 4. A bot with no chosen backup gets none. It waits (`:193-197`).
@@ -864,6 +945,21 @@ The "needs setup" mark (`server/host/setup-recovered.ts`):
    (`session/load`). If the session is lost, the driver rebuilds it one time
    from the stored conversation (`recoveryText`) and marks
    `session.started.rebuilt: true` (`:1150-1181`).
+   - The -32603 path sets `acpSessionFailure`, not `acpSessionBroken`, so
+     this item is still true at `e1cc6a290`. Other failures put the session
+     in the set `brokenSessions`: that session is never loaded again, and
+     the next turn rebuilds from `recoveryText` (`acp/core.ts:1127`, `:1387`
+     at `e1cc6a290`). The set existed at `83d18e3af` for an Antigravity
+     lost thinking signature. Two triggers are new:
+     - an image refusal by a text-only model (`image_content`, commit
+       `e60bfef8a`, v0.1.186). The core also learns that the model reads
+       text only, removes images from MCP results, and adds a note to the
+       prompt (`acp/core.ts:1353`, `:891-893`; `server/mcp-text-only.ts:10`, `:30`, `:41-50`).
+       The release note says: "an image in the conversation no longer makes
+       every later message fail."
+     - an Antigravity media part that Google cannot decode (commit
+       `f44b41d31`, after the tag;
+       `server/drivers/antigravity-turn-outcome.ts:48`, `:192`).
 4. A driver does not send the turn again by itself. The server does it
    through the incident path: one automatic retry, written as a new user
    line that starts with `AUTO_RETRY_LEAD` (`acp-recovery.e2e.test.ts:79-91`,
@@ -1048,7 +1144,21 @@ Where an incident comes from:
    `retriesTeammateThread` is false for a stop, a refusal, a tool denial, a
    sign-out, used-up trial credit, the turn limit, a model with no route, and
    a usage limit (`routine-recovery.ts:100-139`,
-   `chief-notices-retry.test.ts:104-119`). The retry line starts with
+   `chief-notices-retry.test.ts:104-119`). At `e1cc6a290` it is also false
+   for an image refusal by a text-only model (`image_content` in
+   `REFUSED_KINDS`, `routine-recovery.ts:82`, commit `e60bfef8a`,
+   v0.1.186). Two changes of v0.1.186 make more failures a retry:
+   - A short throttle of a provider that Grok reports is now a rate limit,
+     not a usage limit (`server/drivers/acp/grok-signals.ts:39`, `:47`,
+     commit `c7b2af0bb`). So it gets no hold, no take-over and no usage-limit
+     notice, and the turn settles `rpc_error` (`acp/core.ts:1384-1396`).
+     `classifyRoutineFailure` gives `retry` / `rate_limited`
+     (`routine-recovery.ts:121`), so a routine run or a teammate thread
+     gets one automatic retry. Before, it was `owner` / `usage_limit` with
+     no retry.
+   - A cut stream of an OpenAI-compatible provider is the transient reason
+     `stream_cut` (`server/drivers/retry.ts:17`, `:48`, commit
+     `a91ee14e1`), so the retry has the cause `provider`, not `unknown`. The retry line starts with
    `AUTO_RETRY_LEAD`. If someone wrote in the thread since the failure, the
    Chief hears "someone wrote in that thread since", and nothing runs. If the
    retry fails too, the Chief gets the report with "already retried this run
@@ -1106,6 +1216,8 @@ The retry endpoint `POST /api/internal/retry-thread` (`index.ts:13701-13732`):
 
 1. The sender must be a Chief and not hidden (403 "only a Chief of Staff can
    retry a teammate's thread"). It must be able to manage the target.
+   (At `e1cc6a290` the endpoint is at `index.ts:13706-13737` and
+   `retryRefusal` at `chief-notices.ts:131-141`.)
 2. A room thread gets 400 "that is a room thread — use coordinate_bots in the
    room instead".
 3. `retryRefusal` refuses with 409 when the thread is running, settling or
@@ -1117,6 +1229,23 @@ The retry endpoint `POST /api/internal/retry-thread` (`index.ts:13701-13732`):
    (`chief-notices.ts:124-133`, `incidents.e2e.test.ts:113-118`). The retried
    thread keeps its own approval level. The Chief is not woken for its
    result (`agents-call.ts:776`).
+   - At `e1cc6a290` (commits `1254fb66c`, `e5b6e12df`, v0.1.186) this is
+     not true when the failed work was this Chief's own `coordinate_bots`
+     request with the reply `resume`. Then the server sends the retry as a
+     new `coordinate_bots` request from the Chief's current turn into the
+     same thread, with the reply `resume`, the same `consult` mode and
+     `rework: false`. The result wakes the Chief
+     (`chief-notices.ts:83-91`, `:153-161`). The text is a fixed sentence
+     and the note quoted with `quoteInNote(note, 300)` (`:155`). From a room
+     thread the old turn path stays (`index.ts:13727`).
+   - At `e1cc6a290` (commits `579b341aa`, `d84b29142`, v0.1.186, issue
+     #7639): when the thread is idle but its bot is at its thread capacity
+     or in a room turn, the retry goes into the steer queue of the thread,
+     and the endpoint answers 200 `{queued: true, message}`
+     (`chief-notices.ts:166-172`, `index.ts:13730-13733`). Before, it got
+     409. A running, settling or queued thread still gets 409. The
+     automatic retry is never queued. Nobody checked if the steer queue
+     runs `retryRefusal` again when it starts the queued retry.
 5. The endpoint does not read the incident ledger. The limit "never more
    than twice" is in the prompt and in the report text. The server does not
    enforce it.
@@ -1197,6 +1326,16 @@ incidents:
   was sent or streamed. `unknown` counts as `after-accept` (`:3-20`).
 - Only `before-accept` may send the history again (`:22-42`). The class comes
   "from driver protocol state, never from provider error text" (`:1`).
+- At `e1cc6a290` more callers pass `failure: "before-accept"` on their own
+  decision, before any attempt was refused. The Claude driver does it when
+  an older CLI holds a stale system prompt (`server/drivers/claude.ts:943`,
+  commit `5638d70a4`, v0.1.186). The Codex driver already did it for a
+  dropped session, and now also does it when the instruction blocks pass
+  the limit (`server/drivers/codex.ts:1251`, `:1323`, commit `b683e4116`,
+  v0.1.186). In these cases the old session gets no prompt, so nothing was
+  sent. The function
+  `classifyResumeFailure` did not change. A new notice text
+  `instructionsOverflowNotice` is in this file (`server/resume-recovery.ts:48-50`).
 
 `server/turn-outcome.ts`:
 
@@ -1643,6 +1782,9 @@ The problems of [`changelog.md`](../changelog.md) section 5 in this feature:
 | A turn or a wait that does not end | Yes. The 20-minute stall makes an incident. Guessed holds end after 1 hour. The sign-in rechecks stop after 5 reads. A probe has a 30 s limit. Open: `quotaSwitch` waits for `settled` with no limit (`quota-switch.ts:255`). The Claude hold waits for `retire` with no limit of its own (`claude-auth-recovery.ts:88-95`). The stop loop of a pause has no limit | `index.ts:4915`, `limit-resets.ts:110`, `sign-in-resume.ts:23`, `engine-install.ts:18` |
 | The same work done two times, or lost | Yes. Guarded by `nothingRan`, by the driver's proof, and by "finished since reported". Lost with no notice: the muted 6th incident, a move past 500 rows, a failed sign-in resend, due runs cancelled while paused | `turn-outcome.ts:144-151`, `chief-notices.ts:110-120`, `:251`, `limit-failover.ts:117`, `sign-in-resume.ts:193` |
 | State lost at a restart or a crash | Partly. Holds, notices, moves, sign-in waits, pauses and queued reports are on disk. The incident ledger, the budget of each Chief, the automatic retries, the pending resends and the "needs setup" marks are not | section 4.3 |
+| A bot at a usage limit (section 6), at `e1cc6a290` | Repaired in v0.1.186: the bot settings refuse a backup AI that could never take over, so a chosen backup is no longer skipped with no notice at the limit (`248379166`). Repaired after the tag: an OpenCode limit holds only the provider that hit it, so a backup on the same instance can take over (`645566fe8`). Still open: the installation backup has no such check | `bot-patch.ts:259-279`, `limit-resets.ts:163-173` (at `e1cc6a290`) |
+| The same work done two times, or lost, at `e1cc6a290` | Repaired in v0.1.186: an image refusal by a text-only model no longer makes every later message fail, and it gets no automatic retry that meets the same image (`e60bfef8a`). Repaired after the tag: the same for an Antigravity media part that cannot be decoded (`f44b41d31`). New open risk, inferred: a queued Chief retry may not check "finished since reported" again when it starts (`579b341aa`) | `acp/core.ts:1353`, `routine-recovery.ts:82`, `antigravity-turn-outcome.ts:192`, `chief-notices.ts:166-172` (at `e1cc6a290`) |
+| A turn or a wait that does not end, at `e1cc6a290` | Repaired in v0.1.186: a Chief's retry of its own request wakes the Chief, so the Chief no longer waits for a result that never comes back to it (`1254fb66c`) | `chief-notices.ts:153-161` (at `e1cc6a290`) |
 | Busy and races between bots | Yes. No await between release and retry. A Stop during setup interrupts again. Ended turn ids are kept. A busy Chief gets the report in a queue. Open: a turn that passed the pause check but is not yet busy is not in the stop loop | `index.ts:8438`, `turn-dispatch-guard.ts:11-167`, `admission.ts:155-161`, `index.ts:7443`, `:11919` |
 
 ## 9. Not verified
@@ -1695,3 +1837,18 @@ The problems of [`changelog.md`](../changelog.md) section 5 in this feature:
   as signed out or hands the chat to the backup engine". The rule that needs
   the exact synthetic frame with no new cost (`claude-auth-recovery.ts:43-50`)
   is a possible place, but the readers did not check it.
+- The update to `e1cc6a290` (2026-11-28):
+  - Whether the steer queue runs `retryRefusal` again when it starts a
+    queued Chief retry (`server/steer-queue.ts` was not read).
+  - The admission that `coordinate_bots` applies to the retry of a Chief's
+    own request (budget, pause, the ancestor rule).
+  - Whether a conversation that a model-scope Go hold moved goes back at
+    `resetsAt` (`host/limit-takeover.ts:265`, `limit-failover.ts:130`). No
+    test covers it.
+  - What `weighBackups` does when the default model of the same instance is
+    a Go model under the Go hold.
+  - Whether the image refusal of Z.ai carried an HTTP status before
+    `e60bfef8a`, which would already have made it final.
+  - The router texts of Grok that also say "subscription", "billing",
+    "quota" or "usage limit": `classifyError` can still read them as a quota
+    (`server/drivers/retry.ts:54`, `:69-70`).

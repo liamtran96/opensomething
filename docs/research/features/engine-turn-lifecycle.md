@@ -20,10 +20,20 @@ the reference project unless a line says "ours". Nobody opened its
 `enterprise/` directory. Eight subagents read the files in eight groups. The
 main session checked the key lines of each group against the code.
 
-Three commits that this file cites are in no release tag: `5638d70a4` (a
-Claude rebuild when an old CLI keeps a stale system prompt), `b683e4116` and
-`5b740a190` (the Codex instruction overflow reset). Commit `b2e662007` (the
-byte budget for relayed MCP servers) is in v0.1.184 only.
+Updated on 2026-11-28 to commit `e1cc6a290` (2026-11-28). The tag v0.1.186
+is commit `70eb44c1a`, and `e1cc6a290` has commits after it. The section
+"Changes up to `e1cc6a290` (v0.1.186)" lists the changes of this feature
+from `42f86aefd` to `e1cc6a290`. This file is correct for those changes at
+`e1cc6a290`. The other parts were read at `42f86aefd`, and their line
+numbers are from that commit, unless a line gives `e1cc6a290`. Four
+subagents read the diffs of the range, and the main session checked the
+key lines against the code.
+
+The three commits `5638d70a4` (a Claude rebuild when an old CLI keeps a
+stale system prompt), `b683e4116` and `5b740a190` (the Codex instruction
+overflow reset) were in no release tag on 2026-11-27. All three are in
+v0.1.186. Commit `b2e662007` (the byte budget for relayed MCP servers) is in
+v0.1.184.
 
 **What this file adds to the done research files:**
 
@@ -84,7 +94,11 @@ This file describes six things that happen around one turn.
    warm process again only when its **launch key** (also called the **spawn
    contract**) is the same. The launch key is a digest of everything that
    shaped the launch: the arguments, the environment, the system prompt and
-   the MCP servers. Two more warm features exist for Claude only:
+   the MCP servers. Since `3ce9cc7bf` (after the tag v0.1.186), the Claude
+   driver also closes the process after a turn when a configured MCP server
+   did not connect at the start, because the CLI connects MCP servers only
+   when the process starts (`server/drivers/claude.ts:1293`, `:1375` at
+   `e1cc6a290`). Two more warm features exist for Claude only:
    - A **keep-warm ping** sends one small request on a **fork** (a copy) of
      the conversation, so that the prompt cache of the provider lives for
      one more hour.
@@ -123,6 +137,28 @@ This file describes six things that happen around one turn.
      which instruction block the native thread already holds.
    - Codex uses the browser bridge of the reference project, not its own
      browser.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+The base of this file, `42f86aefd`, already has most of the changes that
+the release note of v0.1.186 names for this feature. So the range adds
+only the corrections of "in no tag" and four commits after the tag. All
+lines are at `e1cc6a290`. "Tag" means that the commit is in v0.1.186
+(`git merge-base --is-ancestor <commit> 70eb44c1a`).
+
+| Change | Commit | Tag or after | File and line | Sections of this file |
+|---|---|---|---|---|
+| The Claude rebuild for a stale system prompt is in a release. It also runs when the CLI version does not parse, when the probe gave no version, or when the turn finds another copy of the CLI than the probed one. The record of the prompt is in memory only, so after a server restart no rebuild occurs | `5638d70a4`, `642968816`, `af534cdca` | tag | `server/drivers/claude.ts:930-950`, `:747`, `:1359` | header, 3.9 |
+| The Codex instruction overflow reset is in a release | `b683e4116`, `5b740a190` | tag | `server/drivers/codex-instructions.ts:39`, `:104-108`; `server/drivers/codex.ts:1322-1331` | header, 3.9 |
+| Claude closes a warm process after a turn when its `init` named a configured MCP server as failed. The next turn starts a new process that connects the server again and resumes the same conversation | `3ce9cc7bf` (#4386) | after | `server/drivers/claude.ts:1375`, `:1293`; test `server/drivers/claude.test.ts:3848` | 1, 3.5, 3.7, 8.1 |
+| Antigravity marks a session as broken when Google cannot decode a media part. The next turn rebuilds from the recovery text in a new session | `f44b41d31` | after | `server/drivers/antigravity-turn-outcome.ts:48`, `:192`; `server/drivers/acp/core.ts:1387`, `:1127` | 3.9 |
+| A member (a session with the client scope) can read `GET /api/instances`, so the composer gets the capabilities and offers "Steer now". Before, a member got 403 and could never steer. A member gets a short list with no accounts, paths or addresses | `1b5e01402`, `d48ce8033` | after | `server/request-auth.ts:349-350`; `server/routes/instances.ts:76-83`, `:133` | 3.8 |
+
+Changes in the same range that do not change a statement of this file:
+`645566fe8` and `2624b5105` (OpenCode limit holds for one provider, see
+[`recovery-and-pausing.md`](recovery-and-pausing.md)), `88c29487a` (sign-in
+cards, see [`engines-and-accounts.md`](engines-and-accounts.md)), and
+`c2c82f1d8` (a size limit of `claude.ts`, no change of behaviour).
 
 ## 2. Files read completely
 
@@ -692,6 +728,16 @@ nothing stops them once this server exits" (`claude.ts:1948-1949`).
    (`server/drivers/agents-claude-defer.ts:13-21`). A test holds these bytes
    within 2%, and the total under 8,000 bytes
    (`agents-claude-defer.test.ts:60-73`).
+6. **A failed server.** At `e1cc6a290`, after the tag (commit `3ce9cc7bf`,
+   issue #4386): when the `system/init` message of the CLI names a
+   configured server as failed, the driver sets `customMcpFailed`
+   (`claude.ts:1375`). At the end of the turn it closes the process with
+   the reason "an MCP server did not connect" (`:1293`), as it already did
+   for team tools that did not connect. The next turn starts a new process
+   with `--resume`, and that process connects the server again. Before this
+   commit, the warm process stayed, and the tools of that server did not
+   come back until a larger change (an app restart, a server edit or a model
+   change). Test: `server/drivers/claude.test.ts:3848`.
 
 **Codex** (`codex.ts:440-560`, `server/drivers/codex-mcp-mount.ts`).
 
@@ -793,6 +839,14 @@ This section has what the engine does with a steer.
    (`server/index.ts:7166`). Pictures also need `steerImages &&
    nativeImageInput`, and no videos (`:6078-6081`, `:7160-7164`). No driver
    name is checked.
+   - The client reads the flags from `GET /api/instances`. Until
+     `1b5e01402` (after the tag v0.1.186), a member (a session with the
+     client scope) got 403 on that route, so the composer had no flags and
+     never offered "Steer now" to a member. Now the route is on the client
+     allow list (`server/request-auth.ts:349-350` at `e1cc6a290`), and a
+     member gets a short list with the capabilities but no accounts, paths
+     or addresses (`server/routes/instances.ts:76-83`, `:133`, commit
+     `d48ce8033`).
    - Only Claude sets `steerImages` (`claude.ts:1891`).
    - ACP sets `queueing` only when the adapter has a steer
      (`server/drivers/acp/capabilities.ts:20`), and it refuses pictures
@@ -1002,9 +1056,25 @@ This section has what the engine does with a steer.
    - A `--resume` that the CLI refused before `init` rebuilds one time, with
      the same turn id (`claude.ts:1477-1483`, `:1654-1690`). The CLI either
      exits or, from 2.1.295, sends an error result and stays up.
-   - New, in no tag: a CLI below 2.1.267 keeps the system prompt it
-     recorded at launch. When the prompt hash changed, the driver drops the
-     resume and rebuilds (`:939-951`, commit `5638d70a4`).
+   - In v0.1.186 (commits `5638d70a4`, `642968816`, `af534cdca`): a CLI
+     below 2.1.267 keeps the system prompt it recorded at launch. When the
+     prompt hash changed, the driver drops the resume and rebuilds
+     (`claude.ts:941-950` at `e1cc6a290`). The release note says: "An older
+     Claude CLI starts a fresh session when the bot's instructions change."
+     - The check runs when `knowsRecordedPrompt` is false (`:930-931`):
+       the CLI is below 2.1.267, its version does not parse, the probe gave
+       no version, or the PATH of the turn finds another copy of the CLI
+       than the probed one (`ownCli`, `:909`).
+     - A CLI with a version that does not parse still gets
+       `--system-prompt-snapshot off` (`:932`), because
+       `claudeCliSupports` counts an unknown version as support. But the
+       rebuild check does not trust that version.
+     - The record of the prompt (`recordedPrompts`, `:747`) is in memory.
+       The driver writes it at the `system/init` of the CLI, for a new
+       session or for a resume that the CLI refreshes (`:1359`). So a
+       replacement that stops before `init` keeps the old record, and the
+       next try rebuilds again. After a server restart the map is empty, and
+       no rebuild occurs. No test covers the restart.
    - An edit closes the live process with the reason "context reset"
      (`:1100`, `:1128`).
    - The notice: "<engine> could not reopen this conversation's session, so
@@ -1015,8 +1085,10 @@ This section has what the engine does with a steer.
    - An archived thread is unarchived and resumed (`codex.ts:1255-1266`).
    - A missing thread, an archived thread or a provider mismatch rebuilds
      one time (`:1280-1294`).
-   - New, in no tag: past 85,000 characters of instruction blocks, the
-     next edit moves the thread to a new session with
+   - In v0.1.186 (release note: "A conversation nearing the provider's
+     instruction limit moves to a fresh session."): past 85,000 characters
+     of instruction blocks, the next edit moves the thread to a new session
+     with
      `instructionsOverflowNotice` (`codex-instructions.ts:38-39`,
      `:104-109`, `codex.ts:1321-1331`). The commit message says that before
      this, the thread "froze silently" with a 400 error on each turn.
@@ -1030,6 +1102,15 @@ This section has what the engine does with a steer.
      text, the turn fails (`:1166-1181`).
    - It sets `rebuilt: true` and shows no notice (`:1195`). Only `claude.ts`
      and `codex.ts` import `rebuiltSessionNotice`.
+   - A session id in the set `brokenSessions` is never loaded again, so the
+     next turn rebuilds (`acp/core.ts:1127`, `:1387` at `e1cc6a290`). An
+     Antigravity failure with a lost thinking signature puts the session in
+     that set. Since `f44b41d31` (after the tag v0.1.186), a media part that
+     Google cannot decode does the same: "file or media data is empty,
+     corrupted, or malformed" (`server/drivers/antigravity-turn-outcome.ts:48`,
+     `:192`). The failure text tells the person that the next message starts
+     a fresh session (`:174-176`). Before, each later prompt of that session
+     failed with the same error.
 9. **The chat API.** It has no session. A rewind, a Start fresh, a
    compaction or an engine switch uses the same code as a normal turn
    (section 3.3).
@@ -1372,16 +1453,28 @@ driver, no runtime and no store yet.
 
 ### 8.1 The problems of `changelog.md` section 5 in this code
 
-| Problem | Releases | State at `42f86aefd` |
+| Problem | Releases | State at `42f86aefd` (and at `e1cc6a290` where the cell says so) |
 |---|---|---|
 | A turn or a wait that does not end | v0.1.85, v0.1.132, v0.1.151 | The Claude and Codex drivers have no idle timer after the start. The host stops a quiet turn after 20 min (`TURN_STALL_MS`). Claude sends `tool_progress` every 30 s as proof of life (`claude.ts:1470-1473`). The steer waits have limits: 2 s and 30 s for Claude, 10 s for Codex, 15 s for an ACP request. Codex always completes a stopped turn after 12 retries (`codex.ts:681-685`). Still open: a Claude stop whose root process stays alive waits for that root with no limit (`claude.ts:756`, inferred). The auth-recovery hold has no timer (`claude-auth-recovery.ts:108`). A Codex question has no timer (`codex.ts:838`). The chat turn always ends in its `finally` (`openai-chat.ts:886-924`) |
 | The same work done or delivered two times, or lost | v0.1.150, v0.1.182 | v0.1.150: `answered` stops a resend (`claude.ts:1424`, commit `812c99063`). Still open: only `text_delta` sets `sawStreamDelta` (`:1392`), so a turn that streamed only reasoning can be sent again. v0.1.182: the requeue is dropped after a tool result (`person-first.ts:165-167`, commit `1128b084f`). Still open, inferred: the queue steer route can run steered words again (`bot-messages.ts:431-434`, `:466-468`), and a chat steer can be lost after the first tool of a batch (`openai-chat.ts:623-629`) |
 | State lost at a restart or a crash | v0.1.165 | Warm state is not kept, on purpose (`cache-keepwarm.ts:7-8`). The thread record of `Handoffs` is written at the first acting event, so a restart loses only the credits of `turn.completed` (`delta-context.ts:299-308`). A chat teammate reruns one time (`delta-context.e2e.test.ts:650-702`). The learned tool count is in memory only (`tool-count-limit.ts:82-90`) |
-| Sign-in to an engine, and engine CLIs that change | v0.1.101, v0.1.153, v0.1.177, v0.1.178 | v0.1.101: Codex 0.160 shell policy, commit `6ba128a89` (`codex.ts:129-150`). v0.1.153: `claudeOAuthExpired` gives `auth_required` (`claude.ts:1487`, commit `e5a4e223f`). v0.1.177 and v0.1.178: a half-written `auth.json` is not a missing login (`codex-login.ts:70-71`), and the Claude snapshot keeps the last known auth (`claude.ts:1770`). Both drivers hold many facts pinned to a CLI version. Still open: an unknown Claude version counts as supporting every flag (`claude-cli-version.ts:36-38`) |
+| Sign-in to an engine, and engine CLIs that change | v0.1.101, v0.1.153, v0.1.177, v0.1.178 | v0.1.101: Codex 0.160 shell policy, commit `6ba128a89` (`codex.ts:129-150`). v0.1.153: `claudeOAuthExpired` gives `auth_required` (`claude.ts:1487`, commit `e5a4e223f`). v0.1.177 and v0.1.178: a half-written `auth.json` is not a missing login (`codex-login.ts:70-71`), and the Claude snapshot keeps the last known auth (`claude.ts:1770`). Both drivers hold many facts pinned to a CLI version. Still open: an unknown Claude version counts as supporting every flag (`claude-cli-version.ts:36-38`). At `e1cc6a290`, repaired in v0.1.186: an older Claude CLI that keeps a stale system prompt now gets a new session when the bot's instructions change (`claude.ts:941-950`, commit `5638d70a4`). The rebuild check does not trust an unknown version (`:931`). Still open: the record of the prompt is in memory only (`:747`) |
 | The size of the tool list of one turn | v0.1.182 | Claude uses tool search and deferred tools, and has no open gap (`claude-tool-search.ts`, `agents-claude-defer.ts`). For one ACP CLI, a byte budget came in v0.1.182 (`09a4d73cb`) and v0.1.184 (`b2e662007`). Still open: over the budget there is only a log line (`session-tool-budget.ts:90-92`). The first session guesses the list of a relayed server. A server that is not relayed is not fitted |
-| One slow or stuck part blocks all the others | v0.1.153, v0.1.178 | The v0.1.153 fix is in the chat driver (`chat-mcp-tools.ts:561-566`, commit `84450939f`). Codex counts `failed` as settled and waits at most 30 s. The v0.1.178 fix drops a URL that answers 405 (`server/host/mcp-url-checks.ts:20-24`). Still open: the Codex launch slot is held during the MCP wait (`codex.ts:1351-1363`), so one slow server delays other launches by up to 30 s. A failed server makes the next Codex turn start cold (`:679`) |
+| One slow or stuck part blocks all the others | v0.1.153, v0.1.178 | The v0.1.153 fix is in the chat driver (`chat-mcp-tools.ts:561-566`, commit `84450939f`). Codex counts `failed` as settled and waits at most 30 s. The v0.1.178 fix drops a URL that answers 405 (`server/host/mcp-url-checks.ts:20-24`). Still open: the Codex launch slot is held during the MCP wait (`codex.ts:1351-1363`), so one slow server delays other launches by up to 30 s. A failed server makes the next Codex turn start cold (`:679`). At `e1cc6a290`, repaired after the tag v0.1.186 (`3ce9cc7bf`, issue #4386): a Claude process whose configured MCP server did not connect is closed after the turn, so the next turn connects the server again (`claude.ts:1293`, `:1375`). Before, the tools of that server stayed missing for each later turn of the warm process |
 | The person's own engine config reaches the bots | v0.1.104, v0.1.175 | v0.1.104: `claudeMdExcludes` (`claude.ts:1064`). v0.1.175: `AGENTS.md` is not linked into the Codex home of the reference project (`codex-shared-home.ts:23-24`). Still open: `OMB_CLAUDE_INHERIT_USER_CONFIG=1` (`claude.ts:141-143`). The tool search setting reads `~/.claude/settings.json` (`claude-tool-search.ts:102-104`). Codex keeps the person's own home, and so reads `AGENTS.md`, in several early returns (`codex-shared-home.ts:148-155`). The steering engine's driver may write the person's own `config.toml` (inferred) |
 | Usage and cost numbers corrected | v0.1.178 | Fixed by commit `a9d483545`: a fork books only the growth over a stored base (`claude-keepwarm.ts:86-99`, `claude-cost-history.ts:71-92`). Still open: an aborted ping or summary books nothing, although its prompt was sent (`claude-keepwarm.ts:212-215`, `cache-keepwarm.ts:122`). A summary dropped as busy books nothing (`claude-warm-summary.ts:139`). With no matching base, the whole total is booked (`claude-cost-history.ts:44`) |
+
+Two repairs of this feature up to `e1cc6a290` fit no row of section 5 of
+`changelog.md`. Each one is a native session that the provider refuses on
+each later turn:
+
+- The Codex instruction overflow reset (v0.1.186, commits `b683e4116`,
+  `5b740a190`). Before it, a thread past the instruction limit of the
+  provider "froze silently" with a 400 error on each turn
+  (`codex-instructions.ts:104-108`, `codex.ts:1322-1323` at `e1cc6a290`).
+- The Antigravity broken session for a media part that Google cannot
+  decode (after the tag, commit `f44b41d31`,
+  `antigravity-turn-outcome.ts:48`, `:192` at `e1cc6a290`).
 
 ### 8.2 Proposals
 
@@ -1700,3 +1793,13 @@ the steer back as unread (P590) and close the session.
   wrote in its style by hand. The main session read the skill file and
   applied it to this file.
 
+- The update to `e1cc6a290` (2026-11-28):
+  - Nobody traced how a prestarted Claude spare records its prompt at
+    `init` when a turn takes it (`claude.ts:1359`). A test covers it
+    (`server/drivers/claude-prestart.test.ts:206`).
+  - Nobody checked that an older Claude CLI with a version that does not
+    parse accepts `--system-prompt-snapshot off` (`claude.ts:932`).
+  - A configured server that fails at each Claude start makes each turn
+    start a new process until the start check leaves the server out of
+    turns (`server/mcp-health.ts:142-145`). This is inferred from the code.
+    No test covers it.

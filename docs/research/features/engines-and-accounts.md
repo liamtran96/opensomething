@@ -5,6 +5,14 @@ signs them in and out, with one or more accounts for each engine.
 
 - Reference: the reference project at commit `140172d88` (2026-11-26,
   version 0.1.182). Each path below is relative to its clone.
+- Updated on 2026-11-28 to commit `e1cc6a290` (2026-11-28). The tag
+  v0.1.186 is commit `70eb44c1a`, and `e1cc6a290` has commits after it.
+  The section "Changes up to `e1cc6a290` (v0.1.186)" lists the changes of
+  this feature from `140172d88` to `e1cc6a290`. This file is correct for
+  those changes at `e1cc6a290`. The other parts were read at `140172d88`,
+  and their line numbers are from that commit, unless a line gives
+  `e1cc6a290`. Four subagents read the diffs of the range, and the main
+  session checked the key lines against the code.
 - Rows of [`reference-features.md`](../reference-features.md), group
   "later":
   - "The list of engines and `doctor`; named accounts; many engines and API
@@ -182,6 +190,57 @@ What this file adds to the done research files:
 - New in this file: named accounts and engine homes, the ChatGPT plan, the
   Antigravity account, `doctor`, API keys, the gateway, the default model,
   the UI mode, and the UI of the AI page and the engine library.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+All lines are at `e1cc6a290`. "Tag" means that the commit is in v0.1.186
+(`git merge-base --is-ancestor <commit> 70eb44c1a`). "New fact" means that
+this file did not describe the part before, so no statement changed.
+
+### Sign-in
+
+| Change | Commit | Tag or after | File and line | Sections of this file |
+|---|---|---|---|---|
+| Each end of a sign-in has a fixed reason code, on the status, on the error and in the error body of the route. Ten codes: `completed`, `wrong_code`, `refused`, `expired`, `cancelled`, `exited`, `interrupted`, `not_installed`, `timed_out`, `failed` | `46f016125` (#7723) | tag | `shared/sign-in-outcome.ts:4-25`; `server/drivers/device-auth.ts:351-366`; `server/drivers/claude-login-auth.ts:363`, `:376`; `server/routes/instances.ts:424-428` | 3.10, 3.11 |
+| On a Cloud home, a code that the engine refused, or a login command that exited, ends the session at once (`expiresAt = 0`). The person can start again at once. A pasted value that is not a code keeps the session open. A desktop keeps the old behaviour | `46f016125` | tag | `server/provider-auth-sessions.ts:161-166`, `:175-185`, `:78-81` | 3.11 |
+| On a Cloud home, a sign-in that a server stop cut short answers `interrupted`. The attempts are in `sign-in-trace.json` with only a hash of the instance and the flow id | `46f016125` | tag | `server/sign-in-trace.ts:14`, `:57`, `:126-142`; `server/provider-auth-sessions.ts:133-140` | 3.11 |
+| On a Cloud home, the `active` getter records the outcome of a flow past its expiry. There is still no sweep timer | `46f016125` | tag | `server/provider-auth-sessions.ts:51-70` | 3.11 |
+| The screens show "This sign-in was interrupted. Start again." with "Try again" for `interrupted`, or for a 404 or 410 with no reason. Only 401 and 403 show "expired" or the pairing note | `94a1a6d1f` | tag | `src/components/DeviceSignIn.tsx:31-35`, `:102-106`, `:134`; `src/components/ClaudeSignIn.tsx:107-120` | 3.19.3, 5.3, 5.5.4, 5.5.5 |
+| The server refuses the code that Claude emails (digits only, up to 8), and the form warns about it. New refusal text with `wrong_code` | `94a1a6d1f` | tag | `server/drivers/claude-login-auth.ts:46-51`, `:154`; `src/components/ClaudeSignIn.tsx:33-36`, `:147` | 3.7, 5.5.5 |
+| The Codex step "turn on device code sign-in in ChatGPT Settings → Security" is step 1 above the code. New Codex refusal text with the reason `refused` | `94a1a6d1f`, `5aea9c95e` | tag | `src/components/DeviceSignIn.tsx:145-149`; `server/drivers/codex-device-auth.ts:18`, `:23`, `:27-31` | 3.8, 5.3, 5.5.4 |
+| A `failed` status with the reason `expired` shows the expired line | `1c82a0f0c` | tag | `src/components/DeviceSignIn.tsx:133` | 5.3 |
+| The browser sign-in names the engine, not always Mistral | `5b07c79c4` (#5995) | tag | `src/components/EngineBrowserSignIn.tsx:18-21`; `src/components/EngineSetup.tsx:778` | 5.5.6 |
+| A site sign-in card from an earlier turn settles when a later turn uses the site | `88c29487a` (#6285) | after | `server/host/sign-in-settle.ts:122-128` | 3.12 |
+| A member (client scope) can read `GET /api/instances`, and gets a short list with no accounts, paths or addresses | `1b5e01402`, `d48ce8033` | after | `server/request-auth.ts:349-350`; `server/routes/instances.ts:76-83`, `:133` | 3.4 |
+| The server trims each saved provider key | `88a285945` | tag | `server/config.ts:40` | 3.14 |
+
+### Engines
+
+| Change | Commit | Tag or after | File and line | Sections of this file |
+|---|---|---|---|---|
+| Cursor asks the CLI if it is signed in before the turn handshake sends `authenticate("cursor_login")`. A second `cursor_login` deletes the stored login of the CLI. The memory one-shot path does not have this check (see below) | `73f557e06` | tag | `server/drivers/acp/core.ts:236`, `:1086-1089`; `server/drivers/acp/cursor.ts:525-527` | 3.10 |
+| Cursor model discovery has its own request limit of 20 s. Before, a cold start used 8 s, fell back to the static list, and kept it as confirmed for 6 hours | `30a835bb3` | tag | `server/drivers/acp/custom-model-catalog.ts:47`, `:198`; `server/drivers/acp/cursor.ts:368` | new fact |
+| Devin authenticates with the API key in `authenticate._meta` when `WINDSURF_API_KEY` is set. Model discovery authenticates too. The native log replaces `_meta` with `[redacted]` | `e1f1140f6`, `ae38437b7` | tag | `server/drivers/acp/devin.ts:48-58`; `server/drivers/acp/core.ts:229-230`, `:1091-1093`; `server/drivers/acp/tool-log.ts:41-44` | 9 (new fact) |
+| Codex reads its model catalog a second time before it falls back to the static list | `521d09ac5` (#7637) | tag | `server/drivers/codex-catalog.ts:425-428` | new fact |
+| The Codex update card updates the copy that the app runs: an npm install into the app's own prefix, when the first Codex on the PATH is in the app's engine folder | `db45afce6` | tag | `server/drivers/codex-update.ts:35-38`, `:53` | new fact |
+| A gateway name of Claude Opus 5.5 (1M), such as `claude/claude-opus-5-5[1m]` or `us.anthropic.claude-opus-5-5[1m]`, compacts at 1M tokens. Before, only the bare id did, and a gateway id compacted near 167k | `c4a3e3165` | tag | `server/drivers/claude.ts:189`, `:194` | new fact |
+| An older Claude CLI starts a new session when the bot's instructions change (see [`engine-turn-lifecycle.md`](engine-turn-lifecycle.md) section 3.9) | `5638d70a4`, `642968816`, `af534cdca` | tag | `server/drivers/claude.ts:930-950` | new fact |
+| A Codex conversation near the instruction limit of the provider moves to a new session (see [`engine-turn-lifecycle.md`](engine-turn-lifecycle.md) section 3.9) | `b683e4116`, `5b740a190` | tag | `server/drivers/codex-instructions.ts:39`, `:104-108` | new fact |
+| A compacted Gemini or Antigravity tool schema keeps an `items` type on each array. A tuple, an unknown or a cyclic item becomes `{type: "string"}`. The walk has a limit of 8 hops and 4,096 visits | `08fc34c51`, `b66e84ee3` | tag | `server/tool-schema-profile.ts:240-292`; `server/tool-list-budget.ts:102-114` | new fact |
+| Antigravity honours `usageMeter: false`: the plan usage does not read its quota | `95cf3d4c7` | tag | `server/plan-usage.ts:163`; `server/engine-limits.ts:107-108` | new fact |
+| A provider's short throttle that Grok reports is a rate limit, not the usage limit of the plan | `c7b2af0bb` (#7635) | tag | `server/drivers/acp/grok-signals.ts:39`, `:44-47` | new fact |
+| An added OpenAI-compatible server takes the workspace model and provider only at the workspace server's address | `4a62e5856` | tag | `server/credential-env.ts:70-74`; `server/config.ts:1186-1187`; `server/drivers/openai-compat.ts:167-170` | new fact |
+| An OpenCode usage limit holds only the models of the provider that hit it | `645566fe8`, `2624b5105` (#4878) | after | `server/drivers/acp/opencode-go.ts:782-806`; `server/limit-resets.ts:163-173` | new fact (see [`recovery-and-pausing.md`](recovery-and-pausing.md)) |
+| The bot settings refuse a backup AI that can never take over the bot's work | `248379166` | tag | `server/routes/bot-patch.ts:259-279` | new fact (see [`recovery-and-pausing.md`](recovery-and-pausing.md)) |
+
+The commit message of `73f557e06` says: "The memory one-shot session gets
+the same gate". The code does not do this. The one-shot path passes
+`support.pickAuthMethod` with no status check (`server/drivers/acp/core.ts:1454`),
+and `runAcpOneShot` sends `authenticate` when a method is picked
+(`server/drivers/acp/background-text.ts:217-220`). So a Cursor memory
+one-shot with no key in the environment can still send `cursor_login`.
+Inferred: nobody checked when the reference project runs a memory one-shot
+for Cursor.
 
 ## 2. Files read completely
 
@@ -625,6 +684,7 @@ Routes that read:
    2. With `?fresh=1` it calls `registry.forgetSnapshots()`.
    3. It starts a model manifest refresh and does not wait for it.
    4. It returns `{instances: describeInstances()}`.
+   5. At `e1cc6a290`, after the tag v0.1.186 (commits `1b5e01402`, `d48ce8033`): the route is on the client allow list (`server/request-auth.ts:349-350`). A session without the `admin` scope gets `memberInstances(describeInstances())`, with none of steps 1 to 3. A member entry has `instanceId`, `driverKind`, `displayName`, `readOnly: true`, `icon`, `access`, `models`, `capabilities` and `snapshot {state, authenticated}`, and no account, CLI path, sign-in command, config folder or address (`server/routes/instances.ts:76-83`, `:133`). Before, a member got 403, so the composer had no capabilities and never offered a steer. The admin path is at `server/routes/instances.ts:132-138`.
 3. GET `/api/health/engines` returns `{app:"openmausbot", engines: <count of rows with state "available">}`. It never names the engines. A shared server lets a local caller without a session call it (`server/routes/instances.ts:134-140`).
 4. GET `/api/instances/ollama` is for the owner or an admin only, else 403 (`server/routes/instances.ts:127-133`).
 5. GET `/api/cli-candidates?name=` lists every program of that name on the augmented PATH, in PATH order (`server/routes/instances.ts:417-421`).
@@ -1245,7 +1305,7 @@ A manual script checks this with the real Claude CLI. The account's `settings.js
 | `auth status --json` | 8 s, then SIGKILL of the child only | `server/drivers/claude-login-auth.ts:288-305`, `server/drivers/claude-auth-status.ts:15` |
 | Status output for the snapshot (`maxBuffer`) | 65,536 | `server/drivers/claude-auth-status.ts:15` |
 | Logout | 30 s (`startupTimeoutMs`) | `server/drivers/claude-login-auth.ts:232-268` |
-| Pasted code | 8 to 1024 characters of `[A-Za-z0-9_\-#.:]` | `server/drivers/claude-login-auth.ts:44-47` |
+| Pasted code | 8 to 1024 characters of `[A-Za-z0-9_\-#.:]`. At `e1cc6a290` (commit `94a1a6d1f`, v0.1.186) also not digits only up to 8 digits, so the code that Claude emails is refused | `server/drivers/claude-login-auth.ts:44-47`; at `e1cc6a290` `:46-49` |
 | Trusted link hosts | `claude.com`, `claude.ai`, `console.anthropic.com`, `platform.claude.com` and their subdomains, `https:` only, no user name or password | `server/drivers/claude-login-auth.ts:17-31` |
 
 #### The per-home lock
@@ -1275,7 +1335,7 @@ The person opens the link, signs in at Anthropic, and copies a code from the pag
 
 1. A wrong `flowId`, a flow that is not waiting, or a flow with no link throws "This sign-in is no longer available. Start sign-in again." (`server/drivers/claude-login-auth.ts:146-147`, `server/drivers/claude-login-auth.ts:76`).
 2. A second code throws "A code was already sent for this sign-in..." (`server/drivers/claude-login-auth.ts:148`).
-3. A code that fails `claudeLoginCode` throws "Paste the whole code shown on Anthropic's page after signing in." (`server/drivers/claude-login-auth.ts:149-150`). The code is not sent then.
+3. A code that fails `claudeLoginCode` throws "Paste the whole code shown on Anthropic's page after signing in." (`server/drivers/claude-login-auth.ts:149-150`). The code is not sent then. At `e1cc6a290` (commits `94a1a6d1f`, `46f016125`, v0.1.186) the text is `NOT_THE_CODE`: "That is not the code from Claude's page. If it is the login code Claude emails you, enter it on Claude's page, click Authorize, then paste the longer code Claude shows.", and the error has `reason: "wrong_code"` (`server/drivers/claude-login-auth.ts:51`, `:154`).
 4. The controller writes the code and a newline to the stdin of the login process. A write error fails the flow (`server/drivers/claude-login-auth.ts:162-164`).
 5. It waits for the flow to finish. A 60 s timer fails it: "Claude Code did not finish the sign-in after the code was entered. Start sign-in again." (`server/drivers/claude-login-auth.ts:155-161`).
 
@@ -1444,7 +1504,7 @@ A **device sign-in** shows a URL and a short user code. The person opens the URL
 6. Sign-out runs `login status`, `logout`, `login status`. A sign-out of an API-key login, or with an unknown status, is refused: "did not confirm a ChatGPT sign-in". No `logout` runs then (`server/drivers/codex-device-auth.test.ts:136-145`, `server/drivers/codex-device-auth.test.ts:222-226`).
 7. Failure texts are fixed sentences, never the words of the CLI (`server/drivers/codex-device-auth.ts:12-23`):
    - An old CLI with no `--device-auth`: "needs updating ... npm install -g @openai/codex@latest".
-   - Device login turned off: "Enable device-code login in your ChatGPT security settings...".
+   - Device login turned off: "Enable device-code login in your ChatGPT security settings...". At `e1cc6a290` (commits `94a1a6d1f`, `5aea9c95e`, v0.1.186): "OpenAI did not allow device code sign-in. Turn it on in ChatGPT Settings → Security (your ChatGPT admin may need to), then try again.", with the reason `refused` (`server/drivers/codex-device-auth.ts:18`, `:23`, `:27-31`).
    - The code expired, and a general text.
 8. Two controllers of one home: the second start fails "already running for this server account" until the first cancels (`server/drivers/codex-device-auth.test.ts:345-356`).
 
@@ -1808,6 +1868,7 @@ The end of a flow, `finish()` (`server/drivers/device-auth.ts:347-371`):
 1. It runs one time only, while the phase is `waiting`. It clears both timers.
 2. The status becomes `{phase, flowId, authorizationUrl: null, expiresAt: null, message?}`. A `succeeded` status has no message.
 3. If `start()` did not resolve yet, it resolves for `succeeded` and rejects with the message for the other phases.
+   - At `e1cc6a290` (commit `46f016125`, v0.1.186), `finish` also takes a fixed reason code and puts it on the status (`reason`) and on the error of a waiting `start()` (`server/drivers/device-auth.ts:351-366`). The codes are in `shared/sign-in-outcome.ts:4-25`: `completed`, `wrong_code`, `refused`, `expired`, `cancelled`, `exited`, `interrupted`, `not_installed`, `timed_out` and `failed`. The startup timer gives `timed_out`, the expiry `expired`, a cancel `cancelled`, a missing command `not_installed` (`:342`), and a login exit `spec.failureReason?.(output) ?? "exited"` (`:148`). Codex maps device sign-in turned off to `refused` and an expired code to `expired` (`server/drivers/codex-device-auth.ts:27-31`). The Claude `finish` does the same (`server/drivers/claude-login-auth.ts:363`, `:376-400`).
 4. It stops the child. When the child is gone, it frees the home lock.
 5. If the stop fails, it sets `terminationFailed` and changes the status to `failed` with "{product} could not be stopped on this server. Ask the server administrator to stop the login process before trying again.". The lock stays until the child's `close` event (`server/drivers/device-auth.ts:360-369`).
 6. On `succeeded` it calls `onAuthenticated()` (a model refresh) and ignores its error (`server/drivers/device-auth.ts:370`).
@@ -1854,7 +1915,7 @@ An ACP engine is an engine that the server drives through the Agent Client Proto
 |---|---|---|---|
 | Grok | `auth.json` exists, then `grok models` output. Only a second `signed-out` in a row counts, because the first run can refresh an expired token. 8 s for each call, result kept 5 min, a stale result is answered at once while a new probe runs | signed in | `server/drivers/acp/grok-sign-in.ts:13-62`, `server/drivers/acp/grok.ts:40-44` |
 | Copilot | an empty ACP `session/new`. Signed in kept 5 min, signed out 60 s, an unproven probe 15 s. A caller waits at most 3 s, then gets the last answer, or true | signed in for 15 s | `server/drivers/acp/copilot.ts:25-31`, `117-146` |
-| Cursor | a key in the environment, else `status --format json`, then `status`. 8 s for each call | signed out | `server/drivers/acp/cursor.ts:105`, `298-311` |
+| Cursor | a key in the environment, else `status --format json`, then `status`. 8 s for each call. At `e1cc6a290` (commit `73f557e06`, v0.1.186) the turn handshake also runs this check before it sends `authenticate("cursor_login")`, and sends nothing when the CLI is signed in, because a second `cursor_login` deletes the stored login (`server/drivers/acp/core.ts:1086-1089`, `server/drivers/acp/cursor.ts:525-527`) | signed out | `server/drivers/acp/cursor.ts:105`, `298-311` |
 | Kimi | a token file in `credentials/` that parses and has tokens that are not empty | signed out | `server/drivers/acp/kimi.ts:29-50` |
 | Cline | a key in `CLINE_API_KEY`, else the OAuth entry of `providers.json` | signed out | `server/drivers/acp/cline.ts:138-141` |
 | DeepSeek | `DEEPSEEK_API_KEY`, else the credentials file, else `.env` | signed out (no key) | `server/drivers/acp/deepseek.ts:121-128` |
@@ -1880,7 +1941,7 @@ The owner key is set by the route (`server/routes/instances.ts:319-321`):
 - a paired phone: `companion:<device header>`.
 - else: `"loopback"`. All loopback callers without a session share this one owner.
 
-Data: a map from instance id to one `Flow`, in memory only (`server/provider-auth-sessions.ts:21`). So each instance has at most one sign-in session. A `Flow` holds `instance`, `owner`, `flowId`, `expiresAt`, `busy`, `starting`, `revoked`, `revision` and `told` (`server/provider-auth-sessions.ts:5-16`).
+Data: a map from instance id to one `Flow`, in memory only (`server/provider-auth-sessions.ts:21`). So each instance has at most one sign-in session. A `Flow` holds `instance`, `owner`, `flowId`, `expiresAt`, `busy`, `starting`, `revoked`, `revision` and `told` (`server/provider-auth-sessions.ts:5-16`). At `e1cc6a290` (commit `46f016125`, v0.1.186) it also holds `attempt` (an entry of the sign-in trace, null on a desktop) and `settling` (`server/provider-auth-sessions.ts:11-26`).
 
 States of a session:
 
@@ -1900,23 +1961,23 @@ Flow of `start(instance, owner)` (`server/provider-auth-sessions.ts:34-66`):
 5. Call `startAuthentication()`. If the flow was revoked or replaced meanwhile, call `cancelAuthentication` and refuse with 409 "Sign-in cancelled because the session or provider changed." (`server/provider-auth-sessions.ts:47-50`).
 6. Store the `flowId`. If the result has a valid `expiresAt`, use it in place of the 15 min default (`server/provider-auth-sessions.ts:51-53`).
 7. If the phase is `succeeded` (the engine was signed in already), delete the flow and call `signedIn(instanceId)` (`server/provider-auth-sessions.ts:54-57`).
-8. On an error, delete the flow, unless it was a resume that is not revoked (`server/provider-auth-sessions.ts:60`).
+8. On an error, delete the flow, unless it was a resume that is not revoked (`server/provider-auth-sessions.ts:60`). At `e1cc6a290`, on a Cloud home, a resumed flow whose new engine start failed gets `expiresAt = 0`, so nothing stays open (`server/provider-auth-sessions.ts:111-114`).
 
 The other actions:
 
-- `owned()`: a missing, revoked or foreign flow, or a wrong flow id, gives 404 "This sign-in is no longer available in this browser. Start a new sign-in.". A busy flow gives 409 "The sign-in is still being updated. Try again shortly." (`server/provider-auth-sessions.ts:68-75`).
-- `status()`: calls `getAuthentication(flowId)`. If the flow changed during the call, it gives 404 "This sign-in session ended.". A phase other than `waiting` or `verifying` sets `expiresAt = 0`. On `succeeded` it calls `signedIn` one time only (`told`) (`server/provider-auth-sessions.ts:77-89`).
-- `complete(instanceId, owner, flowId, callbackUrl)`: for engines that take a pasted callback address or code. Without engine support it gives 400 "This provider does not use a callback URL.". Then it deletes the flow and calls `signedIn` (`server/provider-auth-sessions.ts:91-101`).
-- `cancel()`: increments `revision`, so a status read in flight cannot announce success. Then it calls `cancelAuthentication` and sets `expiresAt = 0`. The owner can still read the `cancelled` status later (`server/provider-auth-sessions.ts:103-110`).
+- `owned()`: a missing, revoked or foreign flow, or a wrong flow id, gives 404 "This sign-in is no longer available in this browser. Start a new sign-in.". A busy flow gives 409 "The sign-in is still being updated. Try again shortly." (`server/provider-auth-sessions.ts:68-75`). At `e1cc6a290`, a flow that a server stop cut short (see "What a restart loses") gives 404 "This sign-in was interrupted because the server stopped. Start sign-in again." with `reason: "interrupted"` (`server/provider-auth-sessions.ts:29`, `:125`).
+- `status()`: calls `getAuthentication(flowId)`. If the flow changed during the call, it gives 404 "This sign-in session ended.". A phase other than `waiting` or `verifying` sets `expiresAt = 0`. On `succeeded` it calls `signedIn` one time only (`told`) (`server/provider-auth-sessions.ts:77-89`). At `e1cc6a290`, a flow that a server stop cut short answers 200 `{phase: "failed", flowId, authorizationUrl: null, expiresAt: null, reason: "interrupted"}` with no `message`, before the owner check, so the screen words the reason in the person's language (`server/provider-auth-sessions.ts:137-140`).
+- `complete(instanceId, owner, flowId, callbackUrl)`: for engines that take a pasted callback address or code. Without engine support it gives 400 "This provider does not use a callback URL.". Then it deletes the flow and calls `signedIn` (`server/provider-auth-sessions.ts:91-101`). At `e1cc6a290` (commit `46f016125`, v0.1.186), on a Cloud home, a code that the engine refused calls `afterRefusedCode`: it reads the status of the engine. When the engine ended the flow (the provider refused the code, or the login command exited), it sets `expiresAt = 0` at once and records the reason. A pasted value that is not a code (`wrong_code`) keeps the flow open for another try (`server/provider-auth-sessions.ts:161-166`, `:178-185`). Because the start gate refuses another owner only while `expiresAt > now` (`:78-81`), the person can start again at once. Before, a failed `complete` kept `expiresAt` 15 min ahead. A desktop keeps the old behaviour (`:175-177`). Tests: `server/sign-in-awake.test.ts:126`, `:152`, `:192`.
+- `cancel()`: increments `revision`, so a status read in flight cannot announce success. Then it calls `cancelAuthentication` and sets `expiresAt = 0`. The owner can still read the `cancelled` status later (`server/provider-auth-sessions.ts:103-110`). At `e1cc6a290`, a flow that a server stop cut short returns at once with nothing to cancel (`server/provider-auth-sessions.ts:187-189`).
 - `signOut(instance, owner)`: 404 without engine support. 409 when a flow is busy or belongs to another live owner. Else it puts a busy placeholder flow for 60 s, cancels the old flow, calls `instance.signOut()` and removes the placeholder (`server/provider-auth-sessions.ts:113-127`).
 - `revokeOwner(owner)`: marks each flow of that owner revoked. A flow that is starting stays, because its own start cancels it. The others are cancelled and deleted (`server/provider-auth-sessions.ts:129-140`). The root calls it when a browser session is revoked (`server/index.ts:4621-4622`).
 - `clear()` and `clearInstance(id)`: mark revoked and delete. They do not call `cancelAuthentication` (`server/provider-auth-sessions.ts:142-151`). The engine controller stops when its instance is disposed (`server/drivers/acp/core.ts:1525-1527`). The root calls `clearInstance` when instances stop or reload (`server/index.ts:11719`, `11766`, `11774`, `11816`).
 
-Expiry: there is no sweep timer. An expired flow stays in the map until the next start for the same instance replaces it (`server/provider-auth-sessions.ts:156`). The getter `active` is true while a flow is not expired and is busy or not revoked (`server/provider-auth-sessions.ts:30-32`).
+Expiry: there is no sweep timer. An expired flow stays in the map until the next start for the same instance replaces it (`server/provider-auth-sessions.ts:156`). The getter `active` is true while a flow is not expired and is busy or not revoked (`server/provider-auth-sessions.ts:30-32`). At `e1cc6a290` there is still no sweep timer. But on a Cloud home the getter calls `settleLate` for each flow past `expiresAt`: on a later tick it asks the engine for the outcome, ignores errors, and records the outcome or `expired` (`server/provider-auth-sessions.ts:51-70`). The map entry stays.
 
 What waits on an active sign-in: while `active` is true, the workspace restore does not run (`server/index.ts:11892`), the data move does not run (`server/index.ts:9350`), and maintenance does not run (`server/index.ts:15115`). A start that never returns stops counting after 15 min. A sign-out that never returns stops counting after 60 s (`server/provider-auth-sessions.test.ts:218-242`). This is a case of problem d.
 
-What a restart loses: every session, because the map is in memory only. The engine's login process also stops with the server. The person must start the sign-in again. The app does not keep the flow either (`src/components/DeviceSignIn.tsx` keeps it in React state only).
+What a restart loses: every session, because the map is in memory only. The engine's login process also stops with the server. The person must start the sign-in again. The app does not keep the flow either (`src/components/DeviceSignIn.tsx` keeps it in React state only). At `e1cc6a290` (commit `46f016125`, v0.1.186), a Cloud home writes each attempt to `<dataDir>/sign-in-trace.json`, with only a SHA-256 key of the instance and the flow id (`server/sign-in-trace.ts:14`, `:57`). At a stop it keeps the open attempts open. At the next start it records each open attempt as `interrupted` (`:126-142`, called at `server/index.ts:15083`). Then the screen's next read hears `interrupted` and shows "This sign-in was interrupted. Start again." with "Try again" (`server/provider-auth-sessions.ts:133-140`; `src/components/DeviceSignIn.tsx:102-106`). The map of sessions is still lost, and a desktop has no trace (`server/index.ts:1356`).
 
 The HTTP routes (all answers carry `cache-control: no-store`, `server/routes/instances.ts:324`, `338`):
 
@@ -1934,7 +1995,7 @@ Rules on these routes:
 2. `auth/start` on an unknown instance gets 404.
 3. A `browser` or `browser-pkce` sign-in is refused with 403 when the request is proxied, not from loopback, or from a paired phone: "This sign-in happens in a browser on the computer running {product}. ..." (`server/routes/instances.ts:372-379`). A device code sign-in has no such limit. It works from a phone or a remote browser.
 4. If the browser session ended while the start ran, the route revokes the owner and answers 401 "Your session ended. Start a new sign-in." (`server/routes/instances.ts:382-386`).
-5. An error keeps its status when it is 400, 401, 404, 409, 413 or 415, else 500 (`server/routes/instances.ts:409-413`).
+5. An error keeps its status when it is 400, 401, 404, 409, 413 or 415, else 500 (`server/routes/instances.ts:409-413`). At `e1cc6a290`, the body of an `auth/*` error also has the `reason` of the error, when it has one (`server/routes/instances.ts:424-428`).
 6. The routes check the owner key only. The scope gate is outside them: every path that is not on the client allow-list needs the `admin` scope (`server/request-auth.ts:535-542`).
 
 #### The terminal login route (cli-login)
@@ -2083,7 +2144,7 @@ The next `save()` writes the empty or reduced lists over the old file. The unrea
 - `settle(..., "done" | "cancelled")` hands the browser or computer back, resumes the bot's work with a fixed prompt, and marks the card. A second call on a settled card answers 200 with `resumed: true` (`server/host/sign-in-settle.ts:51-71`).
 - `expire()` ends a card that nobody answered (`server/host/sign-in-settle.ts:74-83`).
 - `answerInChat()`: a line that the person writes in the chat settles every open card on the active path as `answeredInChat` (`server/host/sign-in-settle.ts:86-111`). The prompt quotes the person's line, cut to 400 characters, inside a fixed template (`server/host/sign-in-settle.ts:32-35`).
-- `verified()`: a card is marked done when a later successful tool call names the site (`server/host/sign-in-settle.ts:120-133`).
+- `verified()`: a card is marked done when a later successful tool call names the site (`server/host/sign-in-settle.ts:120-133`). At `140172d88` this was true only for cards made in the turn that ended (`message.at < since`). After the tag v0.1.186 (commit `88c29487a`, issue #6285), `verified(botId, threadId)` has no `since`, so any open card of the active path settles, also a card from an earlier turn (`server/host/sign-in-settle.ts:122-128` at `e1cc6a290`, caller `server/index.ts:1964`; test `server/host/sign-in-settle.test.ts:81`).
 
 The route `POST /api/internal/request-sign-in` makes such a card. It is also not an engine sign-in (`server/routes/sign-in.ts:11`).
 
@@ -2367,7 +2428,7 @@ The default fleet has these API instances: `openai`, `claudeApi`, `xaiApi` and `
 
 #### How a key is saved
 
-1. The person pastes a key into a key row in Settings. The UI cleans it: it removes zero-width characters, trims it and removes one pair of quotes (`src/components/keys/key-save.ts:39-43`). A value with whitespace inside is refused in the UI (`src/components/keys/KeyRow.tsx:202-207`).
+1. The person pastes a key into a key row in Settings. The UI cleans it: it removes zero-width characters, trims it and removes one pair of quotes (`src/components/keys/key-save.ts:39-43`). A value with whitespace inside is refused in the UI (`src/components/keys/KeyRow.tsx:202-207`). At `e1cc6a290` (commit `88a285945`, v0.1.186) the server also trims each saved provider key (`secretText = z.string().trim().optional()`, `server/config.ts:40`).
 2. On the desktop, the UI writes the key to the OS-encrypted store through `window.ogb.setCredential(slot, value, options)`. This happens when the row has a slot and the desktop is not a remote client of another computer (`src/components/keys/key-save.ts:9-17`).
 3. In all other cases, the UI sends `PUT /api/config` with the row's patch. An empty string removes the key (`src/components/keys/key-save.ts:19-27`).
 4. The route accepts only an admin caller. A member token gets 403 (`server/request-auth.test.ts:735-760`). A paired phone may send only a key-only patch, else it gets 403 "From a phone, only API keys can be changed. Change other settings on your computer." (`server/routes/config.ts:146-149`, `server/provider-key-check.ts:13-28`). On hosted models, a patch with a provider kind gets 403 `HOSTED_PROVIDER_SETTINGS_ERROR` (`server/routes/config.ts:150`). A second save while one runs gets 409 "provider settings are already being updated" (`server/routes/config.ts:216`).
@@ -2765,7 +2826,7 @@ All sign-ins use one route family per engine: `POST /api/instances/{id}/auth/sta
 | `DeviceSignIn` | device code (Codex, Grok, Kimi, Cursor), ChatGPT plan (`browser-pkce`) | one status call 2,000 ms after each new answer | a timer at `expiresAt`, only when the server sends a valid date | HTTP 401, 403, 404, 410 | every other error: the message shows and the poll runs again in 2 s | `src/components/DeviceSignIn.tsx:78-80`, `src/components/DeviceSignIn.tsx:180-211` |
 | `EngineBrowserSignIn` | method `browser` (the engine opens the browser itself) | same as `DeviceSignIn` | same | 401, 403, 404, 410 | same | `src/components/EngineBrowserSignIn.tsx:41-72` |
 | `ManagedEngineSetup` | Google sign-in of a managed engine (Antigravity) | `setInterval` of 2,000 ms | none | a final phase from the server. A 404 ends the flow with no error | every other error is ignored | `src/components/EngineSetup.tsx:314-348` |
-| `ClaudeSignIn` | method `paste-code` | no poll | a timer at `expiresAt` | 401, 403, 404, 410 on `/auth/complete` show "expired" | another error makes one `GET .../status`. If the phase is still `waiting`, the form stays open | `src/components/ClaudeSignIn.tsx:58-64`, `src/components/ClaudeSignIn.tsx:90-109` |
+| `ClaudeSignIn` | method `paste-code` | no poll | a timer at `expiresAt` | 401, 403, 404, 410 on `/auth/complete` show "expired". At `e1cc6a290` (commit `94a1a6d1f`, v0.1.186) only 401 and 403 show "expired". A reason `interrupted`, or a 404 or 410 with no reason, shows "This sign-in was interrupted. Start again." (`src/components/ClaudeSignIn.tsx:107-114`) | another error makes one `GET .../status`. If the phase is still `waiting`, the form stays open | `src/components/ClaudeSignIn.tsx:58-64`, `src/components/ClaudeSignIn.tsx:90-109` |
 | `useSignInPill` | the first onboarding screen | `min(2_000 * 2 ** stalls, 30_000)` ms | 3 stalls in a row. Each request has a 10 s timeout | any `ApiError` with status below 500, at once. Three stalls end with "Lost touch with the server during sign-in. Check the connection and start again." | a timeout, a dropped connection or a 5xx counts as one stall | `src/components/onboarding/SignInPill.tsx:17-20`, `src/components/onboarding/SignInPill.tsx:117-158`, `src/locales/en.json:6380` |
 
 The `DeviceSignIn` poll, step by step (`src/components/DeviceSignIn.tsx:180-242`):
@@ -2775,7 +2836,7 @@ The `DeviceSignIn` poll, step by step (`src/components/DeviceSignIn.tsx:180-242`
 3. After 2,000 ms the client sends one status request with an `AbortController`.
 4. A new answer replaces `auth` and clears the error. A new `auth` value runs the effect again, so the next call follows in 2 s.
 5. On `succeeded` the client refreshes the list and the models. It ignores failures of these refreshes: "a failed catalog refresh must not read as a failed sign-in" (`src/components/DeviceSignIn.tsx:172-178`).
-6. On 401, 403, 404 or 410 the flow ends as `failed` with `engineSetup.device.flowEnded` or `engineSetup.chatgpt.flowEnded`.
+6. On 401, 403, 404 or 410 the flow ends as `failed` with `engineSetup.device.flowEnded` or `engineSetup.chatgpt.flowEnded`. At `e1cc6a290` (commit `94a1a6d1f`, v0.1.186), a 404 or 410, or a reason `interrupted`, ends the flow with "This sign-in was interrupted. Start again." and "Try again" (`signInInterrupted`, `unavailableFlow`, `src/components/DeviceSignIn.tsx:31-35`, `:102-106`). Only 401 and 403 keep `flowEnded`.
 7. On any other error the client shows the message and sets `auth` to a copy of itself. This starts the 2 s poll again. A test checks that a network error, 503 and 429 stay retryable (`src/components/DeviceSignIn.test.ts:69-73`).
 
 The Google poll, step by step (`src/components/EngineSetup.tsx:314-348`):
@@ -3528,7 +3589,7 @@ Layout while the phase is `waiting` (`src/components/DeviceSignIn.tsx:121-150`),
 4. A spinner and "Waiting for you to finish signing in…".
 5. "Code expires at {time}" (hour and minute).
 6. The security note "Only enter a code you requested here. This signs Codex in for your bots and uses your account's limits. ...".
-7. Codex only: "Device-code login may need enabling in ChatGPT security settings or by your ChatGPT admin." (`src/components/DeviceSignIn.tsx:268`).
+7. Codex only: "Device-code login may need enabling in ChatGPT security settings or by your ChatGPT admin." (`src/components/DeviceSignIn.tsx:268`). At `e1cc6a290` (commit `94a1a6d1f`, v0.1.186), the step that turns on device code sign-in in ChatGPT is step 1, above the code, while the flow waits. It stays under a flow that ended without success (`engineSetup.device.enableNote`, `src/components/DeviceSignIn.tsx:145-149`, `:294-296`; `src/locales/en.json:6391`).
 
 Cursor has no code. Its "enter code" text is the "open" text (`src/components/DeviceSignIn.tsx:67-68`).
 
@@ -3540,9 +3601,10 @@ States after `waiting` (`src/components/DeviceSignIn.tsx:108-114`):
 |---|---|
 | succeeded | "ChatGPT connected. Your models are being refreshed." |
 | cancelled | "Sign-in cancelled. You can request a new code when ready." |
-| expired | "This code expired. Request a new code to try again." |
+| expired | "This code expired. Request a new code to try again." At `e1cc6a290` also a `failed` status with `reason: "expired"` (`src/components/DeviceSignIn.tsx:133`, commit `1c82a0f0c`) |
 | failed | the server's `message`, else "Sign-in could not be completed. Try again, or check the Codex installation." |
-| flow gone (HTTP 401, 403, 404, 410) | "This sign-in session is no longer available. Check that this browser is still paired with Full access, then request a new code." (`src/components/DeviceSignIn.tsx:78-84`) |
+| interrupted (at `e1cc6a290`: a reason `interrupted`, or HTTP 404 or 410) | "This sign-in was interrupted. Start again." with "Try again" (`src/components/DeviceSignIn.tsx:134`; `src/locales/en.json:6402`) |
+| flow gone (HTTP 401, 403, 404, 410; at `e1cc6a290` 401 and 403 only) | "This sign-in session is no longer available. Check that this browser is still paired with Full access, then request a new code." (`src/components/DeviceSignIn.tsx:78-84`) |
 
 Buttons and busy states (`src/components/DeviceSignIn.tsx:213-260`):
 
@@ -4003,10 +4065,11 @@ Device code sign-in for Codex, Grok, Kimi and Cursor, and the ChatGPT plan sign-
 | Succeeded | "ChatGPT connected. Your models are being refreshed." (`src/locales/en.json:6373`) |
 | Cancelled | "Sign-in cancelled. You can request a new code when ready." (`src/locales/en.json:6377`) |
 | Expired | "This code expired. Request a new code to try again." (`src/locales/en.json:6378`) |
-| Flow gone (401, 403, 404, 410) | "This sign-in session is no longer available. Check that this browser is still paired with Full access, then request a new code." (`src/locales/en.json:6382`) |
+| Interrupted (at `e1cc6a290`: a reason `interrupted`, or 404 or 410) | "This sign-in was interrupted. Start again." (`src/locales/en.json:6402`) |
+| Flow gone (401, 403, 404, 410; at `e1cc6a290` 401 and 403 only) | "This sign-in session is no longer available. Check that this browser is still paired with Full access, then request a new code." (`src/locales/en.json:6382`) |
 | Failed | the server message, or "Sign-in could not be completed. Try again, or check the Codex installation." (`src/locales/en.json:6379`), and "Try again" (`src/locales/en.json:6383`) |
 
-- Codex device code only: "Device-code login may need enabling in ChatGPT security settings or by your ChatGPT admin." (`src/locales/en.json:6372`).
+- Codex device code only: "Device-code login may need enabling in ChatGPT security settings or by your ChatGPT admin." (`src/locales/en.json:6372`). At `e1cc6a290` it is step 1 above the code (see section 5.3).
 - Cursor prints no code. Its waiting view has only the link "Open Cursor sign-in" (`src/components/DeviceSignIn.tsx:67-68`).
 - The ChatGPT plan flow opens the checked link at once after start (`src/components/DeviceSignIn.tsx:221-224`). The device-code flows never open a page by themselves (`src/components/GrokSignIn.interaction.test.ts:54-63`).
 - Attributes: `data-device-sign-in={provider}` and `data-chatgpt-plan-sign-in`.
@@ -4021,16 +4084,16 @@ The Claude paste-code sign-in (`src/components/ClaudeSignIn.tsx:31-198`):
 4. Waiting with a link: a form.
    - "1. Sign in on the Claude page that opened" with the link "Open Claude sign-in".
    - "2. Paste the code Claude shows you" with an input (placeholder "Paste code", autofocus).
-   - "Finish" (`src/locales/en.json:4968`), busy "Checking with Claude Code…". It stays disabled while busy or while the trimmed code has fewer than 8 characters (`src/components/ClaudeSignIn.tsx:159`).
+   - "Finish" (`src/locales/en.json:4968`), busy "Checking with Claude Code…". It stays disabled while busy or while the trimmed code has fewer than 8 characters (`src/components/ClaudeSignIn.tsx:159`). At `e1cc6a290` (commit `94a1a6d1f`, v0.1.186) it also stays disabled while the value looks like the code that Claude emails (digits only, up to 8), and a warning shows under the field (`looksLikeEmailedCode`, `src/components/ClaudeSignIn.tsx:33-36`, `:147`; `src/locales/en.json:4986`).
    - The note "The code goes to Claude Code once and is never saved." (`src/locales/en.json:4969`).
    - Cancel.
-5. Finish sends `POST .../auth/complete` with `{ flowId, code }`. A 200 is the sign-in. A 401, 403, 404 or 410 shows "This code expired. Request a new code to try again." Another error makes one status call. If the flow still waits, the error shows and the form stays open (`src/components/ClaudeSignIn.tsx:90-109`).
+5. Finish sends `POST .../auth/complete` with `{ flowId, code }`. A 200 is the sign-in. A 401, 403, 404 or 410 shows "This code expired. Request a new code to try again." (At `e1cc6a290`: see the polls table of section 3.19.3. Only 401 and 403 show "expired".) Another error makes one status call. If the flow still waits, the error shows and the form stays open (`src/components/ClaudeSignIn.tsx:90-109`).
 6. Success: "Claude connected. Your models are being refreshed."
 7. Ended: the expired text or the failure message, and "Try again".
 
 #### 5.5.6 `EngineBrowserSignIn`
 
-The engine opens the person's browser itself. The app shows no link and no code (`src/components/EngineBrowserSignIn.tsx:1-2`). The code is generic, but all texts name Mistral (`src/locales/en.json:6355-6363`):
+The engine opens the person's browser itself. The app shows no link and no code (`src/components/EngineBrowserSignIn.tsx:1-2`). The code is generic, but all texts name Mistral (`src/locales/en.json:6355-6363`). At `e1cc6a290` (commit `5b07c79c4`, v0.1.186, issue #5995) each text uses the display name of the engine, `{name}` (`src/components/EngineBrowserSignIn.tsx:18-21`, passed at `src/components/EngineSetup.tsx:778`; `src/locales/en.json:6375-6382`). Before, Antigravity (Google Gemini) showed "Sign in to Mistral". The release note says: "The browser sign-in names the right AI." The table has the texts at `140172d88`:
 
 | State | Text |
 |---|---|
@@ -4468,6 +4531,22 @@ Where we differ by design, and the decision:
 Each point has a reason. A point that answers a problem of section 5 of
 [`changelog.md`](../changelog.md) names it.
 
+The problems of `changelog.md` section 5 that the reference repaired in
+this feature up to `e1cc6a290`:
+
+| Problem | What the reference repaired | Commit, tag or after | File and line |
+|---|---|---|---|
+| A turn or a wait that does not end | On a Cloud home, a refused or cut-short sign-in no longer sits on "Waiting…". It says why, and the person can start again at once (v0.1.186) | `46f016125`, `94a1a6d1f`, tag | `server/provider-auth-sessions.ts:133-140`, `:178-185`; `src/components/DeviceSignIn.tsx:102-106` |
+| Sign-in to an engine, and engine CLIs that change | Cursor no longer clears its own sign-in when a session starts (v0.1.186). Devin 3000.15+ refuses `session/new` until `authenticate` carries the key, and the driver now sends it (v0.1.186). An older Claude CLI starts a new session when the instructions change (v0.1.186) | `73f557e06`, `e1f1140f6`, `5638d70a4`, tag | `server/drivers/acp/core.ts:1086-1089`; `server/drivers/acp/devin.ts:48-58`; `server/drivers/claude.ts:941-950` |
+| The size of the tool list of one turn | A compacted Gemini tool list keeps the item type of each list field, so Gemini does not refuse the request (v0.1.186) | `08fc34c51`, `b66e84ee3`, tag | `server/tool-schema-profile.ts:252-292`; `server/tool-list-budget.ts:102-114` |
+| A secret or an access right in the wrong place | The Devin API key is kept out of the native log. A member gets an engine list with no accounts, paths or addresses (after the tag) | `ae38437b7`, tag; `d48ce8033`, after | `server/drivers/acp/tool-log.ts:41-44`; `server/routes/instances.ts:76-83` |
+
+The repairs that stay open: a desktop keeps a refused sign-in open until a
+read or the 15-minute expiry (`server/provider-auth-sessions.ts:175-177`).
+The Cursor memory one-shot can still send `cursor_login`
+(`server/drivers/acp/core.ts:1454`). Section 3.10 and the section "Changes
+up to `e1cc6a290` (v0.1.186)" have the details.
+
 1. **One sign-in state type with "unknown".** The engines of the reference
    project treat a check that cannot finish in opposite ways:
    - Grok counts a timeout or an unknown answer as signed in
@@ -4534,9 +4613,18 @@ Each point has a reason. A point that answers a problem of section 5 of
      (`server/index.ts:9350`, `:11892`, `:15115`).
    - The Google sign-in poll has no client limit
      (`src/components/EngineSetup.tsx:314-348`).
+   - At `e1cc6a290` (commit `46f016125`, v0.1.186) the reference repaired a
+     part, on a Cloud home only: a refused code or an exited login ends the
+     session at once, the `active` getter records a flow past its expiry,
+     and a flow that a stop cut short answers `interrupted`
+     (`server/provider-auth-sessions.ts:51-70`, `:133-140`, `:178-185`).
+     There is still no sweep timer, a desktop keeps the old behaviour
+     (`:175-177`), and a flow that the person leaves still holds `active`
+     until its 15-minute expiry (`server/sign-in-trace.test.ts:41`).
 
    Changelog problem: "A turn or a wait that does not end" (v0.1.124: "A
-   sign-in card for an app no longer waits forever"). P503.
+   sign-in card for an app no longer waits forever"; v0.1.186: a refused AI
+   sign-in on a Cloud no longer sits "on "Waiting…""). P503.
 5. **The files of the person that a server engine home gets are an allow
    list.** The Codex shared home links each file of the person's Codex
    home into each server Codex home, except a deny list
@@ -4633,6 +4721,8 @@ The problems of section 5 that the reference project has here:
   `OPENCODE_PROVIDER_ENV` of `server/credential-env.ts`. Only lines 55-78
   were read.
 - The `snapshot()` of each driver outside the account and sign-in ranges.
+  (At `e1cc6a290`, the sign-in of Devin with an API key is in the section
+  "Changes up to `e1cc6a290` (v0.1.186)".)
   The engines Pi, OMP, Hermes, Droid, Devin, Kiro and Command Code were not
   read.
 - The fake CLIs `fake-kimi-login-cli.ts`, `fake-cursor-login-cli.ts` and
@@ -4654,3 +4744,13 @@ The problems of section 5 that the reference project has here:
 - Live behaviour of the vendors (consent pages, quotas, real CLI output).
   The fake CLIs record what the reference project measured.
 - Non-English texts of the window.
+- The update to `e1cc6a290` (2026-11-28):
+  - `server/sign-in-trace.ts` was read only in parts.
+  - Nobody checked if a client other than `DeviceSignIn` and
+    `ClaudeSignIn` (for example `SignInPill` or `ManagedEngineSetup`) reads
+    the new `reason`.
+  - The lines of the tests of `1c82a0f0c` and `8f5f6889d` were not found.
+  - The Responses API path of the continued reply (`9a8c5667c`) and the
+    call sites of `withoutResultImages` were not read.
+  - Nobody checked when the reference project runs a Cursor memory
+    one-shot.
