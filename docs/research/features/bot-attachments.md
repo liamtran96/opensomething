@@ -16,6 +16,15 @@ read four groups of files: the store, the bot tool, the chat view, and the
 composer with the documents. The main session checked 24 key claims against
 the code (section 2.3).
 
+**Updated on 2026-11-28 to commit `e1cc6a290`** (after the release v0.1.186,
+tag commit `70eb44c1a`). This file is correct at `e1cc6a290` for the changes
+that the section "Changes up to `e1cc6a290` (v0.1.186)" names. The other
+parts were read at `96ff84455`, and their line numbers are at `96ff84455`. A
+line number that is at `e1cc6a290` says so. Three readers read the commits
+of the range: the guard for a file outside the workspace, the attachment
+store, and the file preview. The main session checked the key facts against
+the code.
+
 In names from the reference project, `<product>` replaces the product name:
 the partial file prefix `.<product>-upload-` and the response headers
 `x-<product>-kept-original`, `x-<product>-media` and `x-<product>-folder`.
@@ -120,6 +129,43 @@ The main facts:
 6. Video and audio play through a media link, in ranges of at most 8 MB.
    The gallery loads a video only when the person clicks Play
    (`server/message-media-links.ts:15`, `src/components/AttachmentGallery.tsx:250-343`).
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+The release note of v0.1.186 has two lines for this feature
+(`announcements/releases.json:25`, `:93`):
+
+- "**A file open beside a conversation comes back** when you return to that
+  conversation."
+- "**Linked files outside a bot's folder:** a file link to one can be
+  opened, except hidden files, key and credential files, the Keychain and
+  browser profiles."
+
+Ten commits after the tag (up to `e1cc6a290`) also change this feature. All
+line numbers in this table are at `e1cc6a290`. "Tag" means in v0.1.186.
+"After" means after the tag, in no release yet.
+
+| Change | Commit | Tag or after | File and line | Sections of this file |
+|---|---|---|---|---|
+| On a self-hosted server, the owner or an admin can open one file that a bot links in its text and that is outside every root. The first answer is 403 `outside_workspace` with `canOpenOutside: true`. The chat then offers "Open this file" or "Save this file", and asks again with `allowOutsideWorkspace: true`. Not on a Cloud home or a hosted workspace, not for a member or the service loopback | `7395224e0` | Tag | `server/routes/threads.ts:284`, `:305-312`; `server/index.ts:11963`; `server/message-file.ts:484-531`; `server/request-auth.ts:69-71` | 3.8, 5.5, 8 |
+| A guard refuses such a file when a part of its path starts with `.`, when its name looks like a key or a credential, when it is in a Keychain or a browser profile on macOS, and when it is in a credential store or a "User Data" folder on Windows. Linux has no list of stores. The guard runs on the link as written, on the realpath before the open and on the realpath after it | `24092d6c2` | Tag | `server/outside-file-guard.ts:21-70`; `server/message-file.ts:498`, `:517`, `:525` | 3.8, 8 |
+| The guard also refuses the key formats `.p8`, `.kdb`, `.ppk`, `.jks`, `.keystore`, `.asc` and `.gpg`. v0.1.186 did not refuse them | `b94d19216` | After | `server/outside-file-guard.ts:21` | 3.8, 8 |
+| "Save this file" shows also on a desktop link that reveals the file on a click | `16fa9d7cc` | Tag | `src/components/ChatMarkdown.tsx:396`, `:441-448` | 5.6 |
+| The open file preview is kept in the memory of the window for its conversation. It comes back on a return to that conversation and does not take the focus | `7ac766486` | Tag | `src/lib/file-preview.ts:31-58`; `src/components/FilePreviewPanel.tsx:28-34`, `:45` | 5.5 |
+| A new file opened in a conversation replaces the kept one | `ee0f2d013` | Tag | `src/lib/file-preview.ts:36-39` | 5.5 |
+| A link in a reply to a `.txt`, `.text` or `.log` file opens a plain text preview. An attached text file still saves a copy | `0209cfbae` | Tag | `src/components/HtmlFilePreview.tsx:24-26`, `:60-67`; `src/components/ChatMarkdown.tsx:369-370`; `src/components/MarkdownFilePreview.tsx:41`, `:64`, `:74-77` | 5.2, 5.5 |
+| A conversation with a bot of a personal Cloud shown on this computer ("in place") takes no files in the composer, and its links offer no "Show in folder" | `4c5378d92`, `01142da97` | Tag | `src/components/Composer.tsx:504`, `:509`, `:511`; `src/components/ChatMarkdown.tsx:368` | 5.6, 5.8 |
+| The cleanup after a delete checks all names in one pass over the messages, in slices that give the event loop back. Before, it scanned all messages one time for each name, on the main thread | `ccd37f116` | Tag | `server/attachment-references.ts:1-11`, `:152-242`; `server/host/delete-leftovers.ts:263-299`; `server/message-writes.ts:8-18` | 3.9, 7, 8 |
+| The wheel zooms the image in the lightbox around the pointer, up to 16 times. The chat behind does not scroll | `bc6fce695`, `e671ad04c`, `c10c607b1`, `ad06b4cd4` | After | `src/components/preview-zoom.ts:3-47`; `src/components/AttachmentPreview.tsx:447-448` | 5.4 |
+| `threadsReferencing` answers from an index in memory for a stored upload name. Other text still takes the `instr` scan | `87246500e` | After | `server/message-db.ts:688-690`; `server/message-db-attachment-names.ts:47-139` | 3.8, 3.9, 7, 8 |
+| A named attachment from another computer must be a bare file name, else 400 | `aea459a1b` | After | `server/attachments.ts:576-579` | 3.6 |
+| A delete unlinks only a path whose folder is the store | `d93d653f0` | After | `server/attachments.ts:231-236` | 3.9 |
+| The copies of originals into one folder run one at a time, so two uploads cannot take the folder over 256 MB | `5e4bd5f2f` | After | `server/attachment-originals.ts:21`, `:54-81` | 3.7 |
+| The desktop app on its own server attaches a file over the upload limits by its path on the disk, with no upload | `0029b25d8` | After | `src/lib/composer-attachments.ts:804-817`; `src/components/ComposerAttachments.tsx:23-26` | 5.8, 8 |
+
+Commits `67f085195` and `34a6d3105` (after the tag) change only CSS: long
+paths and chips wrap in a chat bubble. `src/components/AttachmentGallery.tsx`
+did not change in the range.
 
 ## 2. Files read completely
 
@@ -433,6 +479,12 @@ Then `saveBotAttachment`:
   attach it. The bot gets no new read access, because only engines with host
   file tools get the grant. But the file then goes to the chat and to other
   bots.
+- At `e1cc6a290` the grant did not change (`server/message-file.ts:537-566`
+  at `e1cc6a290`). It does not use the new guard of section 3.8 item 5.3.
+  So a key-like file that is not hidden (for example
+  `~/Downloads/server.pem`) or a file in a browser profile under
+  `~/Library/Application Support` can still be attached this way. The owner
+  open of a linked file refuses the same file.
 
 ### 3.4 The `vm_exec` tool
 
@@ -591,7 +643,16 @@ held to 25 MB, because the store serves it from memory (`:678-681`).
 its own name, for a move to the Cloud. If the name exists, it reads the body
 to the end and returns `stored: false` without a byte check (`:563-573`). A
 different file with the same name is lost with no message
-(`server/cloud-send-attachments.test.ts:20-23`).
+(`server/cloud-send-attachments.test.ts:20-23`). This is still true at
+`e1cc6a290` (`server/attachments.ts:583-592`).
+
+At `e1cc6a290` (`aea459a1b`, after the tag), `saveNamedAttachment` also
+refuses a name that is empty, `.`, `..`, not its own base name, or that has
+`/` or `\`. It gives 400 "name must be a filename, not a path" before any
+read (`server/attachments.ts:576-579`). The comment says: "the name arrives
+from another computer, and this join is the only thing between it and the
+data folder". The route already refused such a name with 404 by its name
+pattern (`server/cloud-send-chats.ts:411-413`), so this is a second guard.
 
 ### 3.7 Originals
 
@@ -612,6 +673,13 @@ different file with the same name is lost with no message
    (`server/routes/threads.ts:285-291`).
 6. The originals count in the usage figure of Settings, but not in the
    reservation of an upload (`server/attachments.ts:223-227`, `:313`).
+7. Changed at `e1cc6a290` (`5e4bd5f2f`, after the tag). Before, items 3 and
+   4 had no lock: two uploads at the same time saw the same free room, so
+   the folder could go over 256 MB. Now a map in memory holds one promise
+   for each resolved folder of originals. Each copy waits for the one
+   before it, and the lock is released also when a copy fails
+   (`server/attachment-originals.ts:21`, `:54-81`). The lock is for one
+   process only.
 
 ### 3.8 How a message names a file, and how the chat reads it
 
@@ -650,6 +718,13 @@ different file with the same name is lost with no message
       conversation or a bot avatar uses follows the visibility of that
       conversation or bot. A file that nothing uses is served to anyone who
       knows its name: "its name is random" (`server/bot-visibility.ts:322-337`).
+      At `e1cc6a290` the rule is the same. The gate now learns which
+      conversations name a stored upload from an index in memory
+      (`87246500e`, after the tag; `server/message-db.ts:688-690`). The
+      index is built by one full read of all rows on its first query, and
+      it finds a name only as a whole token. A name that is not a lowercase
+      UUID name still takes the `instr` scan
+      (`server/message-db-attachment-names.ts:8-11`, `:19-23`, `:94-112`).
 5. **`/api/threads/<t>/messages/<m>/file`** serves all other files
    (`server/routes/threads.ts:200-364`):
    1. `POST` with JSON `{path, entry?, media?, listFolder?}`, `GET
@@ -660,6 +735,65 @@ different file with the same name is lost with no message
       root is the store. A bot `attachments[]` entry: the root is the store.
       A link in a bot's text: the roots of the bot for that thread
       (`:251-272`).
+      - New at `e1cc6a290` (`7395224e0`, `24092d6c2`, in the tag): an
+        exception for a link in a bot's text. All line numbers here are at
+        `e1cc6a290`.
+        1. The exception is only on a server that is not a Cloud home and
+           not a hosted workspace. The caller must be the owner or an admin:
+           a loopback caller that is not the service, or a caller with the
+           admin scope (`server/index.ts:11963`;
+           `server/routes/threads.ts:284`; `server/request-auth.ts:69-71`).
+        2. It is only for a `POST` with no folder entry and no media link.
+           The link must be in the text of the message
+           (`server/routes/threads.ts:263-265`).
+        3. The normal open runs first. A delivered copy (item 4) wins. Only
+           when the open fails with `outside_workspace` and no copy exists
+           does the exception run (`:298-305`).
+        4. Without `allowOutsideWorkspace: true` in the body, the server
+           answers 403 `{code: "outside_workspace", canOpenOutside: true}`
+           if the file can be opened (`:308-309`). Else it gives the normal
+           403 with no hint (`:310-311`).
+        5. With `allowOutsideWorkspace: true` and no `listFolder`, it opens
+           and streams the file (`:306-307`).
+        6. The server keeps no state between the two requests. A client
+           that sends the flag in its first request gets the file. The
+           confirmation is a step of the UI only.
+        7. The file must be an absolute local path, not UNC, and a regular
+           file. The server refuses the data folder and a second app data
+           folder that an environment variable can name
+           (`server/message-file.ts:435-441`, `:484-501`).
+        8. The guard `outsideFileRefused` runs three times: on the link as
+           written, on the realpath before the open and on the realpath
+           after the open. The open uses `O_NOFOLLOW` and the dev/ino check
+           (`server/message-file.ts:498`, `:517`, `:525`, `:394-408`). So a
+           link in a plain folder that points into `~/.ssh` is refused
+           (test `server/message-file.test.ts:546`).
+      - The guard (`server/outside-file-guard.ts:57-70`) refuses:
+        1. A path with any part that starts with `.` (`:58-59`). This covers
+           `~/.ssh`, `~/.aws`, `~/.config`, `.env`, `.git` and the secret
+           folder `.<product>-secrets`.
+        2. A name that starts with `id_rsa`, `id_ed25519`, `id_ecdsa`,
+           `id_dsa` or `credentials`, or that ends with `.pem`, `.key`,
+           `.p12`, `.pfx`, `.p8`, `.kdbx`, `.kdb`, `.ppk`, `.jks`,
+           `.keystore`, `.asc`, `.gpg` or `.env`. The match ignores case
+           (`:21`). `.p8`, `.kdb`, `.ppk`, `.jks`, `.keystore`, `.asc` and
+           `.gpg` came after the tag (`b94d19216`).
+        3. On macOS: `~/Library/Keychains`, `/Library/Keychains`,
+           `~/Library/Cookies`, and the profile folders of 12 browsers under
+           `~/Library/Application Support` (`:24-27`, `:37-41`).
+        4. On Windows: the credential, protect and vault folders under
+           `AppData`, the Firefox profiles, Opera, and any part named
+           `User Data` (`:43-50`, `:63-64`).
+        5. On Linux and other platforms: no list of stores (`:52`). Only
+           rules 1 and 2 apply there.
+        6. The compare ignores case on macOS and Windows only (`:30-33`,
+           `:62`).
+      - Every refusal of the guard is the quiet 403 `outside_workspace`
+        with no hint. On this path, the secret folder now gives
+        `outside_workspace`, not `secret_file`
+        (`server/message-file.test.ts:535-537`).
+      - The guard does not run for the grant "saved this turn" of section
+        3.3 (`server/message-file.ts:537-566`).
    4. A bot link to a file that is now gone falls back to the copy that the
       bot delivered in that reply (`deliveredCopy`,
       `server/bot-attachment.ts:205-244`). It matches by source path, then
@@ -712,10 +846,44 @@ nothing uses stays. Examples:
    that is not a picture, a routine file, a calendar file or a parked file
    (`:261-274`). The noted names are in memory. A crash before the flush
    leaves the files.
+   - Changed at `e1cc6a290` (`ccd37f116`, in the tag). Before, the flush ran
+     one `instr` scan of all messages for each name, on the main thread. The
+     commit says that on a Cloud with a large store this held the event loop
+     for minutes, the health checks failed and the home was restarted. Line
+     numbers here are at `e1cc6a290`.
+     1. The flush now asks one shared pass
+        (`server/attachment-references.ts:152-242`). The pass reads the
+        messages by rowid, 64 rows for each read, in slices of about 15 ms,
+        and gives the event loop back between the slices. It checks all
+        names at once with one matcher. The rule is the same as `instr`:
+        the name anywhere in the JSON of a row.
+     2. One pass runs at a time. Names asked for during a pass wait for the
+        next pass.
+     3. A message written during the pass is checked too
+        (`server/message-writes.ts:8-18`).
+     4. "Safety: unsure means kept." A pass that fails, or that finds
+        messages.db opened again, removes nothing (`:10-11`, `:51-59`).
+     5. The files go in batches of 25. Each batch is checked again just
+        before it goes (`server/host/delete-leftovers.ts:263-299`).
+     6. The names are still noted only in memory (`:223-225`). "Nothing is
+        kept on disk, so a restart replays nothing"
+        (`server/attachment-references.ts:7-8`). A crash during the pass
+        also leaves the files.
+     7. The cleanup after a team member leaves uses the same pass
+        (`server/host/team-member-left.ts:145-156`).
 3. `deleteAttachment` also removes the box copies and the original
    (`server/attachments.ts:205-221`). If the unlink fails with an error other
    than ENOENT (a busy file on Windows), it returns at once and keeps the box
    copies (`:213-216`).
+   - Changed at `e1cc6a290`. `deleteAttachment` now calls
+     `deleteAttachments` (`server/attachments.ts:225-236`, `ccd37f116`, in
+     the tag). It lists each box folder one time for all names. Before the
+     unlink, it keeps only the paths whose folder is the store, by
+     `resolve(dirname(path)) === resolve(ATTACHMENTS_DIR)` (`:232`,
+     `d93d653f0`, after the tag). Before `d93d653f0`, a path outside the
+     store was unlinked. The compare is a string compare: it does not follow
+     a link, and it is case-sensitive. An unlink that fails keeps that file
+     and its box copies and original (`:211-222`).
 4. "Start fresh" keeps all messages and files. It is the only clear of one
    conversation (`server/fresh-start.ts:1-33`).
 
@@ -874,7 +1042,8 @@ The limits:
 | Audio | Extension mp3, m4a, aac, wav, ogg, oga, opus, flac | A small Play button, then a player (`:78-80`) |
 | HTML, Markdown | The name | The name opens a preview (`src/components/HtmlFilePreview.tsx:16-22`, `:99-103`) |
 | CSV, TSV | A delimiter in the name | A table button (`src/components/FilePreviewButton.tsx:5-8`) |
-| Other | | A chip that saves a copy |
+| Text (new at `e1cc6a290`, `0209cfbae`, in the tag) | A link in a reply to a `.txt`, `.text` or `.log` file. Not an attached file | The name opens a plain text preview. On the desktop app, a file outside the workspace keeps "Show in folder" (`src/components/HtmlFilePreview.tsx:24-26`, `:60-67`; `src/components/ChatMarkdown.tsx:369-370` at `e1cc6a290`) |
+| Other | | A chip that saves a copy. An attached `.txt` is in this row too (`src/components/AttachmentPreview.tsx:874` at `e1cc6a290`) |
 
 A file that the bot neither attached nor linked, or a message with no saved
 id, shows an inert chip "unavailable" (`src/components/AttachmentPreview.tsx:896-904`).
@@ -924,6 +1093,23 @@ id, shows an inert chip "unavailable" (`src/components/AttachmentPreview.tsx:896
   Tab, handles Escape and the arrow keys, and returns focus on close. It has
   "n of m", Copy image, Download, "Open original" and Close
   (`:452-647`).
+- New after the tag (`bc6fce695`, `e671ad04c`, `c10c607b1`, `ad06b4cd4`; in
+  no release yet). Line numbers are at `e1cc6a290`.
+  1. The wheel zooms the image around the pointer. The point under the
+     pointer stays in place. The scale is `scale * exp(-deltaY / 200)`, at
+     most 16. At 1 or less the image fits again
+     (`src/components/preview-zoom.ts:3`, `:9-15`).
+  2. A wheel line is 16 px and a wheel page is the height of the stage
+     (`:17-21`).
+  3. The zoom goes in only with the pointer on the picture. It goes out
+     anywhere in the stage.
+  4. A native listener with `passive: false` stops every wheel event on the
+     overlay, so the chat behind never scrolls (`:29-47`). The comment
+     says that React 19 attaches `onWheel` as passive (`:32`).
+  5. The zoom resets when the shown image changes
+     (`src/components/AttachmentPreview.tsx:447-448`).
+  6. A zoomed image is clipped by the stage. There is no zoom by the
+     keyboard, no pan by a drag and no reset button.
 
 ### 5.5 Save a copy and the previews
 
@@ -942,7 +1128,13 @@ id, shows an inert chip "unavailable" (`src/components/AttachmentPreview.tsx:896
   (`:110-183`).
 - Retry is not offered for `outside_workspace` and `file_too_large`:
   "Retrying can't move a file into the folder or make it smaller"
-  (`:354-355`).
+  (`:354-355`). At `e1cc6a290` there is still no Retry. But when the server
+  sends `canOpenOutside: true` (section 3.8 item 5.3), the chip, the link and
+  the previews offer "Open this file" or "Save this file". The button asks
+  again with `allowOutsideWorkspace: true` (`7395224e0`, in the tag;
+  `src/components/OutsideWorkspacePreview.tsx:7-28`;
+  `src/components/AttachmentPreview.tsx:222-240`, `:929`, `:994`;
+  `src/components/HtmlFilePreview.tsx:143-174` at `e1cc6a290`).
 - **HTML preview**: `<iframe sandbox="">` with a CSP that allows only
   inline styles and `data:` images, fonts and media, and `<base
   target="_blank">`. No script runs and no link navigates
@@ -956,6 +1148,41 @@ id, shows an inert chip "unavailable" (`src/components/AttachmentPreview.tsx:896
 - The preview opens in a panel beside the chat, where the Computer panel
   sits, or in a dialog on a narrow window
   (`src/components/FilePreviewPanel.tsx`, `src/lib/file-preview.ts:38-43`).
+- **Text preview** (new at `e1cc6a290`, `0209cfbae`, in the tag): the kind
+  `"text"` always shows the raw text in a `<pre>`, with no Source and
+  Rendered toggle. It uses the read limit, the `windows-1252` fallback and
+  the "not text" error of the Markdown preview
+  (`src/components/MarkdownFilePreview.tsx:39`, `:41`, `:52`, `:60`, `:64`,
+  `:74-77` at `e1cc6a290`).
+- **The preview comes back with its conversation** (new at `e1cc6a290`,
+  `7ac766486` and `ee0f2d013`, in the tag). Line numbers are at
+  `e1cc6a290`.
+  1. Before, the panel closed the preview at each change of conversation.
+  2. Now a map in the memory of the window keeps one preview for each
+     conversation: `thread id → FilePreview`
+     (`src/lib/file-preview.ts:31-32`). The type says "Renderer-only:
+     nothing about it is stored or sent anywhere" (`:9`).
+  3. The map keeps the kind, the path, the name and the message ids. It
+     does not keep the bytes, the scroll position or a grant to open a file
+     outside the workspace.
+  4. When the chat moves to another conversation, the panel keeps the open
+     preview for the conversation that it left. It then shows the kept
+     preview of the new conversation, if no other panel holds that side
+     (`src/lib/file-preview.ts:44-52`;
+     `src/components/FilePreviewPanel.tsx:28-33`).
+  5. A preview that comes back does not take the focus. Only a file that
+     the person just opened moves the focus to Close
+     (`src/components/FilePreviewPanel.tsx:44-45`).
+  6. The kept preview is forgotten when the person closes the pane, when
+     another panel opens on that side, when it is shown again, when a new
+     file opens in that conversation (`src/lib/file-preview.ts:36-39`), and
+     when the window reloads (`:54-58`).
+  7. It is not forgotten when the conversation is deleted. The map has no
+     size limit.
+  8. On a return, the content is read again from the server. A missing
+     file shows the read error, with Retry. For a link in a bot's text, the
+     server first looks for a delivered copy with the same name (section
+     3.8 item 5.4), so a kept preview can come back showing that copy.
 
 ### 5.6 Links in a reply
 
@@ -971,6 +1198,13 @@ id, shows an inert chip "unavailable" (`src/components/AttachmentPreview.tsx:896
   attached points to that copy. The match is by name only, not by folder
   (`src/components/AttachmentGallery.tsx:100-123`,
   `src/components/ChatMarkdown.tsx:714-722`).
+- New at `e1cc6a290` (in the tag): in a conversation with a bot of a
+  personal Cloud shown on this computer, a local link offers no "Show in
+  folder" and no reveal menu (`01142da97`;
+  `src/components/ChatMarkdown.tsx:368` at `e1cc6a290`). A link that the
+  desktop knows to be outside the workspace still shows "Save this file"
+  when the server allows it (`16fa9d7cc`; `:396`, `:441-448` at
+  `e1cc6a290`).
 
 ### 5.7 Show the original
 
@@ -1003,6 +1237,27 @@ file. It does not read it.
   unknown type, a video over 100 MB, and an image when the engine takes no
   images (`src/lib/intake-files.test.ts:65-76`). The bot then gets that
   absolute path in a tag.
+- **A file over the limits goes by its place** (new after the tag,
+  `0029b25d8`; line numbers at `e1cc6a290`).
+  1. In the desktop app on its own server, these files are not uploaded and
+     not left out: an image over 10 MB, an image past the 10 images or the
+     40 MB of the message, and any other file over 100 MB
+     (`src/lib/composer-attachments.ts:804-817`).
+  2. The chip holds the absolute path on the disk of the person. The
+     message carries `<attached-file path="<absolute path>" name="..." />`.
+     An image goes as a file tag, so the model does not get it as image
+     input.
+  3. There is no upper size and no count limit for such a file.
+  4. A desktop window that is paired to a server on another computer, a
+     browser and a phone get no path, so the old limits apply there
+     (`src/components/ComposerAttachments.tsx:23-26`).
+  5. The old fallback of the item above is now at
+     `src/lib/composer-attachments.ts:851-858`. It still takes the path
+     also in a paired window (`:851`).
+- **A bot of a personal Cloud shown on this computer** (new at
+  `e1cc6a290`, `4c5378d92`, in the tag): the composer takes no files. A
+  pick, a paste or a drop shows a notice (`src/components/Composer.tsx:504`,
+  `:509`, `:511` at `e1cc6a290`).
 - **Chips.** There are three kinds:
   - PASTED: a paste of at least 900 characters or 12 lines.
   - IMAGE: a thumbnail, and a spinner during the upload.
@@ -1050,6 +1305,21 @@ not be removed (in use or read-only). Try again later."
 | `src/components/AttachmentPreview*.test.ts` | Safe download names. Outside images hidden. The refusal texts. The folder list |
 | `src/lib/composer-attachments.test.ts`, `src/lib/intake-files.test.ts`, `src/lib/attach-notice.test.ts` | Tag escape and parse. One `uploadId` on retry. The disk-path fallback. Image slots |
 
+New tests at `e1cc6a290` (line numbers at `e1cc6a290`):
+
+| Test | What it holds | Commit |
+|---|---|---|
+| `server/outside-file-guard.test.ts:13-56` | Documents are allowed on three platforms. Hidden paths, key names, the stores of macOS and Windows (also in lower case) are refused. A look-alike prefix such as `KeychainsNotes` is allowed | `24092d6c2`, `b94d19216` |
+| `server/message-file.test.ts:505`, `:546` | The owner open refuses folders, app data, secrets and relative links. A link that resolves into a hidden folder gets the quiet outside answer | `7395224e0`, `24092d6c2` |
+| `server/routes/threads-file-handle.test.ts:144` | Only a self-hosted owner, only after the confirmation. A member, the service loopback, a hosted workspace, a folder and an unlinked path are refused | `7395224e0` |
+| `src/components/FilePreviewPanel.dom.test.ts:102-160`, `:219-248` | The preview comes back on a return without the focus, stays closed where the person closed it, waits behind another panel, and is replaced by a new file. A linked text file opens as text, and an attached one saves | `7ac766486`, `ee0f2d013`, `0209cfbae` |
+| `src/components/preview-zoom.test.ts`, `src/components/AttachmentPreview.test.ts:375` | The zoom keeps the point under the pointer, stops at 16, fits again, reads lines and pages as pixels, never scrolls the chat, and resets on a new image | After the tag |
+| `server/attachment-references.test.ts`, `server/host/delete-leftovers.many-uploads.test.ts:70` | The pass agrees with the old check, reads each row once, keeps a name written during the pass, removes nothing when the pass fails, and never holds the event loop for long | `ccd37f116` |
+| `server/message-db.test.ts:201-235` | The name index follows writes and deletes, is built again after a reopen, and is built once | `87246500e` |
+| `server/attachments.test.ts:359`, `:500` | A delete leaves a path outside the store alone. A named attachment refuses a name that is a path | `d93d653f0`, `aea459a1b` |
+| `server/attachment-originals.test.ts:74`, `:84` | 20 uploads at once stay within the total. A failed copy does not stop the next one | `5e4bd5f2f` |
+| `src/lib/intake-files.test.ts:278-333` | Files over the limits go by their place on the desktop app's own server, and keep the old limits elsewhere | `0029b25d8` |
+
 The verification record `docs/verification/evidence/bot-attach-file/README.md`
 says "Limits: 25 MB (images 10 MB), 10 attachments per turn" (`:64-66`).
 The code now has 100 MB (`packages/phone-protocol/src/upload-limits.ts:4`).
@@ -1067,7 +1337,7 @@ the shell.
 | Part | Reference | Ours (proposed) |
 |---|---|---|
 | The attachment type | `packages/phone-protocol/src/wire.ts:450-459`: an absolute `path` | `bot-protocol`, module `message`: `Attachment { kind, path, mime, name, source }` as in the reference. Proposal (section 8 point 2): an `AttachmentId` in place of `path` |
-| The store | `server/attachments.ts`, `server/attachment-originals.ts`: a flat folder, references found by a text scan of messages | `bot-core`, module `attachments`: the same flat folder and the same `wx` + link write. Proposal (section 8 point 1): a SQLite table of references in place of the text scan |
+| The store | `server/attachments.ts`, `server/attachment-originals.ts`: a flat folder, references found by a text scan of messages. At `e1cc6a290`: an index of upload names in memory, and a sliced pass for the cleanup after a delete (`server/message-db-attachment-names.ts`, `server/attachment-references.ts`) | `bot-core`, module `attachments`: the same flat folder and the same `wx` + link write. Proposal (section 8 point 1): a SQLite table of references in place of the text scan |
 | The start-up sweep | `server/host/start-upkeep.ts:86-94`: partial files only | `bot-core::attachments::sweep`: partial files older than 1 hour, as in the reference. Proposal (section 8 point 1): also files with no reference |
 | `attach_file` | `server/bot-attachment.ts`, `server/index.ts:10959-13067` | `bot-engine`, module `tools::attach_file`, with the checks in `bot-core::attachments::open_source` |
 | `vm_exec` | `server/container-computer.ts:1021-1080`, `server/vps-exec.ts` | Not in the plan. A later step of a computer for each bot |
@@ -1088,6 +1358,14 @@ the shell.
    transaction as the message, gives an exact count. A file with no
    reference can then go at the start-up sweep. This answers "state lost at
    a restart" with no risk to a referenced file.
+   At `e1cc6a290` the reference repaired the speed, not the restart. The
+   users of a stored upload name come from an index in memory
+   (`server/message-db.ts:688-690`, `87246500e`, after the tag), and the
+   cleanup after a delete uses one sliced pass (`ccd37f116`, in the tag).
+   The index needs one full synchronous read of all rows on its first query
+   (`server/message-db-attachment-names.ts:94-112`). The names to delete are
+   still only in memory (`server/host/delete-leftovers.ts:223-225`). A file
+   that nothing uses still stays (`server/attachments.ts:45`).
 2. **No absolute path on the wire.** The reference sends the absolute
    server path to each client and in each tag
    (`server/routes/threads.ts:419`, `packages/phone-protocol/src/wire.ts:454-458`).
@@ -1122,6 +1400,10 @@ the shell.
    (`src/lib/composer-attachments.ts:427-438`). Reason: the bot then reads a
    file outside its folder with no grant. We copy the file into the store,
    or we refuse it with a clear text.
+   After the tag (`0029b25d8`), the reference does this on purpose for each
+   file over the upload limits, in the desktop app on its own server
+   (`src/lib/composer-attachments.ts:804-817` at `e1cc6a290`). So the
+   reference moved further from this point.
 10. **Keep drafts in the kept set,** or count a draft as a reference.
     Reason: Clear removes the files of a draft (`server/index.ts:11958`).
 11. **Windows.** The check `resolve(dirname(path)) === resolve(store)` is a
@@ -1142,6 +1424,25 @@ The problems of `changelog.md` section 5 that the reference has here:
 | State lost at a restart | Partly: the sweep is safe, but parked files, noted deletes and upload owners are in memory, and files with no user stay | `server/index.ts:2268`, `server/host/delete-leftovers.ts:221-224`, `server/host/member-uploads.ts:27` |
 | Process control on Windows | Handled in most places: busy files are counted, link not rename, separators, 8.3 names, reserved names. Gaps: a case-sensitive compare, no `O_NOFOLLOW` | `server/attachments.ts:213-217`, `:268-271`, `server/message-file.ts:419-421` |
 | Memory and the number of processes | Partly: images read whole on both sides, `GET /api/attachments` reads the whole file, "Save a copy" has no cap, a drop uploads all files at once, one Docker process for each `vm_exec` | `server/routes/threads.ts:392-417`, `server/attachments.ts:747`, `src/components/AttachmentPreview.tsx:310`, `src/lib/composer-attachments.ts:812` |
+| A secret or an access right in the wrong place: the owner open (new at `e1cc6a290`) | Yes: the owner open of a linked file outside the workspace. The server reads a path that the bot chose, with its own rights, and only a deny list guards it. Linux has no list of stores. The confirmation is a step of the UI only. The grant "saved this turn" does not use the new guard | `server/outside-file-guard.ts:21`, `:52`, `:57-70`; `server/routes/threads.ts:306`; `server/message-file.ts:537-566` (all at `e1cc6a290`) |
+
+**Problems that v0.1.186 repaired in this feature, and the repairs after it**
+(line numbers at `e1cc6a290`):
+
+| Problem | What was repaired | Commit | Tag or after | Where |
+|---|---|---|---|---|
+| One slow or stuck part blocks all the others | The cleanup after a delete held the event loop for minutes on a large Cloud, the health checks failed and the home was restarted. Now one sliced pass checks all names | `ccd37f116` | Tag | `server/attachment-references.ts:1-11`; `server/host/delete-leftovers.ts:263-299` |
+| One slow or stuck part blocks all the others | The `instr` scan for each name held the server of an install with 740,000 rows "for 79 s per refused hand-off file". Now an index answers for a stored upload name | `87246500e` | After | `server/message-db-attachment-names.ts:1-4`; `server/message-db.ts:688-690` |
+| A secret or an access right in the wrong place | v0.1.186 shipped the owner open with a guard that missed `.p8`, `.kdb`, `.ppk`, `.jks`, `.keystore`, `.asc` and `.gpg`. So the owner could open such a key file outside a hidden folder in v0.1.186. Fixed the next day | `b94d19216` | After | `server/outside-file-guard.ts:21` |
+| A secret or an access right in the wrong place | Before `24092d6c2`, the first version of the owner open (`7395224e0`) could open `~/.ssh/id_rsa`. Both commits are in the tag, so no release had this | `24092d6c2` | Tag | `server/outside-file-guard.ts:57-70` |
+| A secret or an access right in the wrong place | A named attachment from another computer could in theory name a path. The route pattern already refused it, so this is a second guard | `aea459a1b` | After | `server/attachments.ts:576-579` |
+| (No theme of section 5) | A delete could unlink a path outside the store if a caller passed one. No caller does today | `d93d653f0` | After | `server/attachments.ts:231-236` |
+| (No theme of section 5) | Two document uploads at the same time could take the originals folder over 256 MB | `5e4bd5f2f` | After | `server/attachment-originals.ts:21`, `:54-81` |
+
+Not repaired: a retried `attach_file` posts two lines, Clear removes the
+files of messages and drafts, an unused upload is served by its name,
+`GET /api/attachments` reads the whole file, parked files and noted deletes
+are in memory, and the compare of the store folder is case-sensitive.
 
 ## 9. Not verified
 
@@ -1169,3 +1470,39 @@ The problems of `changelog.md` section 5 that the reference has here:
   and `RichTable.tsx` use the same components and were not read.
 - The edge case in section 3.1 where `handoffFiles.attached` throws after
   the chat line is added. No test covers it.
+- Corrected at `e1cc6a290`: `inSecretFolder` and `SECRET_FILE_REFUSAL` are in
+  `server/secret-folder.ts:4-11`, not in `server/message-file.ts`. The same
+  was true at `96ff84455`. The folder is `.<product>-secrets`, matched as a
+  whole part of the path.
+
+Not verified in the update to `e1cc6a290`:
+
+- Whether a session of the owner on a self-hosted server (a cookie, not
+  loopback) has the admin scope, so that it can use the owner open.
+- Whether the desktop shell lets the window send `allowOutsideWorkspace`
+  only after a click. Only the React components were read.
+- That a delivered copy always wins over the owner open. The code runs it
+  first (`server/routes/threads.ts:301-305`), but no test covers both.
+- Where browsers on Linux keep their profiles outside a hidden folder (for
+  example Snap or Flatpak). The guard has no list of stores for Linux.
+- Whether the messages of a group room carry the thread id of the room. If
+  not, `openFilePreview` and `moveFilePreview` use different keys
+  (`src/lib/file-preview.ts:37`, `:45`), and the fix of `ee0f2d013` can
+  miss.
+- What a table preview or a "What changed" preview shows when the file of a
+  kept preview is gone.
+- That a trackpad pinch reaches the zoom as a wheel event. The handler has
+  no `ctrlKey` check (`src/components/preview-zoom.ts:33-44`).
+- What the engine does with a disk path that the composer sends for a file
+  over the limits, and whether the bot box on Linux can read it.
+- Whether the chat can show a file that a person sent by its disk path. The
+  message file route uses the store as the root for a person's message.
+- What the general error handler sends for the new 400 of
+  `saveNamedAttachment`.
+- Whether `written` in a transaction that later rolls back leaves a name in
+  the index (`server/message-db.ts:423`, `:452`). If so, the error keeps a
+  file, which is the safe side.
+- The full bodies of `server/attachment-references.test.ts` and
+  `server/host/delete-leftovers.many-uploads.test.ts`. Only the test names
+  were read.
+- The test suites of the reference were not run.

@@ -6,10 +6,18 @@ floor: a list of shell commands that the server never approves by itself"
 (`safety-floor.md`) and "The decision log: each allow and each deny writes an
 audit row" (`2026-08-31-00-control-plane-roadmap.md`).
 
-The reference project is at commit `96ff84455`. HEAD of the local clone was
-`96ff84455`, so the readers read the files directly. All paths are in the
-reference project, under `server/` unless a path starts with another folder.
-Nobody opened the `enterprise/` directory.
+The reference project was read at commit `96ff84455`. HEAD of the local
+clone was `96ff84455`, so the readers read the files directly. All paths are
+in the reference project, under `server/` unless a path starts with another
+folder. Nobody opened the `enterprise/` directory.
+
+**Updated on 2026-11-28 to commit `e1cc6a290`** (after the release v0.1.186,
+tag commit `70eb44c1a`). This file is correct at `e1cc6a290` for the changes
+that the section "Changes up to `e1cc6a290` (v0.1.186)" names. The other
+parts were read at `96ff84455`, and their line numbers are at `96ff84455`. A
+line number that is at `e1cc6a290` says so. One reader read the commits of
+the range that touch the floor and the decision log. The main session checked
+the key facts against the code.
 
 This file adds to [`approval-levels.md`](approval-levels.md) (sections 3.12
 and 3.13) and [`approval-cards.md`](approval-cards.md). It does not repeat
@@ -114,6 +122,37 @@ The main findings of this file:
 - Section 2, group B lists `bot-safety-digest.ts` with the decision log. The
   digest is a change detector for the bots file. It is not part of the log
   (`bot-safety-digest.ts:1-4`).
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+The release note of v0.1.186 says: "**Safety check:** shell commands are read
+more strictly." (`announcements/releases.json:90`). Two commits make this
+true. They are the only changes to `safety-floor.ts` from v0.1.184 to the
+tag. `safety-floor-gate.ts`, `drivers/permission-command.ts` and
+`decision-log.ts` did not change from `96ff84455` to `e1cc6a290`. All line
+numbers in this table are at `e1cc6a290`.
+
+| Change | Commit | Tag or after | File and line | Sections of this file |
+|---|---|---|---|---|
+| The lexer reads a `$(…)` or a back quote inside `${…}`, also in a double-quoted part where `'` is literal. Before, `echo ${X:-$(rm -rf /)}` read as clear. Now it is `delete-root` | `dfe3b0fee` | In the tag | `safety-floor.ts:118-126`, `:128-144`, `:150-155`; tests `safety-floor.test.ts:151-154`, `:463` | 3.1, 3.2, 8 |
+| The lexer reads a substitution inside a `(` in a word (`name=( … )`, `logs/( … )`). Before, `files=( $(mkfs.ext4 /dev/sda1) )` read as clear. Now it is `format-disk`. A literal array with no substitution stays clear | `dfe3b0fee` | In the tag | `safety-floor.ts:295-301`; tests `safety-floor.test.ts:155`, `:464` | 3.1, 3.2 |
+| Each substitution has its own list of pending heredocs. A newline inside a substitution no longer starts the body of an outer heredoc. Before, `: <<EOF $(printf ok\n); ( rm -rf ~\nEOF\n)` read as clear. A heredoc that is opened in a substitution and not closed there makes the line unreadable | `c3967e541` | In the tag | `safety-floor.ts:107-117`, `:115`; tests `safety-floor.test.ts:156-158` | 3.2, 6, 8 |
+| A side effect of `c3967e541`: after `$(( … ))` with `<<`, the next line is read. `echo $((1 << 2))\nrm -rf /` was unreadable and is now `delete-root`. `$(( … ))` alone, `(( … ))` and `$[ … ]` stay unreadable | `c3967e541` | In the tag | `safety-floor.test.ts:634-635`; the comment "KNOWN LIMITATION" at `:624-628` did not change | 6 |
+| The outbound check below Full also reads the tool name from a display summary `Run mcp_…` when the tool is `other`. This can only change an automatic allow into a card. The floor and the decision log did not change. The `rawInput` field that the same commit put on the request event was removed again by `6766ba4ca` (in the tag), because "a tool's raw input can carry secrets" | `65780d818` | In the tag | `auto-approve.ts:106-107`, `:116`; `packages/phone-protocol/src/outbound.ts:102-128`; `index.ts:6468`; test `shared/outbound.test.ts:213-224` | 9 |
+| A new writer of the decision log: the connector gate. It writes its row after all checks. But a call that went out and then failed is still `auto-approved`, with the summary `ran, <reason>` | `3529752e9` | In the tag | `connector-gate.ts:178-192`, wired at `index.ts:11946` | 3.3 |
+| Two more new writers of the decision log, for skills: `auto-approved`, `card-shown`, `user-approved` and `user-denied` | `b69cab10e`, `718d02334` | `b69cab10e` in the tag, `718d02334` after it | `host/skills-for-all-bots-host.ts:170`, `:226`, `:258`; `host/teammate-skills-host.ts:163`, `:174`, `:184` | 3.3 |
+
+Still the same at `e1cc6a290` (the reader ran each line again on copies of
+`safety-floor.ts`):
+
+- Each "More gaps" example of section 3.1 still reads as clear: `rm -rf
+  /{etc,usr}`, `rm -rf /e*`, `rm -rf $'/'`, `su -c`, `echo ... | sh`,
+  `tee /dev/sda`, `diskutil secureErase`, `pwsh -EncodedCommand`,
+  `pwsh –Command` with an en dash, and the Windows rows.
+- The ACP reader still joins two spellings of a command with a newline
+  (`drivers/permission-command.ts:78-81`). `ls \` and a newline and then
+  `rm -rf ~` still reads as clear.
+- The gate is still off on a Windows server (`safety-floor-gate.ts:36-39`).
 
 ## 2. Files read completely
 
@@ -259,7 +298,10 @@ The label that a person sees names the kind, never the command
 
 - `ssh build-host 'rm -rf /'` (`:405`), `docker run ... rm -rf /` (`:404`).
 - `alias nuke='rm -rf /'`, `export CLEAN_CMD="rm -rf /"`, a command in an
-  array (`:399-401`).
+  array (`:399-401`). At `e1cc6a290` a literal array such as
+  `cmd=(rm -rf /tmp/x)` is still clear. But the floor now reads a
+  substitution inside an array: `files=( $(mkfs.ext4 /dev/sda1) )` is
+  `format-disk` (`dfe3b0fee`, `safety-floor.test.ts:155` at `e1cc6a290`).
 - A heredoc body and `<<<` (`:392-398`).
 - `Get-ChildItem C:\ | Remove-Item -Recurse -Force` on all platforms (`:577`).
   It deletes all of `C:\`, but the path comes from a pipe.
@@ -302,6 +344,26 @@ The causes, in the code:
 text, a heredoc body and a `#` comment are data, not commands. It nests at
 most 40 levels (`:85`). An open quote, `${`, `(` or heredoc gives
 `{read: false}` (`:119`, `:221`, `:244`, `:272`, `:331`, `:336`).
+
+**Changed at `e1cc6a290` (in v0.1.186).** Line numbers in this paragraph are
+at `e1cc6a290`.
+
+- Before `dfe3b0fee`, the text inside `${…}` and inside a `(` in a word was
+  one unknown word. The lexer did not read a command substitution there. Now
+  it reads a `$(…)` or a back quote inside `${…}` and inside a word-paren as
+  commands (`safety-floor.ts:118-126`, `:128-144`, `:150-155`, `:295-301`).
+  Inside `"${…}"` a single quote is literal, so `"${X:-'$(…)'}"` is read. The
+  `windows` mode does not do this (`:121`).
+- Before `c3967e541`, a substitution used the pending heredocs of the whole
+  line. A newline inside the substitution started the body of an outer
+  heredoc, and the commands after it were not read. Now each substitution
+  has its own list. The outer list is set aside before the substitution and
+  put back after it (`:107-117`). The comment says: "Bash reads a pending
+  heredoc body after the line, not at a newline inside a substitution on
+  it." (`:108`).
+- A new unreadable case: a heredoc that is opened in a substitution and not
+  closed there (`:115`). A block that the floor found before or after still
+  stands.
 
 **Prefixes that it skips** (`:342-353`, `:391-449`): `sudo`, `doas`, `env`,
 `nice`, `timeout`, `exec`, `command`, `nohup`, `time`, `builtin`, `busybox`,
@@ -378,6 +440,8 @@ writers.
 | `host/mcp-chat.ts:108` with `routes/internal-mcp.ts:251-370` | `auto-approved` | `full-access`, `level` | After |
 | `host/skills-library.ts:294-295` | `auto-approved` | `full-access`, `level`, `self` | After |
 | `host/skill-switch-host.ts:136-137` | `auto-approved` | `full-access`, `level`, `self` | After |
+| New at `e1cc6a290`: `connector-gate.ts:178-192` (`3529752e9`, in the tag) | `auto-approved` when the call went out, also when it then failed (summary `ran, <reason>`); else `auto-denied` | `connector-scope` | After all checks |
+| New at `e1cc6a290`: `host/skills-for-all-bots-host.ts:170`, `:226`, `:258` (in the tag) and `host/teammate-skills-host.ts:163`, `:174`, `:184` (after the tag) | `auto-approved`, `card-shown`, `user-approved`, `user-denied` | Not read in full | Not read in full |
 | `host/skill-switch-host.ts:150-151` | `card-shown` | `skill` | Before |
 | `host/skill-switch-host.ts:164-190` | `user-approved`, `user-denied` | `user` | After |
 | `app-settings/host.ts:149` | `auto-approved` | `app-settings` | After |
@@ -841,7 +905,15 @@ skip the mode check on Windows (`admin-activity.test.ts:192`).
 - The "not clear" rows: an arithmetic `<<` is read as a heredoc that never
   ends, so `(( x << 1 ))` is unreadable. The test calls this a "KNOWN
   LIMITATION" (`:614-624`). `env -S` with a variable, a short long option,
-  five wrappers (`:625-640`).
+  five wrappers (`:625-640`). At `e1cc6a290` (`c3967e541`, in v0.1.186) the
+  limitation is smaller: after `$(( … ))` the heredoc stays in the
+  substitution, so the next line is read. `echo $((1 << 2))\nrm -rf /` is
+  now `delete-root`, not unreadable (`safety-floor.test.ts:634-635` at
+  `e1cc6a290`). The comment "KNOWN LIMITATION" did not change, and it still
+  names `$(( … ))` (`:624-628` at `e1cc6a290`).
+- New at `e1cc6a290`: six blocked rows for a substitution in `${…}`, in an
+  array and beside an outer heredoc (`:151-158`), and two allowed rows,
+  `DIR="${DIR:-$(mktemp -d)}"` and `files=( $(ls) )` (`:463-464`).
 - A block that comes before a break stands (`:688-689`). The 32 KiB limit,
   exactly (`:695-711`). The label never holds a token (`:713-723`). The home
   by its path, with case rules (`:725-736`). An exception gives
@@ -986,6 +1058,21 @@ None of our crates has approval code yet. `bot-protocol` has `event.rs`,
 | A file written over after a failed read | Not in the decision log or the admin log: both only append. Yes nearby: `watch.json` of the proactive bot becomes `{}` after any read error, and the next save writes over it. Then the default routine can be made again (`host/proactive.ts:195-212`). That belongs to the automations feature | 3.5 |
 | A feature added, then removed or reversed | Yes. The model reviewer left the kinds `review-would-*` and their UI text (`en.json:4576-4577`) | 5 |
 
+**Problems that v0.1.186 repaired in this feature** (line numbers at
+`e1cc6a290`):
+
+| Problem | What v0.1.186 repaired | Commit | Where |
+|---|---|---|---|
+| The approval model changed | "shell commands are read more strictly": the floor reads a substitution inside `${…}` and inside an array or a word-paren. Before, `echo ${X:-$(rm -rf /)}` and `files=( $(mkfs.ext4 /dev/sda1) )` read as clear and could be allowed automatically | `dfe3b0fee` | `safety-floor.ts:118-144`, `:295-301`; `safety-floor.test.ts:151-155` |
+| The approval model changed | A substitution no longer starts the body of an outer heredoc, so a command after it is read. Before, `: <<EOF $(printf ok\n); ( rm -rf ~\nEOF\n)` read as clear. This hole was in the reference before `96ff84455`. `dfe3b0fee` also opened it for `${…}`, and `c3967e541` closed both before the tag | `c3967e541` | `safety-floor.ts:107-117`; `safety-floor.test.ts:156-158` |
+| A secret or an access right in the wrong place | Near this feature, not in the floor: `65780d818` put the raw input of an ACP tool on the request event. `6766ba4ca` removed it before the tag, because "a tool's raw input can carry secrets that the event log and its subscribers must never hold". No release had it | `65780d818`, `6766ba4ca` | `drivers/acp/core.ts`; `index.ts:6312` |
+
+Not repaired: the gaps of section 3.1 ("More gaps"), the joined ACP spellings
+(`drivers/permission-command.ts:78-81`), the gate that is off on Windows, and
+the decision values with no single meaning. The new connector gate adds one
+more writer that records a failed call as `auto-approved`
+(`connector-gate.ts:188-189`).
+
 ## 9. Not verified
 
 - Whether `step.detail` of a tool run event is redacted before it reaches the
@@ -993,7 +1080,9 @@ None of our crates has approval code yet. `bot-protocol` has `event.rs`,
 - Whether the chat line of a read-and-draft refusal is redacted
   (`read-and-draft.ts:147`).
 - Whether each engine asks permission for the email send tool, so that the
-  outbound guard puts a card before an email send (`auto-approve.ts:114`).
+  outbound guard puts a card before an email send (`auto-approve.ts:114`;
+  at `e1cc6a290` the check is at `:116`, and it also reads a `Run mcp_…`
+  summary when the tool is `other`).
 - Whether the answers to lending lift, outside write and team memory cards run
   inside `answeringCardAs`, so that their rows carry the actor.
 - Whether the other admin writers (team owners, team connections, bot access,
@@ -1011,3 +1100,24 @@ None of our crates has approval code yet. `bot-protocol` has `event.rs`,
 - The value of `call.reason` in the connector deny row (`index.ts:14162`).
 - How Node applies the modes 0600 and 0700 on Windows, at the version of the
   reference.
+
+Not verified in the update to `e1cc6a290`:
+
+- The test suite of the reference was not run. The results of the update
+  come from runs of copies of `safety-floor.ts` at `96ff84455`, `dfe3b0fee`
+  and `e1cc6a290` with Node 25, for the platform `linux` unless a row names
+  another.
+- That bash reads a pending heredoc body after the line and not at a newline
+  inside a substitution. This is the claim of `c3967e541` and of
+  `safety-floor.ts:108`. Nobody ran bash.
+- The full code of the new writers `connector-gate.ts`,
+  `host/skills-for-all-bots-host.ts` and `host/teammate-skills-host.ts`.
+  Only the cited lines were read.
+- The full content of `45605c8f9` (in the tag), which also changes
+  `packages/phone-protocol/src/outbound.ts`.
+- Which engines send an ACP request with the tool `other` and a summary
+  `Run mcp_…`.
+- Whether other `index.ts` line numbers of this file moved. `index.ts`
+  changed by 389 lines in the range. Only the approval path was mapped:
+  `:4782-4791` is now `:4795-4804`, `:6515-6525` is now `:6520-6530`, and
+  `:6552-6563` is now `:6557-6568`.
