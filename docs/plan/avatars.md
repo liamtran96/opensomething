@@ -24,9 +24,10 @@ the reference project.
   value that it does not accept and saves the file with no action of the
   person (`server/store.ts:376-383`, `:534`). This is how the stored crop
   `face` of the removed "Living" avatar disappeared.
-- **Ours today:** our crates have no avatar code. The bot type of the
-  window, `crates/bot-desktop/ui/src/features/bots/types.ts`, has no
-  avatar field.
+- **Ours today:** `crates/bot-desktop/ui/src/features/bots/BotAvatar.tsx`
+  shows the first letter of the name on the colour of the bot. The bot
+  type of the window, `crates/bot-desktop/ui/src/features/bots/types.ts`,
+  has no picture field. No Rust crate has avatar code.
 
 ## Proposals
 
@@ -56,6 +57,9 @@ Decide P710 first.
     into P301.
 - Why: part 46 has "none yet" as its step in `docs/plan/README.md`.
   Without a step, no proposal of this file has a place.
+- Note: P726 of [`mascot.md`](mascot.md) also adds a step for part 46 (the
+  mascot). Decide the two together: P726 option (a) makes one step with two
+  parts.
 - Reference: "Bot avatars intentionally reuse the image attachment store.
   Uploads and generated images therefore get the same size checks,
   owner-only filesystem permissions, immutable serving URL, and raster-only
@@ -289,6 +293,9 @@ Decide P710 first.
   lost.
 - Crates: `bot-protocol` (the type), `bot-core` (the store, step 6 or 8,
   with P419 of [`bot-profile.md`](bot-profile.md)).
+- Note: P730 of [`mascot.md`](mascot.md) asks for closed enums with typed
+  refusals for the look fields. Decide the two together: a refusal at the
+  edge for a new write, and a kept "not known" value for an old row.
 
 ### P717. Cancel the provider call when the person leaves (the step of P710)
 
@@ -482,8 +489,8 @@ Decide P710 first.
   in a release.
 - Options:
   - (a) Record the decision (recommended).
-  - (b) Leave it to the plan of the feature "mascot" (batch 14, not
-    written yet).
+  - (b) Leave it to the plan of the feature "mascot"
+    ([`mascot.md`](mascot.md)), with D23.
 - Why: the reference built it and removed it in about 14 hours. A written
   reason stops a second try. This also matters for the ant mascot of the
   author: the ant is the mascot, and a picture of a bot is never drawn into

@@ -725,14 +725,14 @@ entry was written. Verify them before relying on them.
   for all bots, or ant variants ([P724](plan/mascot.md)).
 - **What:** the mascot of a bot is an ant. It has a head with the face, a
   thorax, a thin waist, a large abdomen, six legs and two antennae.
-- **Why:** the author said: "for the mascot I want to make it like an ant".
+- **Why:** the author said: "for the mastcot I want to make it like an ant".
 - **Different from the reference:** the reference has ten body shapes of
   its own design, made by a generator, and more object and festival bodies.
   We do not copy its shapes. A choice of the author, not "better than the
   reference".
-- **Same as the reference:** a bot shows its mascot or its own picture,
-  never both (the reference removed the "Living" avatar in `eb6fad2c0`,
-  see [P722](plan/avatars.md)).
+- **Open:** [P722](plan/avatars.md) proposes that a bot shows its mascot
+  or its own picture, never both, as the reference does since it removed
+  the "Living" avatar in `eb6fad2c0`. The author has not decided P722.
 - **References** (reference project at commit `e1cc6a290`; the full notes
   are in section 7.4 of
   [`research/features/mascot.md`](research/features/mascot.md)):
