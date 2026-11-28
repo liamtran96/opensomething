@@ -877,3 +877,69 @@ of v0.1.186 to `changelog.md`. The agents numbered their proposals T1, T2,
   and adds two v0.1.186 examples to section 5 of `changelog.md`.
 - After this batch, the group "later" has no open row. The open rows are in
   the group "no" (not in our plan).
+
+## The update to v0.1.186, started 2026-11-28
+
+The author asked to read the newest code of the reference and to update the
+research and the plan of each feature that the release v0.1.186 changed,
+and only those. The reference is at commit `e1cc6a290` (2026-11-28), after
+the tag v0.1.186 (`70eb44c1a`, 2026-11-27).
+
+The main session chose the features from the release note and from a
+`git diff` of the reference files that each research file cites. Apps,
+templates, the Cloud, lending and the licence file changed too, but they
+are not in our plan. Six Orca worktrees ran at the same time, on Opus 5.5.
+Each agent read only the commits from the commit of its research file to
+`e1cc6a290`, with four subagents at most.
+
+| Worktree | Research and plan files | Read before at | Proposals | Pull request |
+|---|---|---|---|---|
+| `update-automations` | `automations` | `eee23ebbe` | P748 to P754, P805 | #166 |
+| `update-custom-mcp-servers` | `custom-mcp-servers` | `96ff84455` | P755 to P764 | #167 |
+| `update-safety-and-files` | `safety-floor`, `bot-attachments` | `ed8cb7278`, `96ff84455` | P765 to P771 | #168 |
+| `update-chat-driver` | `chat-streaming`, `chat-driver-tool-calls` | `3aec210` | P772 to P777 | #169 |
+| `update-engine-sessions` | `engine-turn-lifecycle`, `engines-and-accounts`, `recovery-and-pausing` | `42f86aefd`, `140172d88`, `83d18e3af` | P778 to P793 | #170 |
+| `update-work-between-bots` | `assignment-runtime`, `bot-coordination`, `goals` | `eee23ebbe`, `eee23ebbe`, `fcce0b6de` | P794 to P804 | #171 |
+
+- The agents numbered their proposals TA1, TB1, ..., and the main session
+  gave the P-numbers. Two agents numbered from 1 in each plan file. The
+  main session corrected the links between the files.
+- The estimates were 9.4M to 14.4M tokens in total. The status line showed
+  14% of the weekly limit left at the start and 5% at the end. The
+  work-between-bots agent used about 0.9M of its 3M to 4.5M estimate.
+- The main session checked three to five key claims of each worktree at
+  `e1cc6a290`, and all agree with the code. Some of them:
+  1. `automations`: a scheduled run is held while another run of its
+     routine has a live turn (`server/routines.ts:1123-1124`).
+  2. `custom-mcp-servers`: three timeouts in a row make a verdict
+     (`server/mcp-health.ts:16-20`, `:81-86`).
+  3. `safety-floor`: `echo ${X:-$(rm -rf /)}` is `delete-root`
+     (`server/safety-floor.test.ts:152`).
+  4. `chat-streaming`: at most 8 continuations of a cut reply in one turn
+     (`server/drivers/openai-chat-protocol.ts:22-30`).
+  5. `engines-and-accounts`: the Claude sign-in refuses the digits-only
+     code that Claude emails (`server/drivers/claude-login-auth.ts:46-51`).
+  6. `assignment-runtime`: only a `resume` reply is refused back to an
+     ancestor (`server/runtime/runtime.ts:238-243`), after the tag.
+- The author chose for P751 that "after the reply" follows the reference:
+  after any assistant text of the turn.
+- The author asked how Claude handles a refused tool call. A headless turn of
+  the Claude Code CLI 2.1.332 showed it: the refused call is one failed step,
+  the model reports it, and the run ends as `success` with the call in
+  `permission_denials`. This gave P805, the other option of P751.
+- This record links P748 to P805 in `docs/plan/README.md`, adds them to its
+  table of reference problems, and adds four missing release lines to the
+  v0.1.186 row of `changelog.md`.
+- Not corrected yet, from the reports of the agents:
+  - `docs/plan/custom-mcp-servers.md` cites `server/mcp-health.ts:15`,
+    which is `:16` at `e1cc6a290`.
+  - P537 and P538 of `docs/plan/goals.md` cite lines of
+    `server/group-goal-run.ts` and `server/index.ts` that moved.
+  - `docs/research/features/team-board.md` section 3.1 names the switch
+    `features.teamBoard`, which is gone. `helper-bot.md` cites lines of
+    `server/job-slots.ts` that moved by 5 after line 62.
+  - The quote of v0.1.154 in section 5 of `changelog.md` comes from a block
+    of the release notes that commit `6fa9e4dc7` removed from
+    `announcements/releases.json`.
+- The worktrees are removed and the branches are kept.
+

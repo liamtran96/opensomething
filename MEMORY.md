@@ -100,6 +100,23 @@ research the release history again unless the author asks.
     v0.1.186, add its row to section 8. Change sections 3 to 7 only when the
     new release changes them.
 
+### A new release updates the features that it changes (2026-11-28)
+
+When the reference project publishes a release, update each feature that
+we researched and that the release changes: its research file in
+`docs/research/features/` and its plan file in `docs/plan/`, in the same
+pull request. Do not update a feature that the release does not change.
+
+- **Why:** the author asked to read the newest code and to update "the
+  features and the plan", "just only for the features we need to update",
+  and then said "remember update the features in the file in the feature
+  folders and the plan as well".
+- **How:** "The update to v0.1.186" in
+  [`docs/research/progress.md`](docs/research/progress.md): choose the
+  features from the release note and from a `git diff` of the cited
+  files, one worktree for each group of features, and each agent reads
+  only the commits after the commit of its research file.
+
 ### A changelog row has all the key changes of its release (2026-11-23)
 
 When you write or check a row of the release history, read the whole note
