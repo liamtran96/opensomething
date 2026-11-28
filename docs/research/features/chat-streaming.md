@@ -5,9 +5,16 @@ with streaming". Rows of [`../reference-features.md`](../reference-features.md):
 `custom-engines.md` and "A model connection with no tools". Step 5 of
 [`../../plan/README.md`](../../plan/README.md), crate `bot-engine`.
 
-Read on 2026-11-23, at commit 3aec210 of the reference project. All paths
-are in the reference project unless a line says "ours". The `enterprise/`
-directory was not opened.
+Read on 2026-11-23, at commit 3aec210 of the reference project. Updated on
+2026-11-28 to commit `e1cc6a290`. That commit is after release v0.1.186
+(tag commit `70eb44c1a`). The section "Changes up to `e1cc6a290`
+(v0.1.186)" lists the changes of this feature. This file is correct at
+`e1cc6a290` for the changes that that section names. A statement that
+this update corrected starts with "Update (v0.1.186)", and its line
+numbers are at `e1cc6a290`. All other parts were read at `3aec210`, and
+their line numbers are at `3aec210`. All paths are in the reference
+project unless a line says "ours". The `enterprise/` directory was not
+opened.
 
 This file adds to three earlier files and does not repeat them:
 
@@ -73,7 +80,12 @@ The driver of the reference project does these things:
 4. When something goes wrong before any text was shown, it may **retry**:
    send the same request again after a short wait (**backoff**). It sends a
    `turn.retrying` event first. It never retries after text was shown,
-   because the person would then see two answers joined.
+   because the person would then see two answers joined. Update
+   (v0.1.186): a request that the service cut before any delta is also
+   sent again after earlier tool rounds of the turn (`chat.ts:713-715`).
+   A reply that the service cut at the output limit is continued with a
+   new request, and the window shows the pieces as one message
+   (`chat.ts:745-750`).
 5. When the service stops sending for too long (an **idle timeout**), it
    stops the request and reports an error.
 6. When the person presses Stop, it **aborts** the request (cancels the
@@ -84,6 +96,56 @@ The reference has one shared runtime for all chat services
 (`createOpenAIChatRuntime`, `chat.ts:203`). Each service has a small file
 that gives options: the address, the body of the request, the timeout,
 whether reasoning text is shown (section 3.9).
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+Four subagents read the commits from `3aec210` to `e1cc6a290` for the
+files of this feature. The main session checked the key lines against the
+code. Their reports are not in the repository. All the changes below are
+in the tag v0.1.186 (`git merge-base --is-ancestor <commit> 70eb44c1a`).
+No commit after the tag changes this feature. Lines are at `e1cc6a290`.
+Short names as in the table above. New short names: `cut.ts` is
+`server/drivers/cut-reply-text.ts`, `halves.ts` is
+`server/drivers/secret-halves.ts`.
+
+| Change | Commit | Tag | File and line | Sections that it changes |
+|---|---|---|---|---|
+| A reply that the service cut at the output limit (`finish_reason: "length"`) is continued. The driver sends the cut text and a note to continue, at most 8 times in one turn | `9a8c5667c`, `f97e0f741` | in v0.1.186 | `protocol.ts:22-47`, `chat.ts:665`, `:745-753`. Tests `openai-chat.test.ts:1169-1384` | 1, 3.7, 3.13, 6, 8.8 |
+| The pieces of a continued reply go out as one `item.completed`. This also occurs when the turn fails or stops in the chain, for the pieces that finished | `f97e0f741`, `8130a91b8`, `7a9e1e9f0` | in v0.1.186 | `cut.ts:33-45`, `chat.ts:590`, `:736-738`, `:889`. Tests `openai-chat.test.ts:1186`, `:1350` | 3.7, 3.11, 3.13, 5, 8.8, 8.11 |
+| The tail that is held back for secrets goes into the next request only when the reply continues. Each other end of a message releases it | `fc8f55f96`, `918aa2c75`, `8130a91b8`, `7a9e1e9f0`, `459da558f`, `f909454a2` | in v0.1.186 | `halves.ts:1-13`, `cut.ts:9-31`, `chat.ts:641-644`, `:665-668`, `:736`. Tests `openai-chat.test.ts:1203-1334`, `secret-halves.test.ts` | 3.7, 8.10 |
+| The Responses API path continues a reply cut by `max_output_tokens` in the same way | `9a8c5667c`, `918aa2c75`, `8130a91b8`, `f909454a2` | in v0.1.186 | `responses.ts:190-215`, `:242-247`, `chat.ts:216`. Tests `openai-responses.test.ts:515`, `:539`, `:563` | 3.10 |
+| A stream that the service cuts is sent again also after earlier tool rounds of the turn. It is never sent again when this request already streamed a delta | `a91ee14e1`, `b0b545aa3` | in v0.1.186 | `retry.ts:17`, `:47-48`, `chat.ts:713-719`. Tests `retry.test.ts:79-87`, `openai-chat-stream-retry.test.ts:69-78`, `:80-135` | 1, 3.8, 3.13, 6, 8.1 |
+| A cut Responses stream with no delta is now sent again (a side effect of the row above; from the code, no test) | `a91ee14e1` | in v0.1.186 | `responses.ts:265`, `retry.ts:48`, `chat.ts:715` | 3.10, 8.6 |
+| Two conversations that change the route of the same model at the same time no longer fail | `f0bcf6840` | in v0.1.186 | `chat.ts:462-474`. Tests `openai-responses.test.ts:251-273`, `:275-311` | 3.10 |
+| A connection at its own address does not take the workspace model and provider pin | `4a62e5856` | in v0.1.186 | `server/credential-env.ts:70-74`, `compat.ts:167`, `:180-186`, `server/config.ts:1186-1187`. Tests `openai-compat.test.ts:123-141`, `server/config.test.ts:1320-1333` | 3.9 |
+| `runtime.error` gets `blockedAfterReply: true` beside `partial: true` when each failed call was a safety-floor block after the reply | `ba5c2c50e` | in v0.1.186 | `chat.ts:761`, `:904`, `events.ts:205-207` | 3.12, 4 |
+| An HTTP error of the chat request is a `ChatHttpError` with the status. The retry classifier still reads only the words of the message | `978076bd9`, `957f3a0f2` | in v0.1.186 | `chat.ts:305`, `refusals.ts:37-51`, `:116-125`, `retry.ts:191-217` | 3.3, 8.2 |
+| `turn.completed` gets `unsent?: true`. The chat driver does not set it | `a8e42cacf` | in v0.1.186 | `events.ts:65-67` | 4 |
+
+Two lines of the release note do not change this feature:
+
+- "an image in the conversation no longer makes every later message
+  fail" (`e60bfef8a`). The repair is for the ACP engines. The chat driver
+  builds the earlier messages of a thread as text (`chat.ts:501-507`), so
+  one image fails one turn only. This was already so at `3aec210`. The
+  commit adds a failure kind `image_content` (`engine-errors.ts:24`,
+  `:37-40`, `:102`). The plain sentence for it does not reach a turn of the
+  generic service, because that service has the label `upstream` and the
+  driver then sends the raw line (`chat.ts:902`).
+- "a provider's brief throttle reads as a rate limit, not the plan's
+  quota" (`c7b2af0bb`). The commit changes only
+  `server/drivers/acp/grok-signals.ts` and its test. It does not change
+  `retry.ts`, `engine-errors.ts` or the chat driver.
+
+**The problems of `changelog.md` section 5 that v0.1.186 repairs in this
+feature.** The theme of each row is the main session's reading, not a
+statement of the release note.
+
+| Theme of section 5 | What v0.1.186 repairs | Commit and line |
+|---|---|---|
+| The same work done or delivered two times, or lost | "A reply cut at the output limit is continued and shown as one message, instead of failing." Before, the person got the cut reply and then an error. Also: "A stream the provider cuts is retried, also after earlier tool steps." Before, a cut after a tool round failed the whole turn. The rule "never send again after a delta" stays, so a reply is not shown two times (`b0b545aa3`) | `9a8c5667c`, `a91ee14e1`, `b0b545aa3`; `chat.ts:715`, `:747-750` |
+| A secret or an access right in the wrong place | A configured credential that the output limit cuts in two is not shown in halves. In the same release, `459da558f` carried the hold across every request, and the last characters of one message went into the next message ("Let me check the logs" lost its "s"). `f909454a2` repaired that before the tag | `fc8f55f96`, `f909454a2`; `chat.ts:665-668` |
+| "Busy" and races between bots | "Two conversations switching the same model's route at once no longer fail." | `f0bcf6840`; `chat.ts:463`, `:471` |
 
 ## 2. Files read completely
 
@@ -246,7 +308,9 @@ When the status is not 2xx (`chat.ts:297-312`):
    6. a refused tool call
    7. a refused replay of reasoning text
 
-   Anything else is a plain error.
+   Anything else is a plain error. Update (v0.1.186): anything else is a
+   `ChatHttpError` with a field `status` (`chat.ts:305`). The message is
+   the same. The retry classifier does not read `status` (section 3.8).
 4. A 2xx answer marks the key as accepted (`chat.ts:313`).
 
 The driver keeps the rejected key in memory only, as the address and the first 32
@@ -375,11 +439,22 @@ into pieces across chunks. `ChatToolCalls` joins them (`protocol.ts:79-188`):
    text it held. It replaces each whole secret with `[redacted]`. Then it
    holds back the longest tail that could be the start of a secret. The comment: "A
    configured credential can straddle chunks: hold any suffix that could be
-   its prefix" (`chat.ts:643-657`).
+   its prefix" (`chat.ts:643-657`). Update (v0.1.186): the hold is now in
+   `maskSecretHalves` (`halves.ts:1-13`) and in the class `MaskedDeltas`,
+   with one held tail for each stream kind (`cut.ts:11-31`). Each attempt
+   makes a new `MaskedDeltas` and starts it with the tail that a cut
+   reply carried (`chat.ts:641-644`).
 4. It emits `content.delta { streamKind, delta }` with the visible part
    (`chat.ts:656`).
 5. After a good stream, it releases what was held and flushes both kinds
-   (`chat.ts:666-679`).
+   (`chat.ts:666-679`). Update (v0.1.186): it flushes only when the reply
+   does not continue (`chat.ts:667`). When the reply continues (step 9),
+   the held tail goes into the next request. The driver computes it again
+   from the full text, so a reply that came as one JSON body carries it
+   too (`chat.ts:668`). A tail is never carried across any other end of a
+   message: a tool round, a steer text, a nudge. `459da558f` carried it
+   there, and the last characters of a message then went into the next
+   message. `f909454a2` removed this in the same release.
 6. Usage: the driver adds the round's usage to the turn's totals and emits
    `thread.token-usage.updated` with the totals and `contextTokens` = this
    round's input + output (`chat.ts:733-744`).
@@ -393,6 +468,42 @@ into pieces across chunks. `ChatToolCalls` joins them (`protocol.ts:79-188`):
    `"provider did not finish the response (<reason>)"` (`chat.ts:754-758`).
    These come after `item.completed`, so the window gets the reply and then
    an error for the same round.
+
+   Update (v0.1.186), the flow of a reply with `finish_reason: "length"`
+   (`chat.ts:665`, `:735-753`, `protocol.ts:22-47`):
+
+   1. The driver continues the reply only when all of these are true:
+      the finish reason is `length`, the answer text is not blank
+      (reasoning text does not count), the model is not a local model with
+      tools, and the turn used fewer than 8 continuations
+      (`protocol.ts:28-31`). The comment for the local model: "a cut reply
+      there may be half a call and stays a failure" (`protocol.ts:26-27`).
+   2. The driver does not send `item.completed` yet. The class
+      `ContinuedReply` keeps the masked text of each piece
+      (`cut.ts:35-45`, `chat.ts:590`, `:736-738`).
+   3. It appends the cut text as an `assistant` message, then a `user`
+      message `CUT_REPLY_NOTE`: `"[<product>: your reply was cut at the
+      output limit. Continue exactly where you stopped.]"`
+      (`protocol.ts:22`, `chat.ts:747-750`). Then it sends the next
+      request.
+   4. Each piece emits its own `content.delta` events and its own
+      `thread.token-usage.updated` (`chat.ts:724-733`).
+   5. The limit is 8 continuations for each turn, for all the replies of
+      the turn together (`protocol.ts:23-24`). So one chain has at most 9
+      requests.
+   6. When the chain ends with `stop` or with tool calls, the driver sends
+      one `item.completed` with the text of all pieces (`chat.ts:738`).
+   7. At the limit, the item with all 9 pieces goes out, then the error
+      `The reply was still cut at the output limit after 8 continuations;
+      the turn was stopped.` (`protocol.ts:41-42`, test
+      `openai-chat.test.ts:1376`). This error does not match `CAP_STOP`
+      (`server/turn-continuation.ts:83`), so no handoff file is written.
+   8. The order "item, then error" stays in four cases, because
+      `answer.end()` (`chat.ts:738`) runs before the checks at
+      `chat.ts:747` and `:751-752`: the limit, a local model with tools,
+      a cut with reasoning text only (from the code, the test at
+      `openai-chat.test.ts:1368` checks only the error), and a finish
+      reason that is not `stop` or `length`.
 
 The bus of the server then joins the deltas of one stream that come
 within 50 ms (`DELTA_MERGE_MS`, `bus.ts:116-126`). It sends a waiting delta
@@ -441,6 +552,36 @@ cases are tried in this order:
    Stop ends at once (`interruptibleDelay`), then send again
    (`chat.ts:727-730`).
 
+   Update (v0.1.186): the gate is now `chat.ts:715`, and the wait is
+   `chat.ts:716-719`. Two of the seven conditions changed:
+   - "A tool call ran in this turn" now stops the retry only when the
+     reason is not `stream_cut`.
+   - "It is a protocol error" now stops the retry only when the reason is
+     not `stream_cut`.
+
+   The comment: "Never resend once this call streamed (the person already
+   saw or heard it). A stream cut ran nothing upstream, so it resends after
+   earlier tool rounds too (their results are in the request)"
+   (`chat.ts:713`). `attempt` starts at 0 in each round (`chat.ts:634`), so
+   a cut round after tool rounds has its own 3 requests. A round that
+   streams only the fragments of a tool call sends no delta, so it can be
+   sent again too. None of its calls ran. `a91ee14e1` first permitted a
+   resend after streamed text too. `b0b545aa3` removed that in the same
+   release: a resend would show the reply two times in the open bubble and
+   read it two times aloud (commit message).
+
+   | Error | A delta in this request | A tool ran earlier in the turn | Service with `retryScale` | Other services |
+   |---|---|---|---|---|
+   | `StreamTruncatedError` | no | no | retry, reason `stream_truncated` | retry |
+   | `StreamTruncatedError` | no | yes | retry (new) | retry (new) |
+   | `terminated` read error, or a chunk `streaming completion error: terminated` | no | any | retry (new), reason `stream_cut` | no retry |
+   | Any of the above | yes | any | no retry | no retry |
+   | HTTP 429, 503 and the other transient errors | no | yes | no retry | no retry |
+
+   The new reason `stream_cut` is not in the list of reasons of the turn
+   record (`server/perf/turn-record.ts:24-26`). The record writes it as
+   `other`.
+
 The numbers (`retry.ts:6-9`, `:225-229`):
 
 - `RETRY_MAX_ATTEMPTS = 3`. The backoff retry and the tool-call retry share
@@ -478,7 +619,11 @@ message as text:
    (`retry.ts:143-184`).
 4. Then transient words: `429`, "rate limit", "overloaded", any number from
    500 to 599, "ECONNRESET", "fetch failed", "socket hang up", "timed out"
-   (`retry.ts:34-46`).
+   (`retry.ts:34-46`). Update (v0.1.186): the last transient pattern gives
+   `stream_cut` for "streaming completion error: terminated", a message
+   that starts with "terminated", and "stream ended before completion"
+   (`retry.ts:47-48`). The comment names undici as the source of the bare
+   word "terminated" (`retry.ts:47`). It names no version.
 5. Nothing matched: terminal, reason `unknown`.
 
 The reason is a plain `string` (`retry.ts:31`). The values in the events
@@ -509,6 +654,17 @@ limit.
 With no `reasoning` option (Mistral, xAI), the reasoning deltas of the
 service are dropped with no notice (`chat.ts:399`).
 
+Update (v0.1.186): a connection of the generic service with no key of its
+own takes the workspace model and provider pin (`OPENAI_COMPAT_MODEL`,
+`OPENAI_COMPAT_PROVIDER`) only when it has no address, or when its address
+is the workspace address (`OPENAI_COMPAT_URL`, else
+`https://openrouter.ai/api/v1`) (`server/credential-env.ts:70-74`,
+`compat.ts:167`, `:180-186`). The list of instances uses the same rule
+(`server/config.ts:1186-1187`). Before, an added server such as LM Studio
+listed the workspace model as its default and sent it to a server that did
+not have it. That server answered HTTP 400. The wrapper of
+`openrouter-free.ts` is now at `openrouter-free.ts:118-152`.
+
 ### 3.10 The Responses API
 
 OpenAI has a second API, `POST /responses`, with a different event format.
@@ -519,12 +675,28 @@ The reference uses it only in one case: at the address
 moves forward (`chat` → `responses` → `chat-reasoning-off`), so the resend
 cannot loop.
 
+Update (v0.1.186): the driver keeps the route on which it sent the
+request (`chat.ts:463`). When the service refuses and another turn already
+moved the model to a later route, the driver sends again on that route and
+does not fail (`chat.ts:471`). Before, the second turn failed with "This
+model can only use tools through OpenAI's Responses API". One race stays,
+from the code with no test: two turns that both get `summaries-refused`.
+The second call of `advance` returns false (`responses.ts:54-57`), and
+that turn fails.
+
 The reader (`readResponsesStream`, `responses.ts:157-282`):
 
 - `response.output_text.delta` and `response.refusal.delta` give
   `assistant_text`. `response.reasoning_summary_text.delta` gives
   `reasoning_text`.
-- `response.completed` and `response.incomplete` end the stream.
+- `response.completed` and `response.incomplete` end the stream. Update
+  (v0.1.186): `response.incomplete` with the reason `max_output_tokens`
+  gives `finishReason: "length"` (`responses.ts:242-247`), and the turn
+  loop continues the reply as in section 3.7. `finish` adds each item of
+  `response.output` that the stream did not finish, so the next request
+  replays the cut message one time (`responses.ts:201-215`). A tool call
+  cut in this way is still refused and does not run
+  (`openai-responses.test.ts:584`).
 - `response.failed` and `error` become an HTTP-like error: 429 for
   `rate_limit_exceeded`, 500 for `server_error`, else 400.
 - Tool calls come whole, from `response.output_item.done`.
@@ -532,7 +704,14 @@ The reader (`readResponsesStream`, `responses.ts:157-282`):
   the instructions and the tools.
 - An early end is a protocol error, `"Stream ended before completion"`
   (`responses.ts:257`), not `StreamTruncatedError`. So a cut Responses
-  stream is never retried, while a cut chat stream is.
+  stream is never retried, while a cut chat stream is. Update (v0.1.186):
+  the error is now at `responses.ts:265`. The classifier reads its words
+  as `stream_cut` (`retry.ts:48`), and the gate lets a protocol error
+  with that reason through (`chat.ts:715`). So a cut Responses stream
+  with no delta is now sent again. Only the generic service uses this
+  route, and it sets `retryScale` (`compat.ts:440`). This is from the
+  code: the one test of a cut Responses stream sends a delta first
+  (`openai-responses.test.ts:665-670`).
 
 Our plan does not have this API (section 7).
 
@@ -550,7 +729,13 @@ Our plan does not have this API (section 7).
 6. No `runtime.error` is sent, unless the tools could not be closed
    (`chat.ts:904`).
 7. No `item.completed` is sent for the partial text. The tail held back for
-   secrets is never sent.
+   secrets is never sent. Update (v0.1.186): this is still true for one
+   reply. In a chain of continued pieces (section 3.7), the `finally`
+   block calls `answer.end()` (`chat.ts:889`). It sends one
+   `item.completed` with the pieces that finished, with no mark, before
+   `runtime.error` (`chat.ts:904`). The piece that was streaming is not in
+   it. The test `openai-chat.test.ts:1350` covers a failure in the chain.
+   No test covers a Stop in the chain.
 8. `turn.completed { ok: false, stopReason: "interrupted" }` (`chat.ts:923`).
 9. If the person sent a message during the turn that the model did not
    read, `runtime.notice` with `chat.notice.unreadMessage` comes before it
@@ -575,6 +760,11 @@ Our plan does not have this API (section 7).
    (`plainFailure`, `server/drivers/engine-errors.ts:212-215`). `text` is
    there only for a notice error. `terminal` is `!aborted`. So it is false
    only after a Stop with a failed tool cleanup. `partial` is there only for `stopReason: "tool_error"`.
+   Update (v0.1.186): `blockedAfterReply: true` comes with `partial` when
+   each failed call of the last tool rounds was a block of the safety
+   floor after the bot gave its answer text (`chat.ts:761`, `:904`,
+   `events.ts:205-207`). A routine run then ends as partly done
+   (`server/routines.ts:1293`).
 3. When the model-step limit was spent, a handoff file is written and
    `cap.exhausted` is sent (`chat.ts:910-921`). This file is not redacted
    (`server/turn-continuation.ts:42-69`).
@@ -594,6 +784,10 @@ Our plan does not have this API (section 7).
 | `finish_reason: "length"` | `content.delta` × n, `thread.token-usage.updated`, `item.completed`, `runtime.error "provider did not finish the response (length)"`, `turn.completed { ok: false }` |
 | Stop | `content.delta` × n, (`runtime.notice`), `turn.completed { ok: false, stopReason: "interrupted" }` |
 | Refused before the turn | No event. `sendTurn` rejects |
+| Update (v0.1.186): `finish_reason: "length"` with answer text, before the limit | For each piece: `content.delta` × n, `thread.token-usage.updated`. Then one `item.completed` with all pieces, then the same end as success. The row `finish_reason: "length"` above is now only for the four cases of section 3.7 |
+| Update (v0.1.186): at the limit of 8 continuations | The same, then `runtime.error "The reply was still cut at the output limit after 8 continuations; ..."`, `turn.completed { ok: false }` |
+| Update (v0.1.186): an error or a Stop in a chain of pieces | `content.delta` × n, then `item.completed` with the pieces that finished, then (`runtime.error`), `turn.completed { ok: false }` |
+| Update (v0.1.186): a cut stream after tool rounds | ..., `turn.retrying { reason: "stream_truncated" }` or `"stream_cut"`, (wait), the same request again |
 
 ### 3.14 The host
 
@@ -654,6 +848,12 @@ The members that this feature sends:
 | `runtime.error` | `message`, `partial?`, `setup?`, `terminal?`, `stalled?`, `limitResetsAt?`, `limit?`, `text?`, and more | `:191-203` |
 | `runtime.notice` | `message`, `text?` | `:204-206` |
 | `turn.completed` | `ok`, `stopReason?`, `cost?`, `denials?`, `usage?` | `:61-71` |
+
+Update (v0.1.186): `runtime.error` has a new field `blockedAfterReply?`
+(`events.ts:205-207`, section 3.12). `turn.completed` has a new field
+`unsent?: true` for `stopReason: "auth_required"`, when the prompt never
+reached the model (`events.ts:65-67`). The chat driver does not set
+`unsent`. `turn.retrying` can now have the reason `stream_cut`.
 
 **A chunk of the stream**, as the tests send it
 (`openai-chat-stream-retry.test.ts:24-25`, `openai-chat.test.ts:841-843`):
@@ -721,7 +921,17 @@ stores (`src/lib/live-events.ts:134-144`):
 7. `turn.completed`, `cap.exhausted`, `session.exited` and `runtime.error`
    with `terminal: true` drop every item that was not saved
    (`live-reply.ts:78-80`). So a stopped or failed reply disappears from the
-   window.
+   window. Update (v0.1.186): `live-reply.ts` did not change. But in a
+   chain of continued pieces, the driver now sends `item.completed` for the
+   pieces that finished, also on a failure or a Stop (section 3.11), and
+   the host saves it as a message (`server/index.ts:6380-6382`). So the
+   window keeps those pieces as a normal reply with no mark. The words of
+   the piece that was streaming disappear, because `item.completed`
+   replaces the text of the open item (`live-reply.ts:104`). A failure in
+   the first request still removes all the text. The chat driver sends no
+   `itemId` (`chat.ts:226-232`), so the window completes "the last open
+   item" of the turn (`live-reply.ts:118-123`). This is from the code: no
+   window test covers a continued reply.
 8. Limits: 32 items for each thread, 200 threads, 4096 seen events
    (`live-reply.ts:37-42`).
 9. While a reply streams, its actions are hidden and inert, and the
@@ -746,7 +956,7 @@ stores (`src/lib/live-events.ts:134-144`):
 | Busy, writing | The bubble grows word by word. The line says "Writing a reply" |
 | Retrying | A saved row `retrying — attempt 2/3 in 1s — rate_limited`. It is an activity row that is not a notice. So the transcript treats it as a done tool step, and may fold it into the turn's run of steps (`src/lib/activity-runs.ts:17-24`, `:33-38`). The live stores ignore `turn.retrying` |
 | Notice | A grey pill with an info icon and the text (`src/components/StatusActivityRow.tsx:32-37`) |
-| Error | The live bubble disappears. A saved failure row in a danger colour, with "Details" and "Retry" (`ChatView.tsx:139-210`) |
+| Error | The live bubble disappears (Update (v0.1.186): except the finished pieces of a continued reply, item 7 above). A saved failure row in a danger colour, with "Details" and "Retry" (`ChatView.tsx:139-210`) |
 | Partly done | "Partly done. The reply came back, but a step didn't work, ..." (`en.json:2618`) |
 | Stopped | The live bubble disappears. "Stopped" and "You stopped this." (`en.json:2604-2605`) |
 
@@ -793,7 +1003,19 @@ What the tests guarantee:
 - After 3 truncated attempts: attempts `[1, 2]`, 3 requests, then the error
   (`:60`).
 - No resend after answer text streamed (`:69`), and no resend after a tool
-  ran in the turn, so the tool runs once (`:80`).
+  ran in the turn, so the tool runs once (`:80`). Update (v0.1.186): no
+  resend after answer text streamed, for a plain cut and for a
+  `terminated` chunk (`:69-78`). A cut in a round after a tool ran is sent
+  again: 3 requests, one `turn.retrying { attempt: 1, reason:
+  "stream_truncated" }`, the tool runs once, and the turn ends with `ok:
+  true` (`:80-135`). The classifier test covers the `terminated` forms
+  (`retry.test.ts:79-87`). No test sends them through the driver.
+- Update (v0.1.186), the continuation of a cut reply
+  (`openai-chat.test.ts:1169-1384`): one item for two pieces (`:1186`), the
+  pieces that finished are kept when the next request fails (`:1350`), a
+  blank cut reply fails (`:1360`), a cut with reasoning text only fails
+  (`:1368`), and the limit of 8 (`:1376`). Tests `:1203-1334` cover the
+  held tail of a secret across the cut.
 - A refused tool call is sent again with `delayMs: 0`, at most 3 requests,
   and never after answer text (`openai-chat.test.ts:868-916`).
 - The driver retries a 429, and a 409 only from `api.openai.com`. Three
@@ -836,7 +1058,8 @@ answer is empty.
 - `\r\n` line ends
 - a malformed frame in the middle of a stream
 - more than one choice
-- `finish_reason: "length"` on the chat path
+- `finish_reason: "length"` on the chat path. Update (v0.1.186): now
+  tested (`openai-chat.test.ts:1169-1384`)
 - a truncation after reasoning text only
 
 ## 7. Ours compared
@@ -905,7 +1128,11 @@ answer is empty.
    `streamed` (`chat.ts:712`). An attempt can carry a state `NothingShown`
    or `Shown`, set by the code that sends the first delta. Only
    `NothingShown` can be retried. The compiler then refuses a retry after
-   text, and the rule is in one place.
+   text, and the rule is in one place. Update (v0.1.186): the problem
+   stays. The gate is now `chat.ts:715`, and the copy is `chat.ts:701`.
+   The gate still has seven conditions, and two of them now have an
+   exception for `stream_cut`. The reference now sends a cut request
+   again after earlier tool rounds, when that request showed nothing.
 2. **Classify errors by their kind, not by the words of the message.** The
    reference matches regular expressions on the message text. It reads the
    terminal words before the status. So it reads
@@ -915,7 +1142,13 @@ answer is empty.
    (`retry.ts:37`). In Rust the error is an enum from the
    start: `Http { status, body }`, `Connect`, `Idle`, `Truncated`,
    `Protocol`. The status decides, and the body is only for the message.
-   Less code, and the bug cannot happen.
+   Less code, and the bug cannot happen. Update (v0.1.186): the problem
+   stays. The reference now keeps the status in `ChatHttpError.status`
+   and `ChatCompletionError.status` (`chat.ts:305`,
+   `refusals.ts:37-51`), but `classifyError` still reads only the message
+   (`retry.ts:191-217`). The lines are now `retry.ts:38` and `:208-212`.
+   The new reason `stream_cut` is also found by the words of the message
+   (`retry.ts:48`).
 3. **One reason type.** The reference's `reason` is a `string`
    (`retry.ts:31`). The classifier returns `"provider_safety"`, but that
    value is not in its own union (`retry.ts:191`). An enum with `serde` gives the same JSON and a
@@ -927,25 +1160,40 @@ answer is empty.
    multiplied by `retryScale` (`chat.ts:728-729`). The host prints
    `attempt + 1` of 3, so the first retry reads "attempt 2/3"
    (`index.ts:6622`). One counter in the driver, and an event that says
-   "attempt 2 of 3, wait 1.2 s" with the real numbers.
+   "attempt 2 of 3, wait 1.2 s" with the real numbers. Update (v0.1.186):
+   the problem stays. The lines are now `chat.ts:678`, `:695`, `:702`,
+   `:717-718` and `index.ts:6609`.
 5. **All services retry the same way.** In the reference, only the generic
    service and the xAI service retry a 429 or a 5xx (`compat.ts:439`, `grok.ts:55`).
    They opt in through a test environment variable in production code. The
    other seven never retry a 429. We have one service type. Give it one
    policy. Give the test its delays through the constructor, not an
-   environment variable.
+   environment variable. Update (v0.1.186): the problem stays. The line
+   is now `compat.ts:440`. The other seven services also do not send
+   again a `terminated` cut (section 3.8).
 6. **The same end rule for every stream.** A cut chat stream is retried, a
    cut Responses stream is not (`responses.ts:257`). If we add a second
-   format, its parser gives the same `Truncated` error.
+   format, its parser gives the same `Truncated` error. Update (v0.1.186):
+   the reference now sends a cut Responses stream again too, but only
+   because the words of its error match the new pattern
+   (`responses.ts:265`, `retry.ts:48`, section 3.10). The point stays for
+   us: one error type from each parser, not a match of words.
 7. **Fail at the first bad frame.** The reference keeps reading after a
    frame that does not parse, shows the text, and fails only at the end
    (`chat.ts:385`, `protocol.ts:162`). Our parser can return an error at
-   once.
+   once. Update (v0.1.186): no change. The lines are now `chat.ts:380` and
+   `protocol.ts:189`.
 8. **Do not send `item.completed` and then fail the same round.** For
    `finish_reason: "length"` the reference sends the reply as complete,
    then a terminal error (`chat.ts:747`, `:756-757`). Decide the outcome
    first. A reply cut by the length limit can be an `item.completed` with
-   a mark, or no item.
+   a mark, or no item. Update (v0.1.186): the reference now continues a
+   reply cut by the length limit (section 3.7). The problem stays in four
+   cases: the limit of 8 continuations, a local model with tools, a cut
+   with reasoning text only, and a finish reason that is not `stop` or
+   `length`. In each one, `answer.end()` sends the item (`chat.ts:738`)
+   before the error (`chat.ts:747`, `:751-752`). The lines `chat.ts:747`
+   and `:756-757` of `3aec210` are now `chat.ts:737-738` and `:751-752`.
 9. **Separate limits for the first byte and between pieces.** The
    reference has one idle timer that also covers the wait for the model
    and the headers (`chat.ts:271`). A local model that loads slowly then
@@ -954,7 +1202,8 @@ answer is empty.
    piece, and the time between pieces. The plan's open choice for 5.4 names
    only a connection timeout and a timeout between pieces. It does not
    cover the wait for the first piece, which is the long wait of a local
-   model or of Meta (600 s).
+   model or of Meta (600 s). Update (v0.1.186): no change. The line is now
+   `chat.ts:266`.
 10. **Redact the live text in one place.** The reference uses three
     places:
     - The driver redacts the configured secrets with a held-back tail
@@ -967,12 +1216,22 @@ answer is empty.
     `bot-engine`. At the end, the driver then sends or drops the held tail
     on purpose, also after an error. The reference drops it after an
     error, because the code reaches `chat.ts:678-679` only on success.
+    Update (v0.1.186): the driver hold is now in `halves.ts:1-13` and
+    `cut.ts:11-31`. The flush is at `chat.ts:667`, still only on success.
+    The hold now also crosses into a continued request (section 3.7). The
+    rule of the hold changed two times in one release (`459da558f`, then
+    `f909454a2`), and the first change moved characters into the wrong
+    message.
 11. **Decide what happens to the partial reply.** In the reference, text
     shown before an error or a Stop is not saved, and the window then
     removes it (`live-reply.ts:78-80`, test
     `openai-compat-idle.test.ts:43`). The person sees words vanish. Choose
     on purpose: keep the partial text as an item with a mark, or remove
-    it. D20 does not say.
+    it. D20 does not say. Update (v0.1.186): the reference now has a third
+    behaviour for a chain of continued pieces. It keeps the pieces that
+    finished as a normal reply with no mark, and removes the piece that
+    was streaming (`chat.ts:737`, `:889`, section 5 item 7). For one reply,
+    the words still vanish.
 12. **No product name in prompt text or settings.** The reference's
     environment variables and prompt text carry its own product name
     (`compat.ts:17-28`, `openai-compat.test.ts:871`). Our names follow
@@ -1013,3 +1272,24 @@ answer is empty.
   (`refusals.ts:110`), DashScope ids (`protocol.ts:111-113`), Node's 300 s
   limit (`openai-chat-fetch.ts:3-5`). A comment gives a version where it
   has one. Nobody checked these behaviours against the services.
+
+**Not verified in the update to v0.1.186:**
+
+- These are from the code, with no test:
+  - the item, then the error, for a cut with reasoning text only
+  - the item of the finished pieces on a Stop in a chain
+  - the resend of a cut Responses stream with no delta
+  - the race of two `summaries-refused` answers
+  - the window effect of a continued reply
+- A steer text during a chain: the code puts the steer text after the
+  note to continue (`chat.ts:625-628`, `:748`), and the answer joins the
+  same item. No test.
+- How a real service answers the note to continue. The tests use a fake
+  server.
+- Whether a real service sends `{"error":"terminated"}`, and which undici
+  version ends a cut read with "terminated". Only the comment at
+  `retry.ts:47` says so.
+- The test files of the range were read only at the lines that this file
+  names.
+- The line numbers of the parts of this file that the update did not
+  change are at `3aec210`. Many of them moved.

@@ -1,7 +1,14 @@
 # Tool calls for the chat API drivers
 
-Read on 2026-11-23, at commit `3aec210` of the reference project. This file
-is for the feature row "Tool calls for the chat API drivers, with approvals,
+Read on 2026-11-23, at commit `3aec210` of the reference project. Updated
+on 2026-11-28 to commit `e1cc6a290`, which is after release v0.1.186 (tag
+commit `70eb44c1a`). The section "Changes up to `e1cc6a290` (v0.1.186)"
+lists the changes of this feature. This file is correct at `e1cc6a290` for
+the changes that that section names. A statement that this update
+corrected starts with "Update (v0.1.186)", and its line numbers are at
+`e1cc6a290`. All other parts were read at `3aec210`, and their line
+numbers are at `3aec210`. This file is
+for the feature row "Tool calls for the chat API drivers, with approvals,
 deny and interrupt" of [`reference-features.md`](../reference-features.md) (parts 9 and 10 of
 [`README.md`](../README.md)). All paths are in the reference project unless a
 line says "ours". The `enterprise/` directory, the ACP drivers and the CLI
@@ -75,6 +82,50 @@ The most important rules of the design:
 - A failed tool does not fail the turn if the model then uses tools again.
 - The model always gets an answer for each tool call, also for a call that
   did not run.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+Four subagents read the commits from `3aec210` to `e1cc6a290` for the
+files of this feature and of
+[`chat-streaming.md`](chat-streaming.md). The main session checked the key
+lines against the code. Their reports are not in the repository. All the
+changes below are in the tag v0.1.186
+(`git merge-base --is-ancestor <commit> 70eb44c1a`). No commit after the
+tag changes a tool call of a chat driver. The commits after the tag that
+were checked change question cards of handed-on work (`8e2e3223c`,
+`d184bc6f9`), add a send option that refuses while a card waits
+(`6b7ca34a3`), change skills of teammates (`718d02334`, `d23997fc9`) and
+change styles (`67f085195`). Lines are at `e1cc6a290`.
+
+| Change | Commit | Tag | File and line | Sections that it changes |
+|---|---|---|---|---|
+| A reply that the service cut at the output limit is continued in a new request, and its pieces are one `item.completed`. The limit is 8 continuations for each turn. Details in `chat-streaming.md` section 3.7 | `9a8c5667c`, `f97e0f741`, `8130a91b8` | in v0.1.186 | `proto.ts:22-47`, `chat.ts:736-738`, `:745-753`, `:889` | 3.6, 3.11, 3.13, 4.1 |
+| A request that the service cut before any delta is sent again also after a tool ran in the turn. The earlier tool results are in the request, so no tool runs again | `a91ee14e1`, `b0b545aa3` | in v0.1.186 | `chat.ts:713-715`, `server/drivers/retry.ts:47-48`. Test `openai-chat-stream-retry.test.ts:80-135` | 3.12, 8 (the list of things to keep) |
+| `runtime.error` gets `blockedAfterReply: true` beside `partial: true` | `ba5c2c50e` | in v0.1.186 | `chat.ts:761`, `:904` | 3.9 |
+| A turn with no shell (a guest turn, or work that came over a bot link while the commands grant is off) uses no session grant | `980229b87` | in v0.1.186 | `chat.ts:551`, `server/drivers/shell-off.ts:1-5` | 3.9 |
+| In such link-limited work, the server denies at once a permission request that its capped check does not allow. No card shows | `980229b87` | in v0.1.186 | `index.ts:6444-6446`, `:6537`, `server/bot-link/far-side.ts:26` | 3.9 |
+| The error for arguments that do not match the schema names the tool and at most 8 problems | `3f15b33c4` | in v0.1.186 | `mcp.ts:494-496`, `:831`, `:838-841`, `server/mcp-schema-validator.ts:140-149`. Test `chat-mcp-tools.test.ts:204-205` | 3.7 |
+| The host computer stand-in takes one place in the tool budget, not two | `2b5394ce2` | in v0.1.186 | `mcp.ts:678`, `:692-693`. Test `chat-host-computer.test.ts:149-157` | 3.3 |
+| A start check of an MCP server that only ran out of time keeps the server in turns, until three time-outs in a row. A time-out is checked again after 60 s | `e375e704e`, `c887e11ab` | in v0.1.186 | `server/mcp-health.ts:16-20`, `:81-97`, `server/host/mcp-servers-host.ts:130` | 3.2 |
+| In the preview of a tool call, the value of an `error` key is kept as redacted text of at most 500 characters, also when the rest of the preview is cut | `19de57f43`, `af317f79f`, `1a4deaba8` | in v0.1.186 | `server/tool-summary.ts:9-57`, `:74-80`. Tests `server/tool-summary.test.ts:37-64` | 3.7, 3.11 |
+| A line that the person types in the bot's own chat answers the one waiting question card that takes words | `daac62594` to `804af2752` (8 commits) | in v0.1.186 | `server/host/ask-cards.ts:31`, `:66-70`, `:325-382` | 3.14 |
+| A repeated `request.opened` for the same request makes no second card | `e68308207` | in v0.1.186 | `index.ts:6437` | 5.1 |
+| The texts for the model between rounds moved to one file. The note to continue a cut reply is in another file | `f909454a2`, `9a8c5667c` | in v0.1.186 | `server/drivers/openai-chat-prompts.ts:3-11`, `proto.ts:22` | 8 (point 17) |
+| An announcement with a curly apostrophe ("I’ll check") is recognised | `36070c08d` | in v0.1.186 | `server/drivers/chat-announcement.ts:28` | none |
+
+The MCP image filter for a text-only model (`e60bfef8a`) acts only for the
+ACP engines. Only `acpMcpServers` sets the variable that turns it on
+(`server/drivers/turn-mcp.ts:118-125`). The chat driver does not use it.
+
+**The problems of `changelog.md` section 5 that v0.1.186 repairs in this
+feature.** The theme of each row is the main session's reading, not a
+statement of the release note.
+
+| Theme of section 5 | What v0.1.186 repairs | Commit and line |
+|---|---|---|
+| One slow or stuck part blocks all the others | "A server whose start check only timed out stays on, unless that happens three times in a row." Before, one slow check removed the server from the turns of the bot for 30 minutes | `e375e704e`, `c887e11ab`; `server/mcp-health.ts:81-86` |
+| The size of the tool list of one turn | The stand-in of the host computer was counted two times, so a server that fitted exactly went behind the directory tools | `2b5394ce2`; `mcp.ts:678`, `:692-693` |
+| The same work done or delivered two times, or lost | A cut stream after a tool round failed the whole turn. Now the request is sent again, and the tool does not run again. A repeated `request.opened` no longer makes a second card and a second notification | `a91ee14e1`, `b0b545aa3`, `e68308207`; `chat.ts:715`, `index.ts:6437` |
 
 ## 2. Files read completely
 
@@ -196,6 +247,15 @@ starts and the request has no `tools` field (`chat.ts:287`).
      "<name>" was skipped for this turn: <reason>` (`mcp.ts:381-383`).
    - A server that the turn must have (the agents server, a Local VM) fails
      the turn: `MCP server "<name>" didn't start: ...` (`mcp.ts:741`).
+   - Update (v0.1.186): before the turn, the server leaves out a
+     configured command server whose start check failed
+     (`server/host/mcp-servers-host.ts:173`). A check that only ran out of
+     time keeps the server in, until three time-outs in a row
+     (`server/mcp-health.ts:20`, `:83-84`). A time-out is checked again
+     after 60 s, other failures after 30 minutes (`server/mcp-health.ts:16`,
+     `:18`, `:85-86`). The first request of the driver still does not wait
+     for a slow server: `e375e704e` added that wait, and `c887e11ab`
+     removed it in the same release.
 7. Limits: 32 servers, 2,000 tools for one server, 100 pages, a 64 KB schema
    for one tool, a 1 MB catalog, a 2 MiB line (32 MiB for a server that
    sends screenshots), 10,000 response lines for one server in a turn
@@ -226,6 +286,11 @@ starts and the request has no `tools` field (`chat.ts:287`).
      reads the number from the refusal, lists the tools again and sends the
      request one more time (`server/tool-count-limit.ts:58-90`,
      `chat.ts:685-691`).
+- Update (v0.1.186): the stand-in tool of the host computer takes one
+  place of the budget. Before, the driver took its place out two times, so
+  a server that fitted exactly went behind the directory tools. Now
+  `directServers` runs before the stand-in goes into the list
+  (`mcp.ts:678`, `:692-693`, test `chat-host-computer.test.ts:149-157`).
 - **The tool budget:** the last layout of each bot is kept in memory and
   served by `GET /api/bots/:id/tool-budget`
   (`server/tool-budgets.ts:3-12`, `server/routes/mcp-servers.ts:85-89`).
@@ -289,11 +354,17 @@ text stays text and nothing runs.
 5. If the reply has usage numbers, it emits `thread.token-usage.updated`.
 6. If the reply has text, it emits `item.completed` with `itemType:
    "assistant_text"`. This occurs also in a round that has tool calls
-   (`chat.ts:746-747`).
+   (`chat.ts:746-747`). Update (v0.1.186): the pieces of a reply that the
+   service cut at the output limit wait, and go out as one item when the
+   chain ends (`chat.ts:735-738`).
 7. **If the reply has no tool call,** the final checks run, in this order
    (`chat.ts:754-788`):
    1. An empty reply fails the turn.
-   2. A finish reason that is not `stop` fails the turn.
+   2. A finish reason that is not `stop` fails the turn. Update
+      (v0.1.186): a reply with `length` and answer text is first continued
+      with a new request, at most 8 times in a turn (`chat.ts:747-750`,
+      `chat-streaming.md` section 3.7). The checks are now at
+      `chat.ts:745-784`.
    3. A tool failure is pending: see 3.9.
    4. The reply only announces an action: see 3.10.
    5. A steer text arrived: go to step 3.
@@ -319,11 +390,26 @@ For each call of the batch (`chat.ts:803-884`):
 1. Check for a stop.
 2. Parse the arguments. Make a preview of them: pretty JSON, secrets
    replaced by `[redacted]`, cut at 6,000 characters
-   (`server/tool-summary.ts:5-40`).
+   (`server/tool-summary.ts:5-40`). Update (v0.1.186): the value of a key
+   that starts with `error` is redacted and then cut at 500 characters.
+   When the preview runs out of room, the first `error` value below is
+   still shown (`server/tool-summary.ts:9-57`, `:74-80`). The model gets
+   the tool message, not this preview (`chat.ts:874`). The chat driver
+   makes the output preview from `{ ok, result: <text> }` (`chat.ts:871`),
+   so this rule acts on its input preview and on a result whose object has
+   an `error` key. The commit message of `19de57f43` says that before, "the
+   bot saw a failure with no cause". That is about another path: the chat
+   driver gives the model the full text, cut at 2,000 characters for an
+   error.
 3. The repeat guard can refuse the call (local models only, see 3.11).
 4. `tools.validate`: the tool must be in the list of this turn, the tool
    selection of the bot must permit it, and the arguments must match the
-   full schema of the tool (`mcp.ts:822-839`).
+   full schema of the tool (`mcp.ts:822-839`). Update (v0.1.186): the
+   refusal text names the tool and at most 8 problems: `Tool arguments do
+   not match the advertised input schema: <tool>: <problems>.`
+   (`mcp.ts:494-495`, `server/mcp-schema-validator.ts:140-149`). A problem
+   has the path of the argument (key names that the model sent) and the
+   message of the validator. It has no value of an argument.
 5. `tools.view` says how to show the call and if it asks
    (`mcp.ts:840-855`):
    - A tool of the agents server never asks.
@@ -432,6 +518,13 @@ started, tool]` (`mcp.ts:843`). It is kept in the memory of the driver, for
 each pair of thread and bot, for at most 256 pairs (`chat.ts:226`,
 `:548-552`). A restart of the server forgets it. A changed command or
 environment of the MCP server makes a new key. A guest turn gets no grant.
+Update (v0.1.186): a turn of link-limited work (work that came over a bot
+link while the commands grant is off) also gets no grant
+(`chat.ts:551`, `server/drivers/shell-off.ts:1-5`). For such work the
+server also denies at once each permission request that its capped
+automatic check does not allow, with no card, and no saved grant applies
+(`index.ts:6444-6446`, `:6452`, `:6537`). The driver then gets a deny, as
+for the person's "no".
 
 **Deny.** A deny by the person, a time limit, and a closed gate all give the
 model the same tool result (`approval.ts:21`):
@@ -450,7 +543,10 @@ model the same tool result (`approval.ts:21`):
 6. Then the turn fails: `stopReason: "tool_error"`, `runtime.error` with
    `partial: true`, and the text `Stopped because the tool call “<name>”
    wasn't allowed. The bot's reply isn't proof the work was done; that step
-   didn't run.` (`chat.ts:759-767`, `tool-failure.ts:17-28`).
+   didn't run.` (`chat.ts:759-767`, `tool-failure.ts:17-28`). Update
+   (v0.1.186): `runtime.error` also gets `blockedAfterReply: true` when
+   each failed call was a block of the safety floor after the bot gave its
+   answer text (`chat.ts:761`, `:904`).
 
 After a denial, the model gets no second attempt: "A person's 'no' is never
 answered with another attempt" (`chat.ts:760`).
@@ -522,6 +618,9 @@ A denial or a pending tool failure has priority: no nudge then.
 | Announcement nudges | 3 | `chat.ts:144` | The turn fails |
 | Corrective rounds, local model | 2 | `chat.ts:194` | The turn fails |
 | Resend after a refused tool call | 3 attempts | `chat.ts:710-717` | The turn fails |
+| Update (v0.1.186): continuations of a reply cut at the output limit | 8 for each turn, for all replies together | `proto.ts:23-24` (at `e1cc6a290`) | The joined item, then `runtime.error`, `ok: false` |
+| Update (v0.1.186): an `error` value in a preview | 500 characters | `server/tool-summary.ts:9-57` (at `e1cc6a290`) | Cut |
+| Update (v0.1.186): start checks of an MCP server that run out of time | 3 in a row | `server/mcp-health.ts:20` (at `e1cc6a290`) | The server counts as not starting and leaves the turns |
 
 **The limit of 64 model steps does not exist now.** The verification record
 `docs/verification/openai-tools.md` says "One turn stops after 64 model
@@ -562,7 +661,14 @@ a call is the tool name plus the arguments with sorted keys.
   one time with no tools (`chat.ts:719-723`). A tool that the person mounted
   is never removed silently.
 - **A general error after a tool ran** (for example HTTP 503) is never
-  retried: "Never replay a handled call" (`chat.ts:724-726`).
+  retried: "Never replay a handled call" (`chat.ts:724-726`). Update
+  (v0.1.186): still true for HTTP 503
+  (`openai-chat-tools.test.ts:1318-1331`), but the quoted comment is
+  gone. A request that the service cut before any delta is now sent again
+  also after a tool ran in an earlier round (`chat.ts:713-715`). The
+  earlier tool results are in the request, so no tool runs again (test
+  `openai-chat-stream-retry.test.ts:80-135`). Details in
+  `chat-streaming.md` section 3.8.
 - **A request that is too large:** the driver shortens old tool outputs and
   sends again (`chat-size-limit.ts`).
 
@@ -573,7 +679,7 @@ a call is the tool name plus the arguments with sorted keys.
 
 | State | What occurs |
 |---|---|
-| The reply streams | The HTTP request is aborted. The text that streamed gets no `item.completed` |
+| The reply streams | The HTTP request is aborted. The text that streamed gets no `item.completed`. Update (v0.1.186): in a chain of continued pieces, the pieces that finished get one `item.completed` from the `finally` block (`chat.ts:889`, from the code, no test) |
 | A card waits | The card closes: `request.resolved` with `behavior: "deny"`, `source: "system"`. The call did not run, but it gets the result `Tool interrupted; an operation already dispatched may have taken effect. Verify its state before retrying.` and `item.completed` with `ok: false` |
 | A tool runs | The driver sends `notifications/cancelled` and closes all MCP processes. The call gets the same "Tool interrupted" result. The driver does not know if the operation took effect |
 | The other calls of the batch | No event and no tool message |
@@ -598,6 +704,25 @@ The text goes to the model at the start of the next round, never in the
 middle of a batch (`chat.ts:625-630`). If it arrives while the model writes
 its last reply, the loop does one more round (`chat.ts:783-786`).
 
+Update (v0.1.186): a line that the person types in the bot's own chat can
+answer a question card instead (`server/host/ask-cards.ts:342-382`). All
+of these must be true:
+
+1. The thread is not a room, and the line is not a stop command.
+2. Exactly one question card waits, and the driver still waits on it
+   (`ask-cards.ts:359-360`).
+3. The card takes words: one question, not multiple choice, a free answer
+   permitted, no fixed options (`ask-cards.ts:66-70`).
+4. The line has no attachment. It replies to the card, or the card showed
+   1,500 ms or more before the line (`CARD_SETTLE_MS`,
+   `ask-cards.ts:31`, `:362-363`).
+
+Then the server answers the request with `behavior: "answer"` and the
+text, and stores the line as a reply to the card (`ask-cards.ts:373-380`).
+If that answer fails, the line goes on as a steer text. A card that takes
+only a tap is never answered by a line. For the chat driver this is an
+`ask_user` card.
+
 ### 3.15 A restart of the server
 
 The waiting requests, the session grants and the map from request to card
@@ -617,7 +742,9 @@ and `createdAt`. The order for one round with one tool call, at level `ask`
 
 1. `content.delta`, 0 or more (`:656`)
 2. `thread.token-usage.updated`, if the reply has usage (`:735-744`)
-3. `item.completed` with `assistant_text`, if the reply has text (`:747`)
+3. `item.completed` with `assistant_text`, if the reply has text (`:747`).
+   Update (v0.1.186): now `chat.ts:738`, through `ContinuedReply`. A cut
+   reply that continues sends it only when its chain ends
 4. `request.opened` (`:556-559`)
 5. `request.resolved` (`:560-563`)
 6. `item.started` with `itemType: "tool"` (`:844-846`)
@@ -765,7 +892,7 @@ changed with `store.patchMessage`, which writes the database before memory:
 | tool `item.started` | Adds an activity row with `tool: { name, input, itemId, summary }` and no `ok`. No `ok` means "running". Puts `<thread>:<itemId>` → row id in the memory map `toolMessageByItem` | `index.ts:6426-6437` |
 | tool `item.completed` | Finds the row through the map, replaces the full `tool` object with `ok` and `output`, and removes the map entry. If the map has no entry, nothing changes | `index.ts:6403-6415` |
 | `item.updated` | Nothing. There is no case for it | |
-| `request.opened` | Tries an automatic answer first. If the person must answer: adds a row of kind `options` with a `card`, puts the request in the memory map `askMessageByRequest`, writes a `card-shown` decision row, sets the activity of the task to `waiting-on-you`, and sends a notification of kind `approval` | `index.ts:6438-6587` |
+| `request.opened` | Tries an automatic answer first. If the person must answer: adds a row of kind `options` with a `card`, puts the request in the memory map `askMessageByRequest`, writes a `card-shown` decision row, sets the activity of the task to `waiting-on-you`, and sends a notification of kind `approval`. Update (v0.1.186): a second `request.opened` for a request that `askMessageByRequest` already has makes no second card and no second notification (`index.ts:6437`). The chat driver makes a new id for each request, so this is for a provider that sends the event again | `index.ts:6438-6587` |
 | `request.resolved` | Patches the card: see the table below. Sets the activity back to `working` | `index.ts:6588-6617` |
 | `runtime.error` | Adds a failure row `error: <cause>`, unless the person stopped the turn | `index.ts:6627-6636` |
 | `turn.completed` after a stop | Adds one row `stopped: You stopped this.` | `index.ts:6643-6663`, `server/person-stops.ts` |
@@ -1132,14 +1259,21 @@ do in its place.
 17. **No product name in the text for the model.** The reference texts for
     the model start with the product name in brackets (`chat.ts:190`,
     `:193`, `chat-repeat-guard.ts:43`). Build these texts from one place,
-    with no name in them.
+    with no name in them. Update (v0.1.186): the problem stays. The texts
+    between rounds moved to `server/drivers/openai-chat-prompts.ts:3-11`
+    (`f909454a2`). A new text with the product name, the note to continue
+    a cut reply, is in another file (`proto.ts:22`). The new refusal of
+    bad arguments is a third place (`mcp.ts:494-495`).
 
 Things to keep as they are, because they are correct and tested:
 
 - Register the request before the event is sent.
 - Check the ids of the full batch before a call runs.
 - Never retry a request after a tool ran, and stop a server after a call
-  with an uncertain outcome.
+  with an uncertain outcome. Update (v0.1.186): the reference now sends
+  again a request that the service cut before any delta, also after a tool
+  ran (`chat.ts:713-715`). The rule to keep is: never send again a request
+  whose reply already streamed, and never run a tool call two times.
 - Read the approval level before each call.
 - A question skips the level and has no time limit.
 - A hosted model's text that looks like a call never runs.
@@ -1182,3 +1316,14 @@ Things to keep as they are, because they are correct and tested:
   run. No test was run.
 - If a tool operation stops on the side of the MCP server after a stop. The
   driver only closes the process.
+
+**Not verified in the update to v0.1.186:**
+
+- The link-limited deny was not followed into the chat driver by a test.
+  The tests of `980229b87` and `e68308207` were not read.
+- `startCheckTimeout` (`server/host/mcp-servers-host.ts:129`) and the
+  check of a remote server (`server/host/mcp-url-checks.ts`) were not read.
+- The item of the finished pieces after a Stop in a chain is from the
+  code, with no test.
+- The line numbers of the parts of this file that the update did not
+  change are at `3aec210`. Many of them moved.
