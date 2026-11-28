@@ -814,3 +814,66 @@ session gave the P-numbers from P689.
   ("The sidebar keeps its order:"), so `changelog.md` does not change.
 - After this batch, the group "later" has two open themes: the avatars and
   the mascot (six rows), and localization.
+
+## Batch 14, started 2026-11-28
+
+The author said "start next analyzing features". No pull request was open.
+The group "later" had two open themes: the avatars and the mascot (six
+rows), and localization (one row). The author chose three worktrees: the
+avatar theme in two features, and localization. All three ran at the same
+time.
+
+The reference is at commit `e1cc6a290` (2026-11-28), 138 commits after
+`95f3c9f16`. v0.1.186 (2026-11-27) is the latest release, with its tag at
+`70eb44c1a`. v0.1.185 has no tag and no release. This record adds the row
+of v0.1.186 to `changelog.md`. The agents numbered their proposals T1, T2,
+..., and the main session gave the P-numbers from P710.
+
+| # | Rows of `reference-features.md` | Crate | Step | Name | State |
+|---|---|---|---|---|---|
+| 1 | Ten mascot body shapes; the 25 face expressions, the gaze and the mouths (`2026-08-31-04-mascot-shape-catalog.md`); the vendored Open Bot Avatar engine | `bot-desktop`, `bot-protocol` | none yet (P726 adds one) | [`mascot`](features/mascot.md) | done, 2026-11-28, at commit `e1cc6a290`: research #160, plan #162 (P724 to P735, and D23) |
+| 2 | `avatar-storage.md`; `avatar-providers.md`; the "Living" avatar | `bot-desktop`, `bot-core` | none yet (P710 adds one) | [`avatars`](features/avatars.md) | done, 2026-11-28, at commit `e1cc6a290`: research #158, plan #159 (P710 to P723) |
+| 3 | `localization.md`, `localization-pt-br.md` | `bot-desktop`, `bot-core`, `bot-protocol` | none yet (P738 gives two parts; P736 is for PR 2.5) | [`localization`](features/localization.md) | done, 2026-11-28, at commit `e1cc6a290`: research #161, plan #163 (P736 to P747) |
+
+- The prompts gave each agent its borders: `look-and-design.md`,
+  `bot-settings-ui.md` and `bot-profile.md` for `mascot`;
+  `bot-attachments.md`, `bot-profile.md`, `bot-settings-ui.md`,
+  `onboarding.md` and `look-and-design.md` for `avatars`;
+  `look-and-design.md`, `app-settings.md`, `chat-ui.md`, `helper-bot.md` and
+  `threads.md` for `localization`. Each one had a limit of 8 groups of
+  files. The localization agent read `en.json` (12,347 lines) in recorded
+  ranges, and a script measured the key coverage of the other 15 packs.
+- The plans estimated about 2 to 3M tokens (`mascot`), 1.5 to 2M
+  (`avatars`) and 1.5 to 2.5M (`localization`). The status line showed 19%
+  of the weekly limit at the start and 15% at the end. The author said
+  "approved all". All three agents finished between 15:38 and 15:50, with
+  no usage limit.
+- During the work, the author said: "for the mascot I want to make it like
+  an ant". The main session sent this to the mascot agent, and section 7.4
+  of `mascot.md` says how an ant fits each part of the reference design.
+  The decision is D23 of `docs/decisions.md`. Its form (one ant, or ant
+  variants) is P724.
+- The author said "merge them all". The main session merged each research
+  and plan pull request of the batch when it was open (#158 to #163).
+- The main session checked four or five key claims of each file at
+  `e1cc6a290`, and all 14 agree with the code. Some of them:
+  1. `avatars`: the load of the store deletes an avatar value that it does
+     not accept and saves the file (`server/store.ts:376-383`, `:534`), and
+     the Living avatar was removed in `eb6fad2c0` before v0.1.48.
+  2. `mascot`: the NOTICE of the reference names Open Bot Avatar 0.3.0 for
+     0.4.0 code (`NOTICE:133-137`), and it does not name "Blob Studio"
+     (`src/components/CursorAvatar.tsx:1`).
+  3. `mascot`: an idle bot gets its face from English words in its name
+     (`src/lib/mascot.ts:171-200`).
+  4. `localization`: a missing `source-hashes.json` reads as empty
+     (`scripts/generate-locale.mjs:164`), and the hashes are recorded only
+     at the release (`.github/workflows/prepare-release.yml:113`).
+  5. `localization`: a person-languages file that cannot be read is
+     written over at the next save (`server/host/person-languages.ts:37-48`).
+- The worktrees are removed and the branches are kept. The proposals files
+  of the agents are deleted: each plan file has all of their content.
+- This record also corrects the row "Mascot" of section 11.6 of
+  `docs/comparison.md` (the generator face is for the `cursor` body only),
+  and adds two v0.1.186 examples to section 5 of `changelog.md`.
+- After this batch, the group "later" has no open row. The open rows are in
+  the group "no" (not in our plan).

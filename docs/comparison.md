@@ -345,7 +345,7 @@ Confirmed: yes. All of these stay in the web UI, so no crate replaces them.
 | Feature | Technique (source file) |
 |---|---|
 | Skins | 13 blocks of CSS custom properties, selected with `data-skin` on the root element. The choice is in `localStorage`. A hand-written script calculates the WCAG contrast of each skin and fails the build below 4.5 for text. (`src/lib/skins.ts`, `scripts/check-skin-contrast.mjs`) |
-| Mascot | SVG paths, changed directly with `setAttribute` on a shared clock. A generator script makes each body: rasterize, find the largest inscribed circle, place the face. (`src/components/CursorAvatar.tsx`, `scripts/gen-mascot-bodies.ts`) |
+| Mascot | The `cursor` body: SVG paths, changed directly with `setAttribute` on a shared clock, with a face that a generator script places (rasterize, find the largest inscribed circle, place the face). On the desktop, the other bodies are drawn by the vendored Open Bot Avatar engine, and the generator face is used for the `cursor` body only. Our mascot is an ant (D23). (`src/components/CursorAvatar.tsx`, `scripts/gen-mascot-bodies.ts`, `src/components/Avatar.tsx:118-135`, `packages/phone-protocol/src/open-bot-avatar/`; see [`research/features/mascot.md`](research/features/mascot.md)) |
 | Tool chips | Messages of kind `activity` are grouped into runs. (`src/lib/activity-runs.ts`) |
 | Bot profile | Length limits for each field. An avatar address must be an attachment of the server with a raster extension: no SVG and no outside address. (`shared/bot-profile.ts`, `shared/bot-avatar.ts`) |
 | Order and unread | The bot order and the unread state are stored on the server. (`shared/bot-order.ts`, `server/routes/bot-order.ts`) |
