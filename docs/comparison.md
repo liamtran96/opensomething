@@ -377,7 +377,10 @@ site are in documents only.
 - Eight ACP engines that were only skimmed (see 11.3).
 - The list of built-in preset roles, the order of the notice queue in the UI,
   and the webhook path of the pause feature.
-- UI components that are only layout: sidebar, settings pages, onboarding.
+- UI components that are only layout, other than the sidebar, the bot
+  settings dialog and onboarding. Those three have research files now:
+  `sidebar-and-departments.md`, `bot-settings-ui.md` and `onboarding.md` in
+  `docs/research/features/`.
 
 ## Open points
 

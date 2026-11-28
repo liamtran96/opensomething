@@ -346,6 +346,20 @@ analysis tasks only, not for other worktrees.
     `docs/research/progress.md`. Delete the proposals file of a feature
     when its plan file is in a pull request.
 
+### Look at the open pull requests before you choose a batch (2026-11-28)
+
+Before you choose the features of a batch, run `gh pr list` and read the
+open research and record pull requests. A batch that is done can still be
+open, and `main` then does not show it.
+
+- **Why:** the main session chose batch 13 from `main` and offered features
+  that batch 12 had already done in 13 open pull requests. The author said:
+  "but please check the list pr as well".
+- **How:** step 1 of "How to run a batch" in
+  [`docs/research/progress.md`](docs/research/progress.md). When the open
+  pull requests of a batch change the same tables, merge them, or ask the
+  author, before the new worktrees start.
+
 ### Record a batch before you report it done (2026-11-27)
 
 When the research pull requests of a batch are open or merged, record the
