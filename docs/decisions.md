@@ -717,3 +717,27 @@ entry was written. Verify them before relying on them.
   - `server/contracts.ts:255-310`: the capability flags.
   - `server/contracts.ts:311-334`: `sendTurn`, `interruptTurn`,
     `respondToRequest` and `onEvent`, all mandatory.
+
+## D23. Our mascot is an ant
+
+- **Date:** 2026-11-28
+- **Status:** Accepted (the author). The form of the ant is open: one ant
+  for all bots, or ant variants ([P724](plan/mascot.md)).
+- **What:** the mascot of a bot is an ant. It has a head with the face, a
+  thorax, a thin waist, a large abdomen, six legs and two antennae.
+- **Why:** the author said: "for the mascot I want to make it like an ant".
+- **Different from the reference:** the reference has ten body shapes of
+  its own design, made by a generator, and more object and festival bodies.
+  We do not copy its shapes. A choice of the author, not "better than the
+  reference".
+- **Same as the reference:** a bot shows its mascot or its own picture,
+  never both (the reference removed the "Living" avatar in `eb6fad2c0`,
+  see [P722](plan/avatars.md)).
+- **References** (reference project at commit `e1cc6a290`; the full notes
+  are in section 7.4 of
+  [`research/features/mascot.md`](research/features/mascot.md)):
+  - `docs/superpowers/specs/2026-08-31-mascot-shape-catalog-design.md:26`:
+    before the catalog, "The mascot has one body".
+  - `packages/phone-protocol/src/object-bodies.ts:36-64`: the bull, bunny
+    and cat bodies add ears or horns as more subpaths, the method that an
+    ant can use.
