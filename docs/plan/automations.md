@@ -3,8 +3,8 @@
 The proposals from the research file
 [`../research/features/automations.md`](../research/features/automations.md)
 (batch 6, reference commit `eee23ebbe`, with the changes up to `e1cc6a290`
-after the release v0.1.186: P174 and P177 are corrected, and P748 to P754 are
-new). The steps, the pull requests and the
+after the release v0.1.186: P174 and P177 are corrected, P748 to P754 are
+new, and P805 is the other option of P751). The steps, the pull requests and the
 order are in [`README.md`](README.md). The author decides each proposal.
 Then it becomes a decision, a pull request or a choice, and its text leaves
 this file. All paths below are in the reference project.
@@ -235,6 +235,7 @@ below is at `e1cc6a290`. "In the tag" means in the release v0.1.186 (tag
     the turn, also text beside a tool call
     (`server/drivers/openai-chat.ts:735-737`). The author chose this on
     2026-11-28.
+  - The other option is P805: no "partly done" state, as in Claude Code.
 - **P752 (step 15). The reason why an approval waited is kept on the stored
   ask, as a typed cause.**
   - **Problem in the reference:** in v0.1.186 (`65780d818`) the reason is
@@ -289,6 +290,64 @@ below is at `e1cc6a290`. "In the tag" means in the release v0.1.186 (tag
     `triggerSource ?? (manual ? "manual" : "schedule")`
     (`server/routine-occurrences.ts:29`). Our store has no old rows, so the
     trigger is a required column with no fallback.
+
+- **P805 (step 15, the other option of P751). The end of a run comes from
+  how its turn ended, and each refused tool call is listed on the run.** The
+  author chooses P751 (the reference) or P805.
+  - **Problem in the reference:** a tool call that failed after the reply
+    was delivered marked the run failed, so a coordinator ran the thread
+    again and repeated work that was finished (commit `48b93742f`, issue
+    #7186, v0.1.186). The repair added a third end state, "partly done",
+    with a narrow rule. The rule needs two facts that only the
+    chat-completions runtime knows (`server/routines.ts:1292-1300`,
+    `server/drivers/openai-chat.ts:761`). The release problem: "The same
+    work done or delivered two times, or lost".
+  - The proposal: a run has two end states.
+    - `Completed { refused_calls }`: the turn ended normally, with the
+      final answer of the model.
+    - `Failed { cause }`: the turn itself broke, for example at the turn
+      limit, at the budget limit, at an engine error or at a crash.
+    - A refused or failed tool call is one step of the turn. The model gets
+      the error as the result of that call and continues: it tries another
+      way, or it tells the person. The call does not end the run.
+    - The runtime stores each refused call on the run: the tool name, the
+      call id and a short summary of the input. The summary is redacted
+      before it is stored (`AGENTS.md`).
+    - Nothing runs a completed run again, so the problem of `48b93742f`
+      cannot come back. No driver needs to report `blockedAfterReply`.
+  - Evidence from Claude Code, version 2.1.332 of the CLI on the computer
+    of the author:
+    - The result message has the subtype `success` with the field
+      `permission_denials`, a list of `tool_name`, `tool_use_id` and
+      `tool_input`. The error subtypes are `error_during_execution`,
+      `error_max_turns`, `error_max_budget_usd` and
+      `error_max_structured_output_retries`. No error subtype is "a tool
+      was refused". The text of the CLI says: "result.permission_denials
+      is the authoritative record."
+    - A test on 2026-11-28: one headless turn, with no saved permission
+      rules, was asked to run `date > denied-test.txt`. The call was
+      refused, and the tool result had `is_error: true` with the reason
+      "needs approval". The model then wrote that the command was blocked
+      and that the file was not created. The run ended with `subtype:
+      "success"`, `is_error: false`, `stop_reason: "end_turn"`, and one
+      entry in `permission_denials`.
+    - The Claude driver of the reference reads a turn the same way: a
+      refused call is a failed tool step (`server/drivers/claude.ts:1459`),
+      and the result of the turn comes only from the final result message
+      (`:1500`).
+  - What it changes: it replaces the "partly done" rule of P751, and the
+    enum of P751 has two states, not three. The run page shows the refused
+    calls of a completed run, so the person sees what did not run.
+  - Open points:
+    - A run can end "completed" when the step that mattered most was
+      refused. The person sees it only in the list of refused calls and in
+      the answer of the bot.
+    - The CLI says that some refusals are not in `permission_denials`, for
+      example a refusal by a hook. Our runtime owns the approvals, so it
+      records each refusal itself and does not depend on the engine for
+      the list.
+    - The test covered one turn in one permission mode. Nobody tested a
+      refusal by a hook or by the safety floor.
 
 ## Notes
 
