@@ -894,7 +894,7 @@ Each agent read only the commits from the commit of its research file to
 
 | Worktree | Research and plan files | Read before at | Proposals | Pull request |
 |---|---|---|---|---|
-| `update-automations` | `automations` | `eee23ebbe` | P748 to P754 | #166 |
+| `update-automations` | `automations` | `eee23ebbe` | P748 to P754, P805 | #166 |
 | `update-custom-mcp-servers` | `custom-mcp-servers` | `96ff84455` | P755 to P764 | #167 |
 | `update-safety-and-files` | `safety-floor`, `bot-attachments` | `ed8cb7278`, `96ff84455` | P765 to P771 | #168 |
 | `update-chat-driver` | `chat-streaming`, `chat-driver-tool-calls` | `3aec210` | P772 to P777 | #169 |
@@ -923,7 +923,11 @@ Each agent read only the commits from the commit of its research file to
      ancestor (`server/runtime/runtime.ts:238-243`), after the tag.
 - The author chose for P751 that "after the reply" follows the reference:
   after any assistant text of the turn.
-- This record links P748 to P804 in `docs/plan/README.md`, adds them to its
+- The author asked how Claude handles a refused tool call. A headless turn of
+  the Claude Code CLI 2.1.332 showed it: the refused call is one failed step,
+  the model reports it, and the run ends as `success` with the call in
+  `permission_denials`. This gave P805, the other option of P751.
+- This record links P748 to P805 in `docs/plan/README.md`, adds them to its
   table of reference problems, and adds four missing release lines to the
   v0.1.186 row of `changelog.md`.
 - Not corrected yet, from the reports of the agents:
