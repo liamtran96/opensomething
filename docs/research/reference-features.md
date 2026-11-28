@@ -112,6 +112,11 @@ wide first, and its base parts came late.
     avatars (the storage, the providers and the removed Living avatar) and
     localization. The author chose an ant as our mascot (decision D23). The
     group "later" has no open core row now.
+15. The update of [`progress.md`](progress.md), on 2026-11-28 at
+    `e1cc6a290` (v0.1.186), brought 12 research files up to the newest
+    reference: the features whose behaviour v0.1.186 changed. Each file
+    has a section "Changes up to `e1cc6a290` (v0.1.186)". Their plan files
+    got P748 to P804.
 
 ## Plans in `docs/superpowers/plans/`, files 1 to 12
 
