@@ -11,9 +11,15 @@ webhooks, check-backs and waits" (group 3) of
 step 15 of [`../../plan/README.md`](../../plan/README.md). The port goes to
 `bot-core`, a scheduler module that starts turns through the runtime.
 
-- **Reference commit:** `eee23ebbe` (2026-11-24). Each line number in this
-  file is at that commit. Version 0.1.179 has no release. The next release,
-  v0.1.180, changes no file of this feature (section 3.18).
+- **Reference commit:** two commits.
+  - `e1cc6a290` (2026-11-28): the changes of the section "Changes up to
+    `e1cc6a290` (v0.1.186)" and each statement that a change corrects. This
+    commit is after the release v0.1.186 (tag `70eb44c1a`, 2026-11-27). Four
+    readers read the changes from `eee23ebbe` to `e1cc6a290`, and the lead
+    checked the key claims against the code.
+  - `eee23ebbe` (2026-11-24): all the other parts. Each other line number
+    is at that commit. Version 0.1.179 has no release. The release v0.1.180
+    changes no file of this feature (section 3.18).
 - **Method:** thirteen readers read thirteen groups of files completely or in
   recorded ranges. Five drafters wrote sections 3 to 6 from the reports, and
   settled each contradiction with the code. The lead checked 39 key claims and traced one chain across two stores
@@ -115,6 +121,101 @@ What this file adds to earlier research:
 - [`approval-cards.md`](approval-cards.md) (P121) found that a change of a
   routine by a bot applies with no card. This file confirms it at
   `eee23ebbe` and adds the Undo of that change and its limits.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+From `eee23ebbe` to `e1cc6a290`, the 16 commits of the table change this feature. Each line
+number in this section is at `e1cc6a290`. "Tag" says if the commit is in the
+release v0.1.186 (`git merge-base --is-ancestor <commit> 70eb44c1a`).
+
+| Change | Commit | Tag | File and line | Sections it changes |
+|---|---|---|---|---|
+| A scheduled run (or a same-conversation run) waits while another run of the same routine has a live turn. This also applies to a completed run whose conversation works a follow-up. The release note says: "a scheduled run waits while an earlier run of the same routine is still working." The wait has no deadline | `681bc6f50`; test fix `dc283162e` | in | `server/routines.ts:1123-1125`, `:1136`; `server/routine-turn-live.ts:19-22`; `server/routine-bounds.ts:90-95`; test `server/routines.test.ts:175-192` | 3.4, 3.7, 3.8, 8 (point 12) |
+| A run completes "partly done" only in one case: each failed call of the turn was a block of the safety floor after earlier reply text. Each other failed step still fails the run, with `partial: true` | `48b93742f`, `b7a3e7795`, `b92315689`, `ba5c2c50e` | in | `server/routines.ts:1292-1300`; `server/routine-recovery.ts:41-43`, `:141-142`; `server/drivers/openai-chat.ts:735-737`, `:761`; `src/lib/routine-display.ts:16-21`; `src/lib/automations.ts:337-343`; test `server/routines.test.ts:323-350` | 4.3, 5.5 |
+| The stop line of an approval that nobody answered keeps the reason why the approval card waited | `65780d818` | in | `server/routine-waits.ts:56`; `server/routine-held-reasons.ts:3-24`; `server/index.ts:6315`, `:6550`; test `server/routine-waits.test.ts:13-60` | 3.7, 3.12.4 |
+| A team backup keeps `cron` and `limit_reset` routines, and the `weekdays`, `window` and `endsAt` of an interval. The release note says: team backups "keep cron and limit-reset routines". The shared schedule schema moves to a new file | `24a632800` | in | `shared/team-backup.ts:73-86`; `shared/routine-schedule-schema.ts:1-71`; `server/routine-request-schemas.ts:4-10`, `:75-110`; `server/team-backup.ts:256-258`; test `server/team-backup.test.ts:203-306` | 4.5, and the text below |
+| The `done` notice of a scheduled run has the mark `routine: true`. The desktop shows it under a new per-device switch, "Scheduled report notifications" | `4b2f021e6`, `81f2821c0`; tests `548ccb967`, `876d7acc3` | in | `server/notify.ts:76`; `server/routine-occurrences.ts:28-33`; `server/index.ts:5554`, `:6756`; `src/lib/notify.ts:41`; `src/lib/notification-preferences.ts:130-137` | 3.1, 3.12.2 |
+| A failure of the kind `image_content` is final, and the run does not try again | `e60bfef8a` | in | `server/routine-recovery.ts:82` | none |
+| One scheduler pass writes the busy-minute marks of its queued runs in one write of the whole file. A stamp that the app shows is saved before the app gets it | `2d156d909` | after | `server/save-batch.ts:21-36`; `server/routines.ts:1019-1020`, `:1103-1105`, `:1128-1135`, `:1138`, `:1164`, `:1200`; test `server/server-writes.test.ts:142-170` | 3.2, 3.7 |
+| Undo of a pause or a resume puts back the earlier `enabled` value. Before, it set the opposite of the action | `b63ecc7cb` | after | `server/routine-requests.ts:890-909`, `:1019-1021`, `:1136`; `server/webhook-requests.ts:83-93`, `:212`, `:263` | 3.10, 3.10.9, 4.5 |
+| A usage limit of one provider on an OpenCode engine no longer holds the whole engine. So such a limit no longer gives a time to a `limit_reset` routine on that engine | `645566fe8` | after | `server/limit-resets.ts:141-146`, `:217-218`; `server/drivers/acp/opencode-go.ts:788-799` | 3.3 |
+
+The readers checked these commits and found no change to this feature:
+`c47a9d772` (delegation to an ancestor), `d78209fe6` (background job
+slots), `1285b539e` (the move status report of the desktop app) and
+`70aae8138` (the place of the Routines row in the bot panel).
+
+**The hold behind a live turn** (`681bc6f50`). Before, the dispatch held
+a queued scheduled run only while another run of its routine had the status
+`running` or `waiting`. Now the hold also asks the host `turnLive(other)` for
+each other run of the routine, of any status and any age
+(`server/routines.ts:1123-1125`).
+
+1. The person sends a message in the conversation of a completed run.
+2. The next occurrence comes due. The tick finds `turnLive` true for the
+   completed run, so `held` is true and the state is `busy`.
+3. The run gets `deferredAt`, and after 30 minutes the deferral notice
+   (`server/routines.ts:1127-1135`).
+4. `busyWait` counts busy time only when the run is not held
+   (`server/routines.ts:1136`). With no count, it drops `busyMs` and never
+   gives the run up (`server/routine-bounds.ts:90-95`).
+5. When the conversation is idle, the next pass starts the run.
+
+`turnLive` is `null` for a room goal or a run with no conversation
+(`server/routine-turn-live.ts:19-20`). The hold tests `=== true`, so it
+never holds a room-goal run.
+
+**The end of a partly done run** (the `ba5c2c50e` series). The last commit
+of the series took back most of the first two. At the tag and at
+`e1cc6a290`:
+
+1. A failed turn fails the run, as before (`server/routines.ts:1294`).
+2. One case completes it: the stop reason is `tool_error`, the runtime error
+   had `partial: true` and `blockedAfterReply: true`, and the run has output
+   (`server/routines.ts:1293`). The comment says: "The bot's reply is no
+   proof, so a failed step fails the run."
+3. Such a run becomes `completed` with `partial: true`, and it keeps
+   `run.error` (`server/routines.ts:1299-1300`). It clears the owner
+   notices of its bot, as a completed run does.
+4. Only the chat-completions runtime sets `blockedAfterReply`
+   (`server/drivers/openai-chat.ts:761`). "After the reply" means after any
+   assistant text of the turn, also text beside a tool call (`:735-737`).
+
+**The held reason** (`65780d818`). An approval card can say why it waits
+for a person, for example "This sends something on your behalf, so it asks
+you first." (`server/auto-approve.ts:150-167`). The server keeps this reason
+in memory only, in a map keyed by conversation and request, with at most
+500 entries (`server/routine-held-reasons.ts:3-15`). When the request
+resolves, the event gets the reason and the map drops it (`:18-24`). On a
+timeout, the stop line of the run ends with " (<reason>)"
+(`server/routine-waits.ts:56`). A restart loses the map.
+
+**Team backups** (`24a632800`). Before, the schedule of a routine in a backup
+had three types: `once`, `daily` and `interval` with only `everyMinutes`
+and `anchorAt` (`shared/team-backup.ts:69-72` at `eee23ebbe`). The export
+checks the whole document with `parseTeamBackup`, which throws at the first
+error (`shared/team-backup.ts:179-184`). Now the union has `cron`,
+`limit_reset`, `once`, `daily` and a strict `interval` with `weekdays`,
+`window` and `endsAt` (`shared/team-backup.ts:73-86`). The import makes
+each routine with `enabled: false` (`server/team-backup.ts:256-258`), and
+the routine manager computes the `at` of a `limit_reset` again from the
+reset time of the destination (`server/routines.ts:954-958`). The backup
+accepts a `once` time that is negative or not a whole number
+(`shared/team-backup.ts:76`). The request card wants a whole number of 0 or
+more (`server/routine-request-schemas.ts:78`).
+
+**The scheduled-report switch** (`4b2f021e6`, `81f2821c0`).
+`isScheduledRun(run)` is true when the trigger is `schedule`, or when the
+run has no trigger and is not manual (`server/routine-occurrences.ts:28-29`).
+The host gives `routine: isScheduledRun(run)` to `buildNotification`
+(`server/index.ts:5554`, `:6756`), which keeps the mark only on a `done`
+notice (`server/notify.ts:76`). The desktop shows a marked `done` notice
+under the report switch and each other `done` notice under the finished
+switch (`src/lib/notify.ts:41`). The switch is stored per device, in
+`localStorage`, and with no stored value it follows the finished switch
+(`src/lib/notification-preferences.ts:130-137`). The routing option
+`{ routine: true }` is still given for each routine run
+(`server/index.ts:5554`).
 
 ## 2. Files read completely
 
@@ -684,6 +785,10 @@ How a run reaches a turn (the detail is in sections 3.4 and 3.11):
    (`server/index.ts:6310`).
 5. At the end, the reply goes to the results chat, or a notification of
    kind `done` with `{ routine: true }` is sent (`server/index.ts:6747-6752`).
+   At `e1cc6a290` (in the tag, `81f2821c0`), `{ routine: true }` is still the
+   routing option for each routine run. The notice itself has the mark
+   `routine: true` only for a scheduled run (`server/index.ts:6756`,
+   `server/routine-occurrences.ts:28-29`).
 
 ### 3.2 The routine record and its file
 
@@ -758,6 +863,7 @@ The header of the reader says: "A file that is there but unreadable is never tak
 2. `commitMutation` does not clone the webhook receipts, `startupLaunchId` or `holds`. `queueStartupRuns` restores `startupLaunchId` in its own rollback (`server/routines.ts:1002-1003`). `commitEvent` does its own save and restore (`server/routines.ts:809-825`). `holdFor` has no such step. Section 3.9 describes the defect.
 3. `saveLater()` is `saveSoon(this, () => this.save())` (`server/routines.ts:1535`). Outside a batch it writes at once. Inside a batch it writes once at the end of the batch (`server/save-batch.ts:20-24`). A failed batched write is logged as "a batched save failed; the next save of the file retries it" and the changes stay in memory (`server/save-batch.ts:27-37`).
 4. A direct `save()` is used where a failure must roll back: `commitEvent` (`server/routines.ts:818`) and the start of a run (`server/routines.ts:1163`).
+5. At `e1cc6a290` (after the tag, `2d156d909`): the tick opens a batch with `beginSaves` and closes it with `endSaves` (`server/save-batch.ts:21-30`, `server/routines.ts:1019-1020`). The batch is open from the step of due routines and at each dispatch step (`server/routines.ts:1047`, `:1092`). It closes after the start of a run writes the file, before `startTurn` is awaited, and at the end of the pass (`:1164`, `:1200`). In it, only the busy-minute mark of a queued run is deferred (`:1138`). A stamp that the app shows uses a direct `save()` with no rollback: a moved interval occurrence, `deferredAt`, `deferredNoticeAt` and a wake retry (`:1103-1105`, `:1128-1135`, `:1144`). The comment says: "A stamp the app is shown is on disk when it is shown (reporting persists cards)" (`:1103`).
 5. `save()` steps (`server/routines.ts:1536-1552`):
    1. If unreadable, call `progress.written()` and return.
    2. `evictRuns(this.runs, MAX_RUNS)`.
@@ -874,6 +980,7 @@ Fields: `everyMinutes`, `anchorAt`, and the optional `weekdays`, `window` and `e
 - `at` is "Derived by the server, never taken from input: the reset plus a short buffer" (`packages/phone-protocol/src/limit-reset.ts:12`). The buffer is `AFTER_RESET_MS = 60_000` (`:20`).
 - The engine id must match `/^[\w.:-]{1,128}$/`. Else: "Choose which AI's limit to wait for". `repeat` must be `once` or `every_reset`. Else: "Choose once or every reset" (`server/routine-schedules.ts:111`, `:115-121`).
 - `limitResetOccurrence` returns `null` when the reset is unknown or `<= lastRunFor`: "A routine never runs twice for one reset" (`server/routine-schedules.ts:219-225`).
+- At `e1cc6a290` (after the tag, `645566fe8`): the reset time comes from `limitClock.resetAt(engine)` (`server/limit-resets.ts:141-146`). The clock records a refusal only for a limit of the whole engine, or for a limit with no scope (`server/limit-resets.ts:217-218`). An OpenCode usage limit that names a provider with known models now has the scope `model` (`server/drivers/acp/opencode-go.ts:788-799`). So such a limit gives no reset time to a `limit_reset` routine on that engine. The routine still follows the usage meter of the engine when the meter shows a block (`server/limit-resets.ts:142-144`). Other engines did not change.
 
 **Validation of a whole routine** (`server/routine-input.ts:50-115`)
 
@@ -984,7 +1091,7 @@ The timer has no fixed period. Its contract: "Runs `run` when `next()` says work
     1. Interval: move `scheduledFor` up to the latest interval occurrence. If the interval does not allow now, keep waiting, or fail as below (`:1097-1111`). A test proves that a run queued at the anchor and started 12 h 7 min later runs with `scheduledFor = anchor + 12 h 5 min` (`server/routines.test.ts:2152-2183`). Manual and webhook rows keep their exact time (`server/routines.test.ts:2306-2351`).
     2. If the schedule has no next occurrence, fail as `missed` with "The routine ended before this scheduled run could start" (`:1109-1111`).
     3. A check routine runs its checks to fill this run (`:1115-1119`).
-    4. Find the state. `held` is true when another run of the same routine works. This applies to a scheduled or same-conversation run. `held` is also true when a slow stop holds a thread of the routine. Then `state = held ? "busy" : targetState(run)` (`:1120-1123`).
+    4. Find the state. `held` is true when another run of the same routine works. This applies to a scheduled or same-conversation run. At `e1cc6a290` (in the tag, `681bc6f50`), `held` is also true when `turnLive` is true for another run of the routine, of any status (`server/routines.ts:1123-1125`). `held` is also true when a slow stop holds a thread of the routine. Then `state = held ? "busy" : targetState(run)` (`:1120-1123`).
     5. Busy: section 3.7 (`:1124-1140`).
     6. A missing target fails the run: "The assigned bot no longer exists" or "The assigned room or coordinator no longer exists" (`:1141`, `:1412-1416`).
     7. If `!ledger.ready(run)`, continue. If `ledger.startedElsewhere(run)`, cancel the run with the line `routines.server.duplicate` (`:1143`).
@@ -1226,8 +1333,9 @@ The header of the bounds file says: "Nothing a bot does on its own holds a routi
 6. The owner is told once per waiting run, when the occurrence is at least `ROUTINE_DEFERRAL_NOTICE_MS` (30 min) after the blocker's `waitingSince`. A told row loses `seenAt`, so it shows as new (`server/routine-skips.ts:46`, `:53`). A test: 23 occurrences on one row. The owner is told once, at the 6th: "Skipped 6 scheduled runs because the previous run of this routine is still waiting" (`server/routines.test.ts:548-567`).
 7. A manual run does not follow the queue rule. It starts beside a running scheduled run (`server/routines.test.ts:190-197`). Two routines on one bot run at the same time (`server/routines.test.ts:262-269`).
 8. At dispatch, a queued scheduled run (or a same-conversation run) waits while another run of the same routine works (`sameRoutineWorking`, `server/routines.ts:1120-1121`). This wait does not count toward the busy limit (`server/routines.ts:1136`).
+   - At `e1cc6a290` (in the tag, `681bc6f50`): the name `sameRoutineWorking` is gone. The run also waits while the host says that the turn of another run of the routine is live (`turnLive`), also for a completed run whose conversation works a follow-up (`server/routines.ts:1123-1125`). This wait also does not count toward the busy limit (`server/routines.ts:1136`, `server/routine-bounds.ts:90-95`). So it has no deadline: it lasts while that conversation is live.
 
-**A waiting run gives way to the next occurrence** (`server/routine-execution.ts:134-144`, `server/routines.ts:1035-1040`)
+**A waiting run gives way to the next occurrence** (`server/routine-execution.ts:134-144`, `server/routines.ts:1035-1040`, at `e1cc6a290` `:1038-1043`)
 
 - `ROUTINE_DEFERRAL_NOTICE_MS = 30 * 60_000`: "How long a routine may be held up before it acts: a deferred run tells the owner, a waiting run gives way" (`server/routine-execution.ts:134-135`).
 - `supersededBy(dueAt, run, handedOffWorkLive)` is true in two cases (`server/routine-execution.ts:140-144`):
@@ -1235,7 +1343,7 @@ The header of the bounds file says: "Nothing a bot does on its own holds a routi
   - the run is `waiting` since at least 30 min before the next due time, and it has no live hand-off.
 - The tick cancels it with `ROUTINE_SUPERSEDED` = "Stopped waiting: the next scheduled run of this routine started instead" (`server/routine-execution.ts:136`), interrupts its turn and starts the new run in a new conversation. `onRunFailed` is not called (`server/routines.test.ts:412-435`).
 - A question asked less than 30 min before the next occurrence is left alone. That occurrence counts as a skip, and the run gives way at the one after (`server/routines.test.ts:437-458`).
-- Limits of this rule. It applies only to a routine that repeats, has no checks, and is at most `CATCH_UP_MS` late (`server/routines.ts:1035-1040`). A test: a waiting run is not replaced when the computer was off for 13 h (`server/routines.test.ts:614-624`). A run-once routine has no next occurrence, so its waiting run is never replaced by this rule.
+- Limits of this rule. It applies only to a routine that repeats, has no checks, and is at most `CATCH_UP_MS` late (`server/routines.ts:1035-1040`, at `e1cc6a290` `:1038-1043`). A test: a waiting run is not replaced when the computer was off for 13 h (`server/routines.test.ts:614-624`). A run-once routine has no next occurrence, so its waiting run is never replaced by this rule.
 
 **A busy bot: two paths**
 
@@ -1248,16 +1356,16 @@ Path A: the host says the bot is busy before the start (`server/routines.ts:1124
 3. `busyWait(run, clock, counts, now)`. `counts` is true only for a scheduled run that is not held behind its own routine and has no `checkKey` (`server/routines.ts:1136`).
 4. When `counts` is true, the pass adds its time to `busyMs`, with at most 2 min per pass. At `ROUTINE_BUSY_WAIT_MS` (60 min, `server/routine-recovery.ts:67`) the run ends as `missed` with `routines.server.busyTooLong`: "Did not run: the bot was busy for more than 60 minutes" (`server/routine-bounds.ts:86-99`, `server/routine-lines.ts:23`). The comment says: "its routine's next occurrence does the work".
 5. When `counts` is false, `busyMs` is dropped and the run "waits as long as it takes". This covers webhook, app-event and manual runs, check runs and runs held behind their own routine (`server/routine-bounds.ts:86-99`, `server/routine-reliability.test.ts:414-437`).
-6. `changed` is true only when the whole minute changes, so the row is saved once a minute (`server/routine-bounds.ts:86-99`).
+6. `changed` is true only when the whole minute changes, so the row is saved once a minute (`server/routine-bounds.ts:86-99`). At `e1cc6a290` (after the tag, `2d156d909`), the minute marks of one pass go into one write of the whole file, at the next start of a run or at the end of the pass (`server/routines.ts:1138`, `:1164`, `:1200`; `server/save-batch.ts:33-36`). A crash before that write loses at most the marks of that pass. It cannot count them two times, because `busyMs` is a total and the last count time is in memory only (`server/routine-bounds.ts:30-37`).
 7. Only time seen busy counts. A test: 30 min, a restart, then 10 min gives 40 min. After an 8 h gap only 2 min are added (`server/routine-reliability.test.ts:350-386`).
 
 Path B: `startTurn` is refused with a busy code (`thread_busy`, `thread_limit`, `workspace_busy`, `settling`, `server/routine-recovery.ts:73`), or the server has no process room (`server/routine-recovery.ts:224-240`).
 
 1. If the server has no room and the run already waited once for room (`roomWaited`), fail the run. Else set `roomWaited` for a no-room refusal.
 2. `deferredAt ??= now`.
-3. If `now - deferredAt >= ROUTINE_BUSY_WAIT_MS` and (the run has no `checkKey`, or the server has no room): fail with `routines.server.stillBusy`, "Did not start: still busy after 60 minutes ({failure})" (`:234`). This path measures wall time since `deferredAt`, not seen time.
+3. If `now - deferredAt >= ROUTINE_BUSY_WAIT_MS` and (the run has no `checkKey`, or the server has no room): fail with `routines.server.stillBusy`, "Did not start: still busy after 60 minutes ({failure})" (`:234`, at `e1cc6a290` `:237`). This path measures wall time since `deferredAt`, not seen time.
 4. Else the run stays queued with `retryAt = now + ROUTINE_BUSY_RECHECK_MS` (30 s) and the attention line "Waiting to start: {failure}".
-5. A run of checked items waits "as long as its bot is busy with the person", unless the server has no room (`:232-233`).
+5. A run of checked items waits "as long as its bot is busy with the person", unless the server has no room (`:232-233`, at `e1cc6a290` `server/routine-recovery.ts:235-236`).
 6. The ledger records this case as `missed` with reason `bot-busy` and `startedAt: null`, because a busy refusal is not an attempt (`server/routine-ledger-faults.test.ts:576-608`).
 
 Settled disagreement on `busyMs`: one report says it is persisted (`server/routine-load.ts:138`). Another says it is cleared and not saved (`server/routine-reliability.test.ts:397-398`). Both are true at different times. `busyMs` is saved while the run is queued, and a restart keeps it (`server/routine-reliability.test.ts:357`, `:378-393`). The start deletes it: `this.clock.stop(run, "busyMs", true)` (`server/routines.ts:1162`). So a retried run waits afresh.
@@ -1284,7 +1392,7 @@ A bot that is `missing` at the due time gets no run row and no turn (`server/rou
 6. Tests: 90 passes of one minute give 90 min. A 9-hour jump adds only 2 min. A clock that goes back adds 0 (`server/routine-bounds.test.ts:25-41`). A room goal that waits in `needs-input` for 40 h is never stopped (`server/routine-bounds.test.ts:99-103`). The default 3-hour limit stops the run and the routine stays on (`server/routine-reliability.test.ts:520-664`).
 7. `durationMinutes` (5 to 240, default 30) is calendar data only. It imposes no limit (`server/routine-input.ts:103`, `server/routines.test.ts:2485-2506`).
 8. Settled disagreement: the scheduler-tests report says that a routine with no `timeoutMinutes` has no run limit, from `server/routines.test.ts:2485-2506`. That test moves the clock only 6 minutes past the start. It proves that `durationMinutes` is not a limit. It does not test the default. The default 3-hour limit of work applies (`server/routine-bounds.ts:64-84`, `server/routine-reliability.test.ts:520-664`).
-9. Approvals: a permission request that times out fails the run with "Stopped: nobody answered the approval to use <TOOL>". A question that times out lets the run go on (`server/routines.test.ts:655-661`, `:710-713`).
+9. Approvals: a permission request that times out fails the run with "Stopped: nobody answered the approval to use <TOOL>". A question that times out lets the run go on (`server/routines.test.ts:655-661`, `:710-713`). At `e1cc6a290` (in the tag, `65780d818`), the line ends with " (<held reason>)" when the approval card had a held reason (`server/routine-waits.ts:56`). See "Changes up to `e1cc6a290`".
 
 **Slow stops** (`server/routine-bounds.ts:101-184`)
 
@@ -1326,7 +1434,7 @@ A bot that is `missing` at the due time gets no run row and no turn (`server/rou
 **A run whose turn is gone** (`server/routine-run-watch.ts`, `server/routine-turn-live.ts`)
 
 1. `TURN_GONE_MS = 5 * 60_000` (`server/routine-run-watch.ts:8`). The header says: "A started run whose turn is gone is not left `running` for ever." (`:1-4`).
-2. The host answers `turnLive(run)`. It is true if the conversation is busy, settling, queued, pending, or parked on a computer (`server/routine-turn-live.ts:4-23`). It is `null` for a room goal or a run with no conversation. Without the `turnLive` option, no run is taken for lost (`server/routines.ts:303-304`).
+2. The host answers `turnLive(run)`. It is true if the conversation is busy, settling, queued, pending, or parked on a computer (`server/routine-turn-live.ts:4-23`). It is `null` for a room goal or a run with no conversation. Without the `turnLive` option, no run is taken for lost (`server/routines.ts:303-304`). At `e1cc6a290` (in the tag, `681bc6f50`), `turnLive` also holds the next scheduled occurrence of the routine while it is true for an earlier run (`server/routines.ts:1124`). Without the option, that hold is off too.
 3. Each pass adds `min(COUNT_STEP_CAP_MS, now - lookedAt)` to the gone time when the host said no and no event came. An event resets it to 0 (`server/routine-run-watch.ts:28-44`).
 4. At 5 min the tick calls `settleFailure(run, ROUTINE_TURN_GONE, {})`, with `ROUTINE_TURN_GONE = "its turn ended without reporting back"` (`server/routine-occurrences.ts:18`, `server/routines.ts:1027`).
 5. The first loss gives a retry: "Starting again shortly after a failure: its turn ended without reporting back". The second loss gives "Failed after one automatic retry: its turn ended without reporting back". The ledger reason is `turn-gone` with `attempts: 2` (`server/routine-ledger-faults.test.ts:512-557`).
@@ -1608,7 +1716,7 @@ The reader did not find a try/catch around `submit` in this range. How a thrown 
 8. Set the card options to `["Confirm", "Cancel"]` (`:999-1004`). For an automatic apply, set them to `[]` and `dismissed: true` (`:1022-1025`).
 9. Compute `grant = autoApply?.(botId, threadId, owner)`. It is a label only. The comment says: "A submitted change always applies: `<product>` shows no confirmation card of its own. The grant only names why." (`:1008-1009`). Bot requests apply at once, with no confirmation card.
 10. Call `canPersist(botId, threadId, !automatic)` and `canCommit()` in the same synchronous block, right before the append: "Check and append stay adjacent and synchronous, so no other proposal can interleave." (`:1011-1018`). A turn that ended gets 401 "The requesting turn ended before this proposal could be saved".
-11. For update and delete, take an undo snapshot before the apply (`:1019-1021`).
+11. For update and delete, take an undo snapshot before the apply (`:1019-1021`). At `e1cc6a290` (after the tag, `b63ecc7cb`), the snapshot is also taken for pause and resume. For them it is a snapshot that is used only for `enabled` (`server/routine-requests.ts:1019-1021`).
 12. Append the card message (`:1026`).
 13. Call `resolve({..., behavior: "allow"})` (`:1039`). It checks again and applies (see 3.10.8).
 14. On success, `recordAutoApplied` writes the undo data into the card (`:1043-1045`).
@@ -1714,7 +1822,7 @@ The undo route is `POST /api/threads/:id/undo {requestId}` (`undoAppliedChange`,
 8. The action decides the undo:
    - create: remove the routine if it still exists and belongs to the owner. Else stale (`:1119-1124`).
    - update: restore the full `before` snapshot with `restorePatch` (`:1125-1139`, `:911-926`).
-   - pause, resume: restore the earlier `enabled` value (`:1125-1139`).
+   - pause, resume: at `eee23ebbe` and in v0.1.186, set `enabled` to the opposite of the action: `enabled: operation.action === "pause"` (`:1136`). So the Undo of a pause on a routine that was already paused turned the routine on. At `e1cc6a290` (after the tag, `b63ecc7cb`), set `enabled` to the value in the snapshot: `enabled: undo.before?.enabled ?? (operation.action === "pause")` (`server/routine-requests.ts:1136`). A card with no snapshot (an old card, or a snapshot that fails the schema at `:908`) still gets the opposite of the action. Webhooks have the same change (`server/webhook-requests.ts:212`, `:263`). The Undo of a webhook does not put back `verificationPending`, which the pause or the resume set to `false` (`server/webhook-requests.ts:184`, `server/webhooks.ts:524`).
    - delete: create the routine again from `undo.before`, with a new id (`restoredId`) (`:1140-1159`).
    - run_now: "A routine run can't be undone." (`:1117-1118`).
 9. For update, pause and resume, the routine's `updatedAt` must still equal `undo.appliedUpdatedAt`. Else 409 `UNDO_STALE` = "Changed since, so it can't be undone here." (`server/direct-apply.ts:15`, `server/routine-requests.ts:1111`).
@@ -1722,7 +1830,7 @@ The undo route is `POST /api/threads/:id/undo {requestId}` (`undoAppliedChange`,
 
 Limits of undo:
 
-- Some routines have no snapshot, and so no undo of an update or a delete. This occurs when the routine has attachments. It also occurs when its name or prompt holds text that looks like a secret (`:890-892`).
+- Some routines have no snapshot, and so no undo of an update or a delete. This occurs when the routine has attachments. It also occurs when its name or prompt holds text that looks like a secret (`:890-892`). At `e1cc6a290` this rule applies only to update and delete. For pause and resume, `routineSnapshot(routine, true)` keeps the masked name cut to 80 characters and the masked instructions cut to 20,000 characters, and drops the fields that the Undo does not use (`server/routine-requests.ts:890-909`).
 - The undo of a delete does not restore attachments, checks, access, `deliver`, `modelSelection` or run history (`:893-907`, `:1140-1159`).
 - `recordAutoApplied` swallows all errors (`:1089-1090`). So undo data can be missing with no warning.
 - A person's later edit makes the bot's update stale. The undo of the original create after a delete and a restore is stale, because the id changed (tests `server/routine-requests.test.ts:2038-2084`).
@@ -1900,7 +2008,7 @@ When a destination chat is deleted while a run waits, the run task loses `routin
    8. Append one bot text line with the `automation` field and its flags (`failed`, `partial`, `recovered`, `needsYou`).
    9. Save `{state: "posted", threadId, messageId}` and call `deps.wrote`.
    10. Set `unread: true` on the results chat for a failure, a question, or `routineRunNeedsReview(run)`.
-   11. Notify "question" or "done" with "<routineName>: <question or text>". A failure line and a recovery line do not notify here.
+   11. Notify "question" or "done" with "<routineName>: <question or text>". A failure line and a recovery line do not notify here. At `e1cc6a290` (in the tag, `81f2821c0`), `notify` also gets the run (`server/automation-reports.ts:261`). A `done` notice of a scheduled run has the mark `routine: true`, and the desktop shows it under the report switch (`server/index.ts:5554`, `src/lib/notify.ts:41`).
 8. The next flush comes when the server drains queued sends. `drainQueuedSendsNow` calls `automationReports.flush()` before the person's queued messages (`server/index.ts:7020-7032`). The drain is single-entry, because re-entry "would append the same held line twice". There is no retry timer.
 9. At the first flush after a start, every run with `report.state === "pending"` is queued again. A failed run gives a failure line. Else the reply is read again from the run transcript (`:269-276`).
 
@@ -1957,7 +2065,7 @@ When the run asks:
 
 How a wait ends:
 
-- An approval that the broker resolves with `source === "timeout"` stops the run with "Stopped: nobody answered the approval <subject>" (`server/routine-waits.ts:56`, `server/routines.ts:1275-1280`). The test ends with status "failed", a notify `{kind: "routine-failed"}`, the line "This run didn't finish: Stopped: nobody answered the approval to use COMPOSIO_SEARCH_TOOLS" and a `deny` to the broker (`server/routine-unattended-approval.e2e.test.ts:70-78`). The broker deadline of 15 minutes comes only from a test header comment (`:1-2`).
+- An approval that the broker resolves with `source === "timeout"` stops the run with "Stopped: nobody answered the approval <subject>" (`server/routine-waits.ts:56`, `server/routines.ts:1275-1280`). At `e1cc6a290` (in the tag, `65780d818`), the line ends with " (<held reason>)" when the event has a held reason (`server/routine-waits.ts:56`, `server/routine-held-reasons.ts:18-24`). The test ends with status "failed", a notify `{kind: "routine-failed"}`, the line "This run didn't finish: Stopped: nobody answered the approval to use COMPOSIO_SEARCH_TOOLS" and a `deny` to the broker (`server/routine-unattended-approval.e2e.test.ts:70-78`). The broker deadline of 15 minutes comes only from a test header comment (`:1-2`).
 - A question that times out returns null, and the run goes on (`server/routine-waits.ts:56`).
 - Waiting on the person never counts toward the routine's own limit (`activeMs`, `:60-62`). The default limit counts `workedMs` only while the run is running (`server/routine-bounds.ts:66-83`). The default run limit is `ROUTINE_RUN_LIMIT_MINUTES = 180` (`packages/phone-protocol/src/routines.ts:121`). `OMB_ROUTINE_RUN_LIMIT_HOURS` can change it to 1 to 24 hours (`server/routine-run-limits.ts:18-22`).
 - A run that waits stops for the next occurrence after 30 minutes (`ROUTINE_DEFERRAL_NOTICE_MS`, `server/routine-execution.ts:135-144`). The old run becomes "cancelled" with `ROUTINE_SUPERSEDED` = "Stopped waiting: the next scheduled run of this routine started instead". Its sign-in card becomes `stopped: true`, and the named line loses `needsYou` (`server/routine-unanswered-wait.e2e.test.ts:86-108`). This works across a restart, because `waitingSince` is saved.
@@ -3547,7 +3655,7 @@ The wire record is in `packages/phone-protocol/src/routines.ts:198-258`. The ser
 | `error` | string, max 500, optional | the failure text, with secrets redacted | `server/routines.ts:1382-1388` |
 | `errorCode`, `errorParams`, `attentionCode`, `attentionParams` | optional | the coded lines for translation | `packages/phone-protocol/src/routines.ts:198-258` |
 | `attention` | string, optional | "Concise, redacted question or approval reason". The yellow line while queued or waiting | `packages/phone-protocol/src/routines.ts:243-245` |
-| `partial` | `true`, optional | a reply came back before it failed | `packages/phone-protocol/src/routines.ts:236-237` |
+| `partial` | `true`, optional | a reply came back before it failed. At `e1cc6a290` (in the tag) a `completed` run can also have it, with its `error` kept (`server/routines.ts:1299-1300`). The doc comment was not changed | `packages/phone-protocol/src/routines.ts:236-237` |
 | `retried` | `RoutineRetryCause`, optional | the one automatic retry is used. Its presence blocks any further automatic start | `server/routine-recovery.ts:161-172` |
 | `retryAt` | ms, optional | "A queued run starts no earlier than this." | `server/routines.ts:124-125` |
 | `ownerCause` | `signed_out` \| `credits` \| `usage_limit` \| `setup`, optional | an owner-only failure. It does not count toward spacing | `packages/phone-protocol/src/routines.ts:240-242` |
@@ -3578,7 +3686,7 @@ The wire record is in `packages/phone-protocol/src/routines.ts:198-258`. The ser
 | `queued` | made, not started. It may wait for `retryAt`, a busy bot, the gate or the ledger | no | `server/routines.ts:1086-1198` |
 | `running` | its turn was started | no | `server/routines.ts:1162` |
 | `waiting` | waits on the person, or on work it handed on | no | `server/routines.ts:1369-1372` |
-| `completed` | the turn ended well | yes | `server/routines.ts:1299` |
+| `completed` | the turn ended well. At `e1cc6a290` (in the tag), also a turn whose only failed calls were blocks of the safety floor after the reply: then `partial` is `true` and `error` stays | yes | `server/routines.ts:1293`, `:1299-1300` |
 | `failed` | it ended with an error | yes | `server/routines.ts:1382-1388` |
 | `cancelled` | stopped by a pause, a delete, a supersede, a duplicate or a person | yes | `server/routine-stops.ts:5-21` |
 | `missed` | did not run. Also the status of a counted skip row | yes | `server/routine-skips.ts:39-56` |
@@ -3720,10 +3828,12 @@ Stored schedule (`storedScheduleSchema`, `server/routine-request-schemas.ts:100-
 | `name` | all | the redacted name, ≤200 characters |
 | `schedule?` | create, update, resume | dropped when it fails the schema (`server/routine-requests.ts:1063-1091`) |
 | `appliedUpdatedAt?` | update, pause, resume | the routine's `updatedAt` after the change. Undo needs it to be the same still |
-| `before?` | update, delete | a snapshot taken before the apply |
+| `before?` | update, delete. At `e1cc6a290` (after the tag) also pause and resume | a snapshot taken before the apply |
 | `ownersBefore?` | cloud | cloud ownership bookkeeping |
 
-The snapshot (`storedSnapshotSchema`, `server/routine-request-schemas.ts:210-215`) is the definition plus `enabled`, `target?: "room-goal"`, `groupId?` and `resultsThreadId?`. `routineSnapshot` returns no snapshot when the routine has attachments, when its name or prompt holds text that looks like a secret, or when it fails the schema (`server/routine-requests.ts:890-909`).
+The snapshot (`storedSnapshotSchema`, `server/routine-request-schemas.ts:210-215`) is the definition plus `enabled`, `target?: "room-goal"`, `groupId?` and `resultsThreadId?`. `routineSnapshot` returns no snapshot when the routine has attachments, when its name or prompt holds text that looks like a secret, or when it fails the schema (`server/routine-requests.ts:890-909`). At `e1cc6a290` (after the tag), the rule of attachments and secrets applies only to update and delete (`:892`).
+
+At `e1cc6a290` (in the tag, `24a632800`), the schedule parts of the schemas of this section are in `shared/routine-schedule-schema.ts`: the cron check (`:26-34`), the window (`:19-25`), the `limit_reset` fields (`:35-39`) and the checks of the window and the end (`refineStoredInterval`, `:41-71`). `server/routine-request-schemas.ts` imports them (`:4-10`) and is 177 lines. The line numbers of this section are at `eee23ebbe`. The rules did not change.
 
 #### The detail lines of the card
 
@@ -4738,6 +4848,7 @@ The error classes (:244-252) look at `run.error`, plus "run limit" when `goalSta
 - running or queued: "…" "running now".
 - cancelled: ✗ "Stopped: {reason}" or "Stopped".
 - partly done: "!" "Partly done: {reason}".
+- At `e1cc6a290` (in the tag, `48b93742f`): a `completed` run with `partial` and an `error` gets "!" "Partly done: {reason}" before the "✓" line (`src/lib/automations.ts:337-343`). `partlyDone` is true for such a run (`src/lib/routine-display.ts:16-21`).
 - else: ✗ the owner-fix reason, or the reason, or "It didn't finish".
 
 **Webhook calls in the client** (:358-401). `CALLS_SHOWN = 30` and `CALL_PREVIEW_CHARS = 240`. `callReason` maps each attempt to a line, for example ✓ "Received", ✗ "Already received, so it was skipped", "Wrong secret", "Turned away: it was paused", "Turned away: too large" (en.json:5670-5683). `lastReceived` never uses a rejected call, so a forged payload never shows as the sample (:396-401).
@@ -5671,7 +5782,7 @@ each improvement"). Where no point is given, we follow the reference.
    (`server/routine-occurrences.ts:122-123`, `server/routine-requests.ts:1047-1054`).
    That is less code.
 2. **A unique key for each occurrence.** The reference keeps a ledger with
-   leases, `decided` and `startedElsewhere` (`server/routine-occurrences.ts:192-239`).
+   leases, `decided` and `startedElsewhere` (`server/routine-occurrences.ts:192-239`, at `e1cc6a290` `:195-242`).
    We can use a unique key `(routine_id, due_at)` in the store. A second
    start is then a refused write. Leases are necessary only if two machines
    share one data folder. Decision D10 has one computer. Reason: less code.
@@ -5783,13 +5894,21 @@ each improvement"). Where no point is given, we follow the reference.
 12. **Each queued or waiting thing has a deadline.** In the reference these
     have no limit:
     - a webhook, manual or check run behind a busy bot
-      (`server/routine-bounds.ts:86-99`, `server/routine-recovery.ts:232-234`);
+      (`server/routine-bounds.ts:86-99`, `server/routine-recovery.ts:232-234`,
+      at `e1cc6a290` `:235-237`);
     - a waiting run of a one-time or webhook routine, which has no next
-      occurrence to replace it (`server/routines.ts:1035-1040`);
+      occurrence to replace it (`server/routines.ts:1035-1040`, at
+      `e1cc6a290` `:1038-1043`);
+    - at `e1cc6a290` (in the tag, `681bc6f50`): a scheduled run that waits
+      while the conversation of an earlier run of its routine is live, also
+      a completed run that works a follow-up. Its busy time does not count
+      (`server/routines.ts:1123-1125`, `:1136`;
+      `server/routine-bounds.ts:90-95`);
     - a wait whose chat stays busy (`server/waits.ts:380-389`);
     - a check-back for a busy chat or a paused bot
       (`server/host/check-backs.ts:157`, `:178`);
-    - a held report for a busy chat (`server/automation-reports.ts:230`);
+    - a held report for a busy chat (`server/automation-reports.ts:230`, at
+      `e1cc6a290` `:231`);
     - the text-to-speech call of a room post (`server/host/webhook-room-deps.ts:55-63`).
 
     We can make the deadline a field that the type requires, with a typed
@@ -5868,6 +5987,13 @@ each improvement"). Where no point is given, we follow the reference.
 | A turn or a wait that does not end | Guarded: run limits of work time, the busy miss of 60 minutes, the unattended limits, the 168-hour end of a wait. Present: the cases of point 12 |
 | A secret or an access right in the wrong place | Guarded: the page check reaches only public addresses and checks each redirect, the level of an automation is never raised, files have mode 0600, output is masked. Present: the payload gives instructions (point 11), the fence by driver name (point 15), the secret in the browser (point 17), model text in an opening (point 10), any path for a file wait and any port for a page check (`server/wait-probes.ts:30-37`, `:269-271`) |
 | A feature added, then removed or reversed | Present: routines and webhooks became one feature, "automations", in v0.1.115. The merge is in the UI and in the queue of runs only. The server still has a separate `WebhookManager` with its own file (`server/webhooks.ts`), and webhook, wait and app-event runs enter the queue through `routines.enqueueWebhook` (`server/index.ts:8813`, `:9338`). Also present: the automatic switch-off after failures was removed in v0.1.161, and `turnBackOn` undoes it one time. Confirm cards for bot requests became "apply at once with Undo". Results chats for each routine became the main chat. Waits changed after their plan: a follow-up can make a wait, and waits wake a sleeping Cloud each 30 minutes (`server/waits.ts:26-27`) |
+| "Busy" and races between bots: repaired in v0.1.186 | The release note says: "a scheduled run waits while an earlier run of the same routine is still working." Before, the next occurrence started while the conversation of a completed run still worked a follow-up, so two turns of one routine worked at the same time. Now the occurrence waits while `turnLive` is true for an earlier run (`server/routines.ts:1123-1125`, `681bc6f50`). Still present: this wait has no deadline (point 12) |
+| A schedule type that a team backup could not keep: repaired in v0.1.186. No theme of section 5 has it | The release note says: team backups "keep cron and limit-reset routines." Before, the backup knew only `once`, `daily` and an `interval` with two fields (`shared/team-backup.ts:69-72` at `eee23ebbe`), and the export checks the whole document and stops at the first error (`shared/team-backup.ts:179-184`). Now the backup has the five types and the full interval (`shared/team-backup.ts:73-86`, `24a632800`). Still present: the backup accepts a `once` time that the request card refuses (`shared/team-backup.ts:76`, `server/routine-request-schemas.ts:78`) |
+
+Two later fixes are after the tag, so v0.1.186 does not have them: one write
+of the busy marks for each pass (`2d156d909`), and the Undo of a pause or a
+resume that puts back the earlier state (`b63ecc7cb`). See "Changes up to
+`e1cc6a290` (v0.1.186)".
 
 ## 9. Not verified
 
@@ -5928,6 +6054,18 @@ No reader ran a test. Each statement about a test comes from its source.
 
 - About 2,300 lines of `server/index.ts` were read in ranges, and some very long lines were printed cut. Closures inside lines 2782, 3508, 3844, 5534-5544, 8737, 9352-9357, 11938-11945, 12040, 12282 and 13282 can be missing.
 - Where "Unattended turns never inherit Auto" (`server/index.ts:5508`) is enforced. No code that lowers Auto for such a turn was found.
+
+**The changes up to `e1cc6a290`**
+
+- Nobody ran a test. Each statement about a test comes from its source.
+- That an export at `eee23ebbe` of a team with a `cron` or `limit_reset` routine failed. This comes from a read of `createTeamBackup` (`server/team-backup.ts:111`) and the old schema. That the old backup dropped the `weekdays`, `window` and `endsAt` of an interval depends on the default of zod, which strips unknown keys.
+- How the chat report line reads for a completed partly done run. The report sets `partial` only on a failure line (`server/automation-reports.ts:256`). If failure spacing and the ledger count such a run as a success.
+- The cost of the hold behind a live turn: it asks `turnLive` for each other run of the routine at each dispatch step (`server/routines.ts:1124`).
+- If push notices and the phone apps read the new `routine` mark. The switch is in the `localStorage` of the desktop only.
+- The full behaviour of a `limit_reset` routine on an OpenCode engine after `645566fe8` (`retimeLimitResets`, `server/routines.ts:916-930`, not read to the end).
+- The rest of `e60bfef8a` after `server/routine-recovery.ts:82`.
+- If a routine can hold a value that the pause snapshot schema refuses (for example `durationMinutes` above 240). Then its Undo of a pause still sets the opposite of the action.
+- The line numbers of the other sections at `e1cc6a290`. This update corrected the lines of the changed files that the plan uses. The lead checked the citations of `server/index.ts` and `server/store.ts` that the plan uses, and corrected them in the plan file only.
 
 **Files of the border that nobody read**
 
