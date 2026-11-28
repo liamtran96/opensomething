@@ -14,10 +14,18 @@ Step 16 of [`../../plan/README.md`](../../plan/README.md). Crate:
 `bot-engine`, with types in `bot-protocol` and the stored list in `bot-core`
 (section 7).
 
-Read on 2026-11-25 at commit `96ff84455` of the reference project. All paths
-are in the reference project unless a line says "ours". The `enterprise/`
-directory was not opened. Ten subagents read ten groups of files. The main
-session checked 25 key claims against the code (section 9 lists what is not
+Read on 2026-11-25 at commit `96ff84455` of the reference project. Updated
+on 2026-11-28 to commit `e1cc6a290` (after the release v0.1.186, tag commit
+`70eb44c1a`). This file is correct at `e1cc6a290` for the changes that the
+section "Changes up to `e1cc6a290` (v0.1.186)" names. The other parts were
+read at `96ff84455`. A line number in a part that did not change is a line
+at `96ff84455`.
+
+All paths are in the reference project unless a line says "ours". The
+`enterprise/` directory was not opened. For the first read, ten subagents
+read ten groups of files, and the main session checked 25 key claims against
+the code. For the update, four subagents read four groups of changed files,
+and the main session checked 24 key claims (section 9 lists what is not
 checked).
 
 In quoted text from the reference project, `<product>` replaces the product
@@ -67,8 +75,13 @@ checked each cited file of this feature with `git diff` from the commit of
 its done file:
 
 - `agents-mcp-env.ts` changed one name list at line 8. The cited range
-  `:5-10` and the count of 10 lines are still correct.
-- `pi-mcp-extension.ts` did not change after `ad27f0716`.
+  `:5-10` and the count of 10 lines are correct at `96ff84455`. At
+  `e1cc6a290` the file has 13 lines and the list is at `:6-13` (commits
+  `68991787a` and `bd23c1d82` add `TOOL_SCHEMA_PROFILE_ENV`).
+- `pi-mcp-extension.ts` did not change from `ad27f0716` to `96ff84455`.
+  After `96ff84455` it changed: `0163e1782` adds `windowsHide: true`
+  (`:111`), and `696a3bfb6` adds `startupMs` (section "Changes up to
+  `e1cc6a290`").
 - `chat-mcp-tools.ts` changed only after line 494 since `ed8cb7278`, so
   `security-model.md` (`:144`) is still correct.
 
@@ -130,6 +143,56 @@ The UI has four parts:
 - the "MCP servers" card of the Access settings of a bot.
 - the "Tool selection" card of the same settings.
 - the "Tool time limit" row of the settings.
+
+## Changes up to `e1cc6a290` (v0.1.186)
+
+The range is `96ff84455..e1cc6a290`. It has 736 commits. 82 of them touch
+the MCP files that this file cites. The table has each commit that changes
+the behaviour of custom MCP servers. "Tag" means that the commit is in the
+tag v0.1.186 (`git merge-base --is-ancestor <commit> 70eb44c1a`). "After"
+means that it is not. The column "First release" gives the first tag that
+has the commit. Some fixes came before v0.1.186, because the base commit is
+older than the tags v0.1.182 and v0.1.184.
+
+| # | Change | Commit | Tag or after | First release | File and line at `e1cc6a290` | Sections it changes |
+|---|---|---|---|---|---|---|
+| 1 | A start check that only times out is no verdict. The server stays in turns and is checked again after 1 minute. After 3 timeouts in a row, it is off, the person hears it once, and the next check is after 30 minutes. Release note: "A server whose start check only timed out stays on, unless that happens three times in a row." | `e375e704e`, `c887e11ab` | tag | v0.1.186 | `server/mcp-health.ts:18-20`, `:83-86`, `:92-97`; `server/host/mcp-servers-host.ts:130` | 3.3, 4.4, 8, 9 |
+| 2 | `e375e704e` made the first model request of the chat driver wait for custom servers. `c887e11ab` removed that wait again, before the tag. No release has it | `e375e704e`, `c887e11ab` | tag | none (no net change) | `server/drivers/chat-mcp-tools.ts:803-804` | none |
+| 3 | One ACP engine waits up to 30 s (`REMOTE_MCP_STARTUP_MS`), not 10 s, for its selected MCP catalog | `e375e704e` | tag | v0.1.186 | `server/drivers/acp/grok.ts:584`, `:603` | 3.4 |
+| 4 | The chat driver counts the stand-in tool of the host computer one time, not two times, in the tool room. A server that fits exactly is listed whole | `2b5394ce2` | tag | v0.1.186 | `server/drivers/chat-mcp-tools.ts:692-693` | none |
+| 5 | Claude Code: when the `system/init` message lists a custom server as `failed`, the driver closes the session after the turn. The next turn starts a new process with `--resume`, so the server connects again | `3ce9cc7bf`, `c2c82f1d8` | after | none yet | `server/drivers/claude.ts:734`, `:1293`, `:1375`; `server/drivers/team-tools.ts:12-19` | 3.4, 8 |
+| 6 | Pi gives the `agents` server `agentsStartupMs()` (20 s, 30 s on a Cloud) to start. Each other server keeps 8 s, and a server config cannot set its own time | `696a3bfb6`, `87fdf2c5d` | after | none yet | `server/drivers/pi-mcp-servers.ts:47-49`; `server/drivers/pi-mcp-extension.ts:107`, `:230`, `:247` | "What this file adds", 3.4 |
+| 7 | Sign in card: a server with no registration endpoint and no pre-registered app makes the card `failed` with the reason. The bot hears the reason one time. Release note: "Servers that can't sign in apps say why on the Sign in card." (`announcements/releases.json:63`) | `fb16c3f2a` (merge `c080c8f16`) | tag | v0.1.186 | `server/host/mcp-sign-in-cards.ts:174-178`, `:194-200` | 3.8 |
+| 8 | A turn that parks after the card failed hears the failure text too | `237f93a7a` | tag | v0.1.186 | `server/host/mcp-sign-in-cards.ts:60`, `:296` | 3.8 |
+| 9 | Only `no-registration` fails the card. `not-oauth` and `port-busy` leave the card for another tap, because `not-oauth` also covers a discovery that failed for now | `9b065ddc2` | tag | v0.1.186 | `server/host/mcp-sign-in-cards.ts:174-177` | 3.7, 3.8 |
+| 10 | Discovery reads `client_id_metadata_document_supported`. A server with that flag and no registration endpoint gets its own `no-registration` text: the reference project does not support a client ID metadata document | `4cc5abe9c` | tag | v0.1.186 | `server/mcp-oauth-discovery.ts:13-14`, `:217`; `server/mcp-oauth.ts:537-541` | 3.7 |
+| 11 | A new stdio line reader splits frames on `\n` only. Before, `node:readline` also split on U+2028 and U+2029, which `JSON.stringify` leaves raw in a string. A request then got no answer, or a scoped gate exited. After a handler throws, the buffered frames still come out one by one | `d0d95ebe9`, `41e71b856` | tag | v0.1.182 | `server/stdio-lines.ts:7-41`; `server/mcp-gate.ts:298`, `:363`; `server/mcp-remote-proxy.ts:367-375` | 3.5, 3.6 |
+| 12 | A model that reads text only: after its first image refusal, the ACP driver puts `OMB_MCP_TEXT_ONLY=1` on each server of the next turns. The gate, the remote proxy and the proxy of own servers then replace each image of a `tools/call` result with a short text note. The memory is in the process only (500 keys). The bot box lets the variable through | `e60bfef8a`, `2ee617c61` | tag | v0.1.186 | `server/mcp-text-only.ts:13`, `:22-56`; `server/drivers/turn-mcp.ts:115-125`; `server/mcp-gate.ts:424-426`; `server/mcp-remote-proxy.ts:347-349`; `server/bot-box/env.ts:30` | 3.4, 3.5, 3.6 |
+| 13 | A second schema profile, `gemini` (2,000 bytes for each tool), goes to Gemini CLI and Antigravity by driver kind. So on these engines a person's command server always runs behind the gate, also with no scope. The gate shortens each schema. A tool that is still over 2,000 bytes at its shortest is left out of the list, with one stderr line | `68991787a`, `bd23c1d82`, `ed8c01df9`; `08fc34c51` and `b66e84ee3` (v0.1.186) keep `items` on a collapsed array | tag | v0.1.182 | `server/tool-schema-profile.ts:30`, `:55`; `server/drivers/turn-mcp.ts:47-50`; `server/mcp-tool-schema.ts:116-120` | 3.6, 7, 8 |
+| 14 | The native Antigravity CLI has one byte budget for all the tools of a session (55,000 bytes). The person's servers now get a share of it in `OMB_TOOL_LIST_SHARE`. The relay writes the full list to `<data>/tool-list-records/<hash>.json` and fits the list into the share. A search of `server/` found no code that removes a record | `b2e662007` | tag | v0.1.184 | `server/drivers/session-tool-budget.ts:66-106`; `server/tool-list-share.ts:35-66`; `server/mcp-gate.ts:229-233`, `:420-422`; `server/mcp-remote-proxy.ts:350` | 3.5, 3.6, 4.4, 8 |
+| 15 | Header values of a URL server are trimmed on save and on read. A save refuses a value that Node cannot send in a header (for example a curly quote). A stored bad value fails only its own request, with a 502 that names the header and not the value | `88a285945` | tag | v0.1.184 | `server/mcp-registry.ts:204-206`, `:393-397`; `server/bot-box/broker-headers.ts:10-37` | 3.2 |
+| 16 | Hermes: "Always allow" for a tool of a server that only Hermes's own `config.yaml` has is now saved. The key hashes `{engineOwn, server}`, so an edit of that server in `config.yaml` keeps the grant | `b479b025f`, `610f255dc` | tag | v0.1.182 | `server/provider-tool-allow.ts:12-21`; `server/drivers/acp/hermes-mcp-trust.ts:10-23` | 3.6, 3.11 |
+| 17 | A bot page can call a tool of the person's server outside a turn (`mcp:<server>:<tool>` in `uses`). A tool with `readOnlyHint: true` runs with no approval and no click, at each access level | `3529752e9` | tag | v0.1.184 | `server/connector-gate.ts:293-322`, `:310-315`; `server/chat-apps-mcp.ts:348-376` | 3.3, 3.6 |
+
+No change in the range: `server/routes/mcp-servers.ts`,
+`server/mcp-oauth-store.ts`, `src/lib/mcp-sign-in.ts`,
+`src/components/McpServersPanel.tsx`, `src/components/McpServerEditor.tsx`
+and `server/mcp-gate-config.ts`. No `en.json` key of the MCP sign-in changed.
+
+**Errors of the first read.** Two statements were already wrong at
+`96ff84455`. They are not changes of the range, and the sections correct
+them in place:
+
+- Section 7, D12 row: a command server with no scope also gets a gate for
+  an MCP apps mount, a schema profile or a tool limit
+  (`server/mcp-gate-config.ts:190`, `server/drivers/turn-mcp.ts:47-50`).
+- Section 3.11: Hermes is probably a fourth way that the person's own
+  config reaches bots. The driver uses `HERMES_HOME`, or else `~/.hermes`
+  of the person (`server/drivers/acp/hermes.ts:76-78`,
+  `server/env-path.ts:217-219`, the same code at `96ff84455`). Hermes runs
+  the MCP servers of its own `config.yaml` (code comment,
+  `server/drivers/acp/hermes-mcp-trust.ts:3-6`). Hermes's own code was not
+  read (section 9).
 
 ## 2. Files read completely
 
@@ -409,6 +472,10 @@ or a client secret can be `vault:<id>`, also inside text such as
 - It is read only for a bot that the item allows (`:59`, `:66`). A Team
   Cloud member's own secret is never a server key (`:64-65`).
 - A header value or a client secret with a line break is refused (`:77`).
+- A plain header value (not a pointer) is trimmed on save and on read since
+  v0.1.184. A save refuses a value that Node cannot send. A stored bad
+  value is read as it is, and only its own request fails
+  (`server/mcp-registry.ts:204-206`, `:393-397`, change 15).
 - A value from a linked password manager is kept in memory for 15 minutes
   and read again after 5 (`:15-16`).
 - When a key cannot be read, the server is off for that bot. The reason is
@@ -435,9 +502,25 @@ or a client secret can be `vault:<id>`, also inside text such as
 3. `keyed(bot)` resolves the Vault pointers. A server whose key fails is off
    for that bot (`:110-118`).
 4. The start check of command servers (`server/mcp-health.ts`): at most two
-   checks at a time for all bots (`:15`). A failed server is checked again
-   after 30 minutes, a working one after 6 hours (`:13-14`). A turn waits
-   only for the first check of each server. The state is in
+   checks at a time for all bots (`:21` at `e1cc6a290`). A failed server is
+   checked again after 30 minutes, a working one after 6 hours (`:16-17`).
+   A turn waits only for the first check of each server. Since v0.1.186
+   (change 1), a check that only times out is no verdict:
+   - The server stays in turns, and the person and the bot hear nothing.
+   - The next check is after 1 minute (`RECHECK_TIMEOUT_MS`, `:18`, `:86`).
+   - The record counts the timeouts in a row (`timeouts`, `:92-95`). At 3
+     (`TIMEOUTS_FOR_A_VERDICT`, `:20`, `:83-84`), the server is off, as
+     after a failure of another kind, and the next check is after 30
+     minutes.
+   - A pass, a failure of another kind, an edit or restart (`changed`,
+     `:165-170`) or a new start key ends the count.
+   - There is no timer. A check runs before a turn (`:130-140`), at boot
+     (`:172-174`) and when an engine reports a failed server
+     (`engineFailed`, `:160-163`). So 3 timeouts need at least three
+     checks more than 1 minute apart (derived, not run).
+   - The time limit of one check is 8 s, or 120 s for a package runner
+     such as `npx` (`server/mcp-probe.ts:59`,
+     `server/host/mcp-servers-host.ts:55-58`). The state is in
    `<data>/mcp-health.json` (0600). The key is a SHA-256 of the command,
    arguments, environment and the size and time of each named file.
 5. The URL check (`server/host/mcp-url-checks.ts`): only HTTP 405 to
@@ -454,18 +537,25 @@ or a client secret can be `vault:<id>`, also inside text such as
    notice. The bot hears it on each turn in the system prompt: "The MCP
    server "X" is off for you because it doesn't start for you (<error>);
    it is tried again on its own." (`server/system-prompt.ts:277-284`).
+   Since v0.1.186 a server that only timed out is "off" only at the third
+   timeout in a row. The notice is sent one time for each start key: `told`
+   is not cleared after a pass (`server/mcp-health.ts:96-97`).
 8. The OAuth step: `withMcpSignIn` adds the Bearer token to each signed-in
    URL server, and drops a server whose token is null
    (`server/mcp-oauth.ts:843-859`, section 3.7).
+
+A person's server can also run outside a turn since v0.1.184: a bot page
+can call its tools through the shared app connection (change 17,
+`server/chat-apps-mcp.ts:348-376`, section 3.6).
 
 ### 3.4 How each engine gets the servers
 
 | Engine | How | Reference |
 |---|---|---|
-| Claude Code | A temporary `mcp.json` (0600) under the temp folder, given with `--mcp-config` and `--strict-mcp-config`. Removed when the turn settles. URL servers in the file directly, unless a gate is necessary. The project's `.mcp.json` servers merge last, never for a guest | `server/drivers/claude.ts:1064-1086`, `:1103-1107`, `:842-849`, `claude-project-mcp.ts:4-6` |
+| Claude Code | A temporary `mcp.json` (0600) under the temp folder, given with `--mcp-config` and `--strict-mcp-config`. Removed when the turn settles. URL servers in the file directly, unless a gate is necessary. The project's `.mcp.json` servers merge last, never for a guest. After the tag v0.1.186 (change 5): when `system/init` lists a custom server as `failed`, the session closes after the turn, and the next turn starts a new process with `--resume`. Claude Code connects MCP servers only when its process starts | `server/drivers/claude.ts:1064-1086`, `:1103-1107`, `:842-849` (at `96ff84455`; `:999-1021` at `e1cc6a290`), `claude-project-mcp.ts:4-6`; retire: `claude.ts:1293`, `:1375` |
 | Codex | `-c mcp_servers.<m>.command/args/env_vars`. Only the env names are in argv. The values are in the env of the app-server. A URL server goes through the remote proxy with one private env record `OMB_REMOTE_MCP_CONFIG_<64 hex>`. That family of variables is kept out of the shell | `server/drivers/codex-mcp-mount.ts:26-33`, `codex.ts:453-463`, `:99`, `:524-535` |
-| ACP engines | `session/new` and `session/load` `mcpServers`, env as name and value pairs. Each URL server first becomes the remote proxy. Copilot and Cline get a 0600 file each, kept for each thread until the instance is disposed | `server/drivers/turn-mcp.ts:21-22`, `:40-50`, `acp/copilot.ts:246-269`, `acp/cline.ts:193-223` |
-| Pi | A 0600 file in `OMB_MCP_CONFIG`, removed when the turn settles. URL servers go through the proxy in directory form | `server/drivers/pi.ts:397-431`, `pi-mcp-servers.ts:37-46` |
+| ACP engines | `session/new` and `session/load` `mcpServers`, env as name and value pairs. Each URL server first becomes the remote proxy. Copilot and Cline get a 0600 file each, kept for each thread until the instance is disposed. Since v0.1.186 (change 12): after a model refuses an image, each server of the next turns gets `OMB_MCP_TEXT_ONLY=1`, and own servers stay on stdio. Since v0.1.182 (change 13): on Gemini CLI and Antigravity each command server goes behind the gate | `server/drivers/turn-mcp.ts:21-22`, `:40-50` (`:23-24`, `:42-52` at `e1cc6a290`), `:115-125`, `acp/copilot.ts:246-269`, `acp/cline.ts:193-223` |
+| Pi | A 0600 file in `OMB_MCP_CONFIG`, removed when the turn settles. URL servers go through the proxy in directory form. A command server has 8 s to start. After the tag v0.1.186 (change 6), only the `agents` server gets 20 s, or 30 s on a Cloud | `server/drivers/pi.ts:397-431`, `pi-mcp-servers.ts:37-46` (`:38-49` at `e1cc6a290`), `pi-mcp-extension.ts:107` |
 | Chat driver | It is the MCP client itself. More than 32 servers throws. Each URL server goes through the proxy in directory form | `server/drivers/chat-mcp-tools.ts:562-567`, `:577-594` |
 
 Codex details (`server/drivers/codex-mcp-names.ts`, `codex-mcp-startup.ts`):
@@ -482,13 +572,19 @@ Codex details (`server/drivers/codex-mcp-names.ts`, `codex-mcp-startup.ts`):
   (`codex.ts:549-551`, `:1358-1369`), so one slow server delays the start
   of other Codex bots.
 
+One ACP engine with a tool selection waits for its selected MCP catalog
+before it sends the prompt. Since v0.1.186 the limit is 30 s
+(`REMOTE_MCP_STARTUP_MS`), not 10 s (`server/drivers/acp/grok.ts:584`,
+`:603`, change 3).
+
 **Why one engine is an exception (v0.1.101).** The commit `ddab4356b` says
 that each engine except Claude Code reaches URL servers through the
 reference project's connector. The code gives the reason. Other engines' MCP clients
 add initialize fields that strict servers refuse. But "Claude Code 2.1.292
 sends only spec-defined initialize fields (2025-11-25), so strict servers
 accept it, and it keeps its MCP tool search for big catalogs"
-(`server/drivers/claude.ts:1065-1068`, `server/mcp-remote-proxy.ts:1-2`).
+(`server/drivers/claude.ts:1065-1068`, `:1000-1003` at `e1cc6a290`;
+`server/mcp-remote-proxy.ts:1-2`).
 `server/mcp-strict-handshake.test.ts:106-124` replays real Codex and Claude
 Code handshakes to prove that no engine field reaches the remote server.
 
@@ -515,15 +611,24 @@ request to one remote server through `RemoteMcpClient` (`:167-178`).
    (`:184-195`).
 4. For each request (`handle`, `:318-359`):
    1. Not JSON: `-32700`. Not a request: `-32600`. A duplicate id: `-32600`.
+      Since v0.1.182 (change 11) a frame ends only at `\n`. Before, the
+      reader also cut a frame at U+2028 or U+2029 inside a string, so both
+      halves got `-32700` with `id: null` and the real request got no
+      answer (`server/stdio-lines.ts:7-41`, `mcp-remote-proxy.ts:367-375`
+      at `e1cc6a290`).
    2. `notifications/cancelled` aborts the pending request and is sent
       upstream with the proxy's own id (`:324-328`).
    3. Deadline: 30 s for each method except `tools/call`. `tools/call` gets
       120 s in directory mode and **no deadline of its own** otherwise
-      (`:338-340`). The comment says: "Engines keep their own tool-call
-      deadline (Gemini CLI and Qwen Code wait ten minutes) and cancel through
-      this proxy."
+      (`:338-340`, `:341-343` at `e1cc6a290`; still true). The comment
+      says: "Engines keep their own tool-call deadline (Gemini CLI and Qwen
+      Code wait ten minutes) and cancel through this proxy."
    4. A `tools/list` result goes through the schema profile and the tool
-      count limit (`:344`).
+      count limit (`:344`). Since v0.1.184 it then goes through the session
+      share of the native Antigravity CLI (`:350` at `e1cc6a290`, change
+      14).
+   5. Since v0.1.186, with `OMB_MCP_TEXT_ONLY=1`, each image of a
+      `tools/call` result becomes a text note (`:347-349`, change 12).
 5. Errors (`:345-357`):
    - HTTP 401: a fixed text that tells the engine to send the message again,
      because "<product> refreshes sign-ins when a message starts"
@@ -596,7 +701,8 @@ project's own tool families (seam: agent-tools).
 6. Known gap, stated in the code: outside the packaged desktop, a loopback
    caller is the owner, and "A shell can forge an Origin header". A
    loosening with no `Origin` header is refused only while any bot is busy
-   (`server/routes/bot-patch.ts:619-620`, `:636`, `:650-657`).
+   (`server/routes/bot-patch.ts:619-620`, `:636`, `:650-657`; at
+   `e1cc6a290` the same code is at `:637-638`, `:654`, `:668-675`).
 
 **The gate** (`server/mcp-gate.ts`), when a scope applies:
 
@@ -606,12 +712,37 @@ project's own tool families (seam: agent-tools).
 2. Each `tools/list` page is filtered, `nextCursor` stays (`:393-401`).
 3. A `tools/call` to an excluded tool gets `-32602` "Tool selection excludes
    this tool. Check the bot's Access settings." The server never sees it
-   (`:310-323`).
+   (`:310-323`, `:317-330` at `e1cc6a290`).
 4. A bad frame, a duplicate id or a reply to an unknown id ends the
-   connection (`:333`, `:363-372`).
+   connection (`:333`, `:363-372`). Before v0.1.182, a legal frame with
+   U+2028 or U+2029 in a string counted as a bad frame. On a scoped
+   connection the gate then exited, and the server was gone for the rest of
+   the turn. Since v0.1.182 a frame ends only at `\n` (change 11,
+   `server/mcp-gate.ts:298`, `:363` at `e1cc6a290`).
 5. The `OMB_GATE_*` variables are removed from the server's env (`:225-226`).
+   Since v0.1.184 `OMB_TOOL_LIST_SHARE` and `OMB_TOOL_LIST_RECORD` are
+   removed too (`:229-233` at `e1cc6a290`).
 6. A scoped server that cannot have a gate throws. It never runs without a
    gate (`server/mcp-gate-config.ts:186-207`).
+7. Since v0.1.182, under a schema profile, the gate shortens the schema of
+   each listed tool. A tool that is still over the limit at its shortest
+   form is left out of the list, with one stderr line
+   (`server/mcp-tool-schema.ts:116-120`, change 13). Before, only Kimi and
+   Moonshot models had a profile. Now Gemini CLI and Antigravity have one
+   too (`server/tool-schema-profile.ts:30`, `:55`).
+8. Since v0.1.184, on the native Antigravity CLI, the gate writes the full
+   list to a record file and fits it into a byte share (`:420-422` at
+   `e1cc6a290`, change 14).
+9. Since v0.1.186, with `OMB_MCP_TEXT_ONLY=1`, the gate replaces each image
+   of a `tools/call` result with a text note (`:424-426` at `e1cc6a290`,
+   change 12). A person's command server with no gate gets the variable,
+   but no process reads it, so its images still reach the model. This is
+   derived from `server/drivers/turn-mcp.ts:47-50` and was not run.
+
+A command server with no scope goes behind the gate also for an MCP apps
+mount or a schema profile (`server/drivers/turn-mcp.ts:47-50`). The first
+read missed this. Since v0.1.182 Gemini CLI and Antigravity have a schema
+profile, so on these engines each command server has a gate.
 
 In a scoped turn, each server with no allowed tool is dropped, and each other
 server goes behind a gate (`server/drivers/turn-mcp.ts:54-60`). The gate is
@@ -623,18 +754,33 @@ Which engine supports which scope is a table keyed by the driver kind
 (`shared/tool-scope-support.ts:4-9`), not a capability flag. A test checks
 that each driver kind has a row (`server/drivers/tool-scope-coverage.test.ts:6`).
 
-A selected tool still needs approval. The scope does not pre-approve
-(`scripts/verify-pi-tool-scope.ts:111`). "Always allow" keys for MCP tools
-have the form `provider-tool:<instance>:<server>:<tool>:<16 hex>`, hashed
-from the spec as `config.json` holds it, with no key value and no restart
-count (`server/mcp-grant-spec.ts:12`, `:17-25`).
+A selected tool still needs approval in a turn. The scope does not
+pre-approve (`scripts/verify-pi-tool-scope.ts:111`). "Always allow" keys for
+MCP tools have the form `provider-tool:<instance>:<server>:<tool>:<16 hex>`,
+hashed from the spec as `config.json` holds it, with no key value and no
+restart count (`server/mcp-grant-spec.ts:12`, `:17-25`).
+
+- Since v0.1.182 (change 16), Hermes can also save "Always allow" for a
+  server that only its own `config.yaml` has. The 16 hex are then the hash
+  of `{engineOwn: "hermesAgent", server}`, so an edit of that server in
+  `config.yaml` keeps the grant. Only a rename ends it
+  (`server/provider-tool-allow.ts:12-21`). The set of such engines is keyed
+  by driver kind (`OWN_MCP_CONFIG`, `:13`).
+- Since v0.1.184 (change 17), a bot page can call a tool of the person's
+  server outside a turn. The page declares `mcp:<server>:<tool>`. The
+  server, the scope, the on state and the sign-in are checked as for a turn
+  (`server/chat-apps-mcp.ts:348-376`). But approval is different: a tool
+  that the server marks `readOnlyHint: true` runs with no approval and no
+  click, at each access level. Each other tool needs Full access and a
+  recent click (`server/connector-gate.ts:310-315`).
 
 ### 3.7 OAuth sign-in
 
 `McpOAuthManager` (`server/mcp-oauth.ts:224`) owns the flows, the loopback
 listeners and the refresh.
 
-**Start** (`start`, `:301-321`, and `begin`, `:569-615`):
+**Start** (`start`, `:301-321`, and `begin`, `:569-615`; `begin` is at
+`:571-617` at `e1cc6a290`):
 
 1. A waiting flow of another owner gives 409 "A sign-in is already in
    progress in another browser." The same owner and URL gets the same flow
@@ -645,16 +791,32 @@ listeners and the refresh.
    - Each fetch has 5 s and at most 64 KB, and refuses redirects
      (`:23-24`, `:109-129`).
    - An SSRF guard: a public server cannot point a fetch at a loopback,
-     private or plain-http address (`:45-74`).
+     private or plain-http address (`:45-74`, `:47-76` at `e1cc6a290`).
    - Scopes come from the protected-resource document, plus
      `offline_access` when the authorization server offers it (`:202-206`).
+   - Since v0.1.186 discovery also reads
+     `client_id_metadata_document_supported === true` into
+     `clientIdMetadataDocument` (`:13-14`, `:217` at `e1cc6a290`, change
+     10).
 3. No metadata: `not-oauth` "This server does not offer an OAuth sign-in. Add
-   its token as a header instead." (`server/mcp-oauth.ts:573`).
+   its token as a header instead." (`server/mcp-oauth.ts:573`). The same
+   code comes when a discovery fetch fails for now: `getJson` returns null
+   for a non-2xx reply and for a thrown error
+   (`server/mcp-oauth-discovery.ts:112-115`, `:134-136` at `e1cc6a290`). So
+   the reference project cannot tell "no OAuth" from "discovery failed this
+   time".
 4. The client is a pre-registered app from the config, or a new client.
    Dynamic client registration (RFC 7591) makes a new client for each
    sign-in, "because authorization servers prune idle clients"
-   (`:534-567`). No registration
-   endpoint and no app: `no-registration`.
+   (`:534-567`). No registration endpoint and no app: `no-registration`.
+   Since v0.1.186 its text has two forms (`server/mcp-oauth.ts:537-541` at
+   `e1cc6a290`, change 10). A server with `clientIdMetadataDocument` gets
+   "This server signs in apps by a published app ID (a client ID metadata
+   document), which <product> doesn't support yet." Each other server gets
+   the old text "This server only signs in apps registered with it in
+   advance. Edit the server and add that app's client ID under Sign-in
+   app." The reference project does not implement a client ID metadata
+   document.
 5. Where the browser comes back:
    - A pre-registered app with its own https `redirectUri`: the public
      callback route, no listener (`:576-586`).
@@ -735,10 +897,35 @@ effort (`:385-393`).
    or a remote browser with no https origin, gets 409 "finish this sign-in in
    Settings". Then the card is `authorizing` and only the client that asked
    gets the URL. The URL and the state never go into a message (`:3-4`).
+   When the start fails (`:174-180` at `e1cc6a290`):
+   - `no-registration` (change 7, v0.1.186): the card becomes `failed` with
+     the reason, and the reply is 400 with the code. The bot hears
+     "<product> MCP sign-in for <slug>: <reason> Nothing was signed in."
+     one time (`failedText`, `:60`; `unreachable`, `:194-200`). The reason
+     is a fixed text of the code, never the server's text. Before
+     v0.1.186, each start error gave a 400 that only the tapping client
+     saw. The card stayed on "Sign in", and the bot waited until "Not now".
+   - `not-oauth` and `port-busy` (change 9): a 400 to the tapping client
+     only. The card does not change and the bot hears nothing, so the
+     person can tap again. A server that truly has no OAuth therefore
+     stays retryable with no end (derived, not run).
+   - A registration that the server refuses: a 502 with the server's
+     `error_description` to the tapping client only (`:180`,
+     `server/mcp-oauth.ts:216-222`). Not changed in the range.
+   - The client shows a failed card with the error in red and a "Try
+     again" button (`src/components/ConnectorCard.tsx:210-211`, `:240`). A
+     second tap fails the same way and tells the bot nothing more.
 4. **Settle** (`:275-282`): `succeeded` makes the card `connected` and
    resumes the bot. `expired` and `failed` put it back to `required`.
 5. The bot hears fixed text with the server name only: on, off ("call
-   mcp_server enable") or unreachable (`:79-84`).
+   mcp_server enable") or unreachable (`:79-84`). Since v0.1.186 a failed
+   start adds a fourth text with a fixed reason (`:60`). A turn that parks
+   after the card failed hears it too: `parkedAnswer` returns it (`:296` at
+   `e1cc6a290`, change 8), through `reconcileParkedNode`
+   (`server/index.ts:1927-1932`). The stored error is in the language of
+   the chat, but a turn that was already parked hears English (`:195`,
+   `:197`). So a turn that parks late can hear a translated text for a
+   server that is gone (derived, not run).
 6. "Not now" tells the bot "didn't sign in". After a restart, the next status
    poll puts the card back to `required` (`:217-231`).
 
@@ -752,8 +939,9 @@ Gaps found:
   this. Checked in the code.
 - **Stop does not cancel the flow.** Stop sets `stopped`, but
   `isCardOwnerLive` checks only `dismissed`
-  (`server/index.ts:2013-2025`, `server/host/mcp-sign-in-cards.ts:73-76`).
-  So a sign-in can still finish after Stop, until the 5 minutes end.
+  (`server/index.ts:2013-2025`, `server/host/mcp-sign-in-cards.ts:73-76`;
+  `:2014-2026` and `:75-78` at `e1cc6a290`). So a sign-in can still finish
+  after Stop, until the 5 minutes end. Not changed in the range.
 
 ### 3.9 The `mcp_server` tool
 
@@ -870,6 +1058,15 @@ The route (`server/routes/internal-mcp.ts`):
    `server/drivers/codex.ts:441-443`). The UI calls this "by design"
    (`en.json:6221`).
 
+The first read missed a probable fourth way. **Hermes runs the servers of
+its own `config.yaml`** (code comment,
+`server/drivers/acp/hermes-mcp-trust.ts:3-6`). The driver uses
+`HERMES_HOME`, or else `~/.hermes` of the person
+(`server/drivers/acp/hermes.ts:76-78`, `server/env-path.ts:217-219`). This
+code is the same at `96ff84455`. Since v0.1.182 an "Always allow" on such a
+server is saved, and an edit of the server keeps it (change 16, section
+3.6). Hermes's own code was not read.
+
 ## 4. The data
 
 ### 4.1 `config.json` → `mcpServers`
@@ -942,7 +1139,8 @@ The store reads the file on each call and has no lock (`:106`).
 
 | File | Content | Reference |
 |---|---|---|
-| `<data>/mcp-health.json` | start-check state of command servers, 0600 | `server/mcp-health.ts:37-43` |
+| `<data>/mcp-health.json` | start-check state of command servers, 0600. Since v0.1.186 a record can also hold `timeout: true` and `timeouts` (the count of timeouts in a row) | `server/mcp-health.ts:37-43` (`:25`, `:44-50` at `e1cc6a290`) |
+| `<data>/tool-list-records/<40 hex>.json` | since v0.1.184: the full tool list (names, descriptions, schemas) of one server for one bot, written by the relay on the native Antigravity CLI. 0600 in a 0700 folder, at most 2 MiB. A search of `server/` found no code that removes it when the server goes | `server/drivers/session-tool-budget.ts:38-40`, `:70`; `server/tool-list-share.ts:13`, `:35-46` |
 | `<data>/mcp-url-checks.json` | the `told` set of the URL check. The `off` map is in memory only | `server/host/mcp-url-checks.ts:100-114` |
 | `<data>/mcp-bot-servers.json` | `{claimedAt}`, the one-time claim marker, 0600 | `server/host/mcp-servers-host.ts:53`, `:249` |
 | `<tmp>/omb-mcp-*/mcp.json` | config of one turn of Claude Code, 0600, with Bearer tokens | `server/drivers/claude.ts:1103-1107` |
@@ -1095,9 +1293,9 @@ They are proposals until the author decides.
 | Our document | It says | The reference project |
 |---|---|---|
 | `docs/decisions.md` D12 references | `server/connector-proxy.ts` is the proxy that filters the tool list and checks each call | `server/connector-proxy.ts` is the Composio connector: "Connection requests become … chat cards" (`:1-2`). For custom servers, the gate (`server/mcp-gate.ts`) filters and checks, and the remote proxy (`server/mcp-remote-proxy.ts`) talks to a URL server |
-| `docs/decisions.md` D12 | "a proxy of ours stands between the engine and the tool server" | Not always. Claude Code connects to a URL server itself unless a gate is necessary, and keeps its own tool search (`server/drivers/claude.ts:1064-1068`, `server/mcp-gate-config.ts:47`). A command server with no scope and no budget has no gate (`:190`) |
-| `docs/comparison.md:139` | the Streamable HTTP relay has a 20 MB limit | 20 MB is the limit of the Composio connector (`server/connector-proxy.ts:37`). The client of custom servers has 32 MiB (`server/mcp-http.ts:37-38`) |
-| `docs/comparison.md:138` | the connector proxy filters the tool list to the grants of the bot | True for Composio (`server/connector-proxy.ts:6-12`). For custom servers the grant is the bot's `mcpServers` list plus `toolScope`, and the gate enforces the scope (section 3.6) |
+| `docs/decisions.md` D12 | "a proxy of ours stands between the engine and the tool server" | Not always. Claude Code connects to a URL server itself unless a gate is necessary, and keeps its own tool search (`server/drivers/claude.ts:1064-1068`, `:999-1003` at `e1cc6a290`; `server/mcp-gate-config.ts:47`). A command server has no gate when it has no scope, no budget, no MCP apps mount and no schema profile (`:190`, `server/drivers/turn-mcp.ts:47-50`). The first read named only the scope and the budget. Since v0.1.182 Gemini CLI and Antigravity have a schema profile, so on these engines each command server has a gate |
+| `docs/comparison.md:139` | the Streamable HTTP relay has a 20 MB limit | 20 MB is the limit of the Composio connector (`server/connector-proxy.ts:37`, `:38` at `e1cc6a290`). The client of custom servers has 32 MiB (`server/mcp-http.ts:37-38`) |
+| `docs/comparison.md:138` | the connector proxy filters the tool list to the grants of the bot | True for Composio (`server/connector-proxy.ts:6-12`, `:5-11` at `e1cc6a290`). For custom servers the grant is the bot's `mcpServers` list plus `toolScope`, and the gate enforces the scope (section 3.6) |
 
 Points where our rules already differ:
 
@@ -1105,7 +1303,13 @@ Points where our rules already differ:
   server list by a flag (`customMcp`). But it gates the scope support, the
   schema profile and the Codex start wait by the driver kind or the version
   (`shared/tool-scope-support.ts:4-9`, `server/drivers/turn-mcp.ts:115`,
-  `codex-mcp-startup.ts:8-12`).
+  `codex-mcp-startup.ts:8-12`). The range adds more of these: the `gemini`
+  schema profile (`server/tool-schema-profile.ts:55`), the engines that
+  have their own MCP config (`server/provider-tool-allow.ts:13`), and the
+  session budget, which is chosen by the agent name that `initialize`
+  returns (`server/drivers/antigravity-acp.ts:786-797`). "Reads text only"
+  is learned from the text of one refusal, in the ACP driver only
+  (`server/drivers/engine-errors.ts:40`, `server/mcp-text-only.ts:41-56`).
 - **Typed refusals** (`AGENTS.md`). `perTurnCustomMcp` throws an untyped
   `Error` into the turn (`server/mcp-registry.ts:171-185`).
 - **One transaction for each state change** (`AGENTS.md`). The add, replace
@@ -1113,6 +1317,8 @@ Points where our rules already differ:
 - **Text of a delegated turn from stored data** (`AGENTS.md`). The reference project
   does this for change cards and sign-in cards
   (`server/host/mcp-requests.ts:27-37`, `server/host/mcp-sign-in-cards.ts:79-84`).
+  Since v0.1.186 the failure text of a sign-in card comes from the stored
+  card row too (`server/host/mcp-sign-in-cards.ts:296` at `e1cc6a290`).
 
 ## 8. Where we can be better
 
@@ -1134,17 +1340,20 @@ Points where our rules already differ:
    compile-time or parse-time error.
 4. **Hide a secret in a URL query or an argument.** The listing returns
    `url` and `args` in full, and a query string is allowed
-   (`server/mcp-registry.ts:204-214`, `:499`, `:519`). The route's own comment
+   (`server/mcp-registry.ts:204-214`, `:499`, `:519`; `:209-219`, `:507`,
+   `:527` at `e1cc6a290`). The route's own comment
    says these can hold secrets (`server/routes/mcp-servers.ts:18-19`). Reason:
    "a secret in the wrong place". The bot view already masks them
    (`server/mcp-bot-rules.ts:111-128`). Use one mask for each view.
 5. **Apply the MCP call timeout to each engine, or label it.** Only the chat
-   driver applies the setting (`server/drivers/openai-chat.ts:614`). The UI
+   driver applies the setting (`server/drivers/openai-chat.ts:614`, `:613` at
+   `e1cc6a290`). The UI
    says that it applies to each tool (`en.json:2045`). Reason: "a wait that
    does not end". A driver capability can say whether the engine takes a
    deadline for each server (Codex `tool_timeout_sec`).
 6. **One deadline for each remote call.** The proxy gives `tools/call` no
-   deadline outside directory mode (`server/mcp-remote-proxy.ts:339`). The
+   deadline outside directory mode (`server/mcp-remote-proxy.ts:339`,
+   `:342` at `e1cc6a290`; still true). The
    old SSE stream has no idle limit (`server/mcp-http.ts:370`). An OAuth
    start can take about 50 s (`server/mcp-oauth.ts:572`). `keys.warm` and the
    DNS lookup of `publicMcpUrl` have no limit
@@ -1155,15 +1364,23 @@ Points where our rules already differ:
    Reason: a remote server keeps the work running after its proxy dies.
 8. **One rule for a dead server on each engine.** v0.1.153 ("A turn carries
    on when one optional MCP server dies") is in the chat driver. Only Claude Code
-   reports which server failed (`server/drivers/claude.ts:1439`).
-   Codex holds its launch slot for 30 s (`codex.ts:549-551`). A URL server
-   behind the proxy is kept after a timeout and fails again on each call.
-   Reason: "one slow part blocks the others".
+   reports which server failed (`server/drivers/claude.ts:1439`,
+   `:1375-1376` at `e1cc6a290`). After the tag v0.1.186, Claude Code also
+   closes such a session after the turn, so the next turn connects the
+   server again (change 5). Codex already refused to keep such a session
+   (`codex.ts:679`, `:910` at `e1cc6a290`). Codex holds its launch slot for
+   30 s (`codex.ts:549-551`). A URL server behind the proxy is kept after a
+   timeout and fails again on each call. Reason: "one slow part blocks the
+   others".
 9. **Keep the "off" state of the URL check on disk.** The `off` map is in
    memory, so after a restart a 405 server is mounted until the check
    finishes (`server/host/mcp-url-checks.ts:100`). The 2-slot start queue is
-   shared by all bots and one slot can be held 120 s (`server/mcp-health.ts:15`).
-   Reason: v0.1.178 "named once, instead of slowing every turn".
+   shared by all bots and one slot can be held 120 s (`server/mcp-health.ts:15`,
+   `:21` at `e1cc6a290`). Since v0.1.186 a timed-out check is repeated
+   after 1 minute, up to 3 times in a row (change 1). So a package-runner
+   server that hangs can hold a slot for 120 s three times before it is
+   off, and it stays in turns during that time (derived, not run). Reason:
+   v0.1.178 "named once, instead of slowing every turn".
 10. **Do not run the person's own Codex servers by default.** Outside a
     company Codex home, Codex runs the person's `config.toml` servers on each
     unscoped turn, with no setting (`server/drivers/codex.ts:441-443`,
@@ -1172,7 +1389,8 @@ Points where our rules already differ:
     engine from a list of allowed items.
 11. **An address check for each remote request.** The proxy has no filter of
     private addresses and follows redirects (`server/mcp-http.ts:66-69`,
-    `:312`). Discovery has one (`server/mcp-oauth-discovery.ts:45-74`) and the
+    `:312`). Discovery has one (`server/mcp-oauth-discovery.ts:45-74`, `:47-76` at
+    `e1cc6a290`) and the
     URL check refuses redirects. Reason: a header can go to a new address.
 12. **Scope support as a driver capability.** The reference project keys it by driver
     kind (`shared/tool-scope-support.ts:4-9`). Reason: `AGENTS.md` gates
@@ -1187,7 +1405,8 @@ Points where our rules already differ:
     (`docs/superpowers/specs/2026-11-01-mcp-in-chat-design.md:91`).
 15. **Close the loopback owner gap.** Outside the packaged desktop, any
     loopback caller with an `Origin` header can widen a bot's grants
-    (`server/routes/bot-patch.ts:619-620`, `:636`). Reason: an access right
+    (`server/routes/bot-patch.ts:619-620`, `:636`; `:637-638`, `:654` at
+    `e1cc6a290`). Reason: an access right
     that a bot shell can reach. D10 makes us a desktop app, so a per-process
     token is possible.
 16. **Cancel the sign-in flow on Stop, and do not reuse a dead link.**
@@ -1203,11 +1422,12 @@ Points where our rules already differ:
 
 | Problem | Here | Where |
 |---|---|---|
-| One slow or stuck part blocks the others | yes, partly fixed | v0.1.153 only in the chat driver. v0.1.178 with an in-memory `off` map. Codex start wait holds the launch slot (items 8, 9) |
-| A turn or a wait that does not end | yes | the call timeout on one driver only. No `tools/call` deadline in the proxy. No SSE idle limit (items 5, 6) |
-| The size of the tool list of one turn | handled elsewhere | the grant filters by name and does not cap. The cap is `OMB_TOOL_LIMIT` (`server/mcp-gate.ts:49`, `:410-412`). The probe caps at 100 |
-| A secret or an access right in the wrong place | yes | clear-text tokens and values, the URL listing, literal secrets from a bot, the self-grant path, the loopback owner gap (items 2, 3, 4, 14, 15) |
-| The person's own engine config reaches the bots | yes | the Codex home, the Claude switch, the import of clear-text secrets (item 10) |
+| One slow or stuck part blocks the others | yes, partly fixed | v0.1.153 only in the chat driver. v0.1.178 with an in-memory `off` map. Codex start wait holds the launch slot (items 8, 9). **Repaired in the range:** "One saved key with a stray character can no longer take a Cloud down." (v0.1.184, change 15: the start check of URL servers crashed the server again at each start). "A server whose start check only timed out stays on, unless that happens three times in a row." (v0.1.186, change 1: one slow check no longer took a working server out of turns for 30 minutes). After the tag: a Claude Code session whose server did not connect is closed, so the server comes back on the next turn (change 5, no release yet) |
+| A turn or a wait that does not end | yes | the call timeout on one driver only. No `tools/call` deadline in the proxy. No SSE idle limit (items 5, 6). **Repaired in the range:** "Servers that can't sign in apps say why on the Sign in card." (v0.1.186, `announcements/releases.json:63`, changes 7 and 8: before, the bot waited until the person pressed "Not now"). A frame with U+2028 or U+2029 no longer loses its request, so the engine does not wait for its own timeout (v0.1.182, change 11, no line in the release note) |
+| The size of the tool list of one turn | yes, partly fixed (was "handled elsewhere") | the grant filters by name and does not cap. The cap is `OMB_TOOL_LIMIT` (`server/mcp-gate.ts:49`, `:410-412`; `:51`, `:417-419` at `e1cc6a290`). The probe caps at 100. **Repaired in the range:** "Gemini:" "the bot's tools fit the CLI's tool budget." (v0.1.182, change 13). Antigravity CLI: "connected apps no longer lose tools", and "Every tool's description is now shortened as needed so they all fit." (v0.1.184, change 14). **Still open:** the per-tool fit of change 13 leaves out a tool that is over 2,000 bytes at its shortest, with only a stderr line (`server/mcp-tool-schema.ts:116-120`) |
+| A secret or an access right in the wrong place | yes | clear-text tokens and values, the URL listing, literal secrets from a bot, the self-grant path, the loopback owner gap (items 2, 3, 4, 14, 15). **New in the range:** a page call runs a tool that the server marks `readOnlyHint: true` with no approval (change 17). A Hermes grant stays after an edit of its server (change 16). Tool lists of each bot stay on disk after the server goes (change 14) |
+| The person's own engine config reaches the bots | yes | the Codex home, the Claude switch, the import of clear-text secrets (item 10). Probably also the Hermes home, which the first read missed (section 3.11) |
+| (none of section 5) | repaired | text-only models: "an image in the conversation no longer makes every later message fail." (v0.1.186, change 12). The fix is learned from one refusal text and kept in memory only. An ungated command server does not strip images (derived, section 3.6) |
 | A file written over after a failed read | yes | `mcp-oauth.json` (item 1). `config.json` refuses invalid JSON, but a schema-invalid file loads as `{}` and the next add keeps only the new server (derived, section 9) |
 | The tool connection of an engine (section 6) | reason found | the exception is Claude Code because its client sends only spec fields (`server/drivers/claude.ts:1065-1068`) |
 
@@ -1245,3 +1465,44 @@ Points where our rules already differ:
   `changelog.md`.
 - Whether the evidence images of the sign-in are older than the current
   paste box.
+
+Not verified in the update to `e1cc6a290`:
+
+- That a person's command server with no gate keeps its images for a
+  text-only model. It is derived from `server/drivers/turn-mcp.ts:47-50`
+  and `server/tool-schema-profile.ts:52-58`. It was not run.
+- That a gate whose result trim throws sends the images unstripped
+  (`server/mcp-gate.ts:432-435`). Derived, not tested.
+- That `engineFailed` from Claude's `mcpFailed` adds timeouts faster than
+  one a minute (`server/mcp-health.ts:160-163`, `server/index.ts:6378`).
+  Not run.
+- Which turn first leaves out a server after its third timeout. Derived
+  from the background check at `server/mcp-health.ts:137`.
+- Whether a pre-started (spare) Claude Code process can send `system/init`
+  before a turn is attached. Then `failedCustomMcp` gets no server list,
+  and no retire happens (`server/drivers/claude.ts:1375`).
+- That no chat line tells the person about a failed command server on
+  Claude Code. A grep of `mcpFailed` in `server/index.ts` found only
+  `:6378`.
+- That a server with no OAuth stays retryable with no end, and that a turn
+  that parks late hears a translated failure text. Both are derived from
+  `server/host/mcp-sign-in-cards.ts:177`, `:195-197`, `:296`.
+- A card that failed with `no-registration`, after the person adds a
+  client ID and taps "Try again": `resumed` is already true, so the bot
+  may not hear the later success (`:206`). Read in code only.
+- Whether Hermes mounts the servers of the person's own `config.yaml` on
+  each bot turn. Only the commit message and a code comment say so.
+- Whether a relay inside the bot box can write its tool-list record, and
+  whether backups include `<data>/tool-list-records/`.
+- How often the 2,000-byte fit leaves out a real tool on Gemini CLI or
+  Antigravity.
+- The fit rules of `server/tool-list-budget.ts` ("no tool is removed",
+  "calls are checked against the full schema") come from the commit
+  message.
+- That the ACP engine of `server/drivers/acp/grok.ts` stops a server with
+  its own `startup_timeout_sec` (code comment, `:582-583`).
+- A gap in our changelog: the row v0.1.186 of section 8 of
+  `docs/research/changelog.md` does not have the release line "Servers
+  that can't sign in apps say why on the Sign in card."
+  (`announcements/releases.json:63`). This update does not change the
+  changelog.
